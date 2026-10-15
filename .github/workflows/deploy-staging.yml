@@ -41,6 +41,13 @@ jobs:
       - name: Configure Docker authentication for Artifact Registry
         run: |
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+          if ! gcloud artifacts repositories describe ${{ env.GAR_REPOSITORY }} --location=${{ env.REGION }} --quiet >/dev/null 2>&1; then
+            gcloud artifacts repositories create ${{ env.GAR_REPOSITORY }} \
+              --repository-format=docker \
+              --location=${{ env.REGION }} \
+              --description="Docker repository for ${{ env.SERVICE_NAME }}" \
+              --quiet
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
