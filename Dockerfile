@@ -20,6 +20,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
     APP_ENV=production \
     APP_DEBUG=false \
     APP_KEY=base64:t6OfB9iGaVxtLi1SNgQTvyh0fDlSc/ewpMkziSegE3Y= \
+    PORT=8080 \
+    SERVER_NAME=:8080 \
     DB_CONNECTION=sqlite \
     DB_DATABASE=/app/database/database.sqlite
 
@@ -42,8 +44,8 @@ RUN mkdir -p database storage bootstrap/cache \
     && chown -R www-data:www-data database storage bootstrap/cache \
     && chmod -R 775 database storage bootstrap/cache
 
-# Entrypoint per eseguire mkdir database, touch database.sqlite e php artisan migrate --force
+# Entrypoint per inizializzazione ambiente, permessi e avvio migrazioni in background
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Rispetta la variabile d'ambiente $PORT fornita dinamicamente da Google Cloud Run
-CMD ["sh", "-c", "SERVER_NAME=:${PORT} frankenphp run --config /etc/caddy/Caddyfile"]
+# Avvia FrankenPHP in ascolto sulla porta definita da SERVER_NAME (impostata dall'entrypoint su $PORT di Cloud Run)
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
