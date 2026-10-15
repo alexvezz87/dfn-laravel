@@ -23,6 +23,11 @@ if [ -z "$APP_KEY" ]; then
     export APP_KEY="base64:t6OfB9iGaVxtLi1SNgQTvyh0fDlSc/ewpMkziSegE3Y="
 fi
 
+# Se DB_DATABASE è impostato a 'sys' (database di sistema TiDB), correggi in 'dfn_laravel'
+if [ "$DB_DATABASE" = "sys" ]; then
+    export DB_DATABASE="dfn_laravel"
+fi
+
 # Configura automaticamente il certificato SSL/CA per connessioni MySQL remote (es. TiDB Cloud) se non specificato
 if [ -z "$MYSQL_ATTR_SSL_CA" ]; then
     if [ -f /etc/ssl/certs/ca-certificates.crt ]; then
