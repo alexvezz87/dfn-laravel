@@ -32,6 +32,9 @@ if [ -z "$MYSQL_ATTR_SSL_CA" ]; then
     fi
 fi
 
+# Imposta il driver email su 'log' per default per evitare invii accidentali
+export MAIL_MAILER="${MAIL_MAILER:-log}"
+
 # Esecuzione asincrona/in background delle migrazioni per non bloccare lo startup probe di Cloud Run
 (
     # Breve pausa per assicurare che FrankenPHP abbia effettuato il bind della porta

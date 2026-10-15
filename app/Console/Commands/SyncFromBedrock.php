@@ -6,8 +6,10 @@ use App\Models\Booking;
 use App\Models\Event;
 use App\Models\FaiMember;
 use App\Models\Slot;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 class SyncFromBedrock extends Command
@@ -46,7 +48,11 @@ class SyncFromBedrock extends Command
         }
 
         if ($this->option('fresh')) {
-            if ($this->confirm('Sei sicuro di voler svuotare le tabelle locali events, slots, bookings, fai_members?')) {
+            $confirm = $this->input->isInteractive()
+                ? $this->confirm('Sei sicuro di voler svuotare le tabelle locali events, slots, bookings, fai_members?')
+                : true;
+
+            if ($confirm) {
                 $this->warn('Svuotamento tabelle locali...');
                 Schema::disableForeignKeyConstraints();
                 Booking::truncate();
@@ -77,6 +83,9 @@ class SyncFromBedrock extends Command
         // 5. Sincronizzazione FaiMembers
         $stats['fai_members'] = $this->syncFaiMembers();
 
+        // 6. Verifica o creazione Admin predefinito Filament
+        $this->ensureAdminUser();
+
         $this->newLine();
         $this->info('====================================================');
         $this->info('  Riepilogo Sincronizzazione Completata con Successo ');
@@ -92,6 +101,27 @@ class SyncFromBedrock extends Command
         );
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Assicura la presenza dell'utente amministratore per il pannello Filament.
+     */
+    protected function ensureAdminUser(): void
+    {
+        $this->newLine();
+        $this->line('<fg=cyan>→ Verifica utente amministratore Filament...</>');
+
+        $adminEmail = 'alexvezz87@gmail.com';
+        $user = User::firstOrCreate(
+            ['email' => $adminEmail],
+            [
+                'name' => 'Alex Vezz',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $this->info("  ✓ Utente amministratore Filament pronto: {$user->email}");
     }
 
     /**
@@ -190,9 +220,35 @@ class SyncFromBedrock extends Command
             $progressBar->advance();
         }
 
+        // Recupera ed inserisce eventuali eventi orfani referenziati nelle prenotazioni
+        $bookingsTable = $this->resolveBedrockTableName(['dfn_bookings', 'wp_dfn_bookings']);
+        if ($bookingsTable) {
+            $existingEventIds = $records->pluck('id')->toArray();
+            $orphanEventIds = DB::connection('bedrock')->table($bookingsTable)
+                ->whereNotIn('event_id', $existingEventIds)
+                ->distinct()
+                ->pluck('event_id');
+
+            foreach ($orphanEventIds as $orphanId) {
+                Event::updateOrCreate(
+                    ['id' => $orphanId],
+                    [
+                        'title' => "Evento #{$orphanId} (Storico / Archiviato)",
+                        'status' => 'archived',
+                        'is_active' => false,
+                        'access_type' => 'slots',
+                        'description' => 'Evento storico o di test non presente nella tabella eventi attiva, ma con prenotazioni collegate.',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+                $count++;
+            }
+        }
+
         $progressBar->finish();
         $this->newLine();
-        $this->info("  ✓ {$count} eventi sincronizzati.");
+        $this->info("  ✓ {$count} eventi sincronizzati (inclusi storici).");
 
         return $count;
     }

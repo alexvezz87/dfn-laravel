@@ -23,6 +23,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
     PORT=8080 \
     SERVER_NAME=:8080 \
     MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt \
+    MAIL_MAILER=log \
     DB_CONNECTION=sqlite \
     DB_DATABASE=/app/database/database.sqlite
 
