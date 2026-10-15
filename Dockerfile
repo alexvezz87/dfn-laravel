@@ -22,6 +22,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
     APP_KEY=base64:t6OfB9iGaVxtLi1SNgQTvyh0fDlSc/ewpMkziSegE3Y= \
     PORT=8080 \
     SERVER_NAME=:8080 \
+    MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt \
     DB_CONNECTION=sqlite \
     DB_DATABASE=/app/database/database.sqlite
 

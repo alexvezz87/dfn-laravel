@@ -23,6 +23,15 @@ if [ -z "$APP_KEY" ]; then
     export APP_KEY="base64:t6OfB9iGaVxtLi1SNgQTvyh0fDlSc/ewpMkziSegE3Y="
 fi
 
+# Configura automaticamente il certificato SSL/CA per connessioni MySQL remote (es. TiDB Cloud) se non specificato
+if [ -z "$MYSQL_ATTR_SSL_CA" ]; then
+    if [ -f /etc/ssl/certs/ca-certificates.crt ]; then
+        export MYSQL_ATTR_SSL_CA="/etc/ssl/certs/ca-certificates.crt"
+    elif [ -f /app/storage/certs/cacert.pem ]; then
+        export MYSQL_ATTR_SSL_CA="/app/storage/certs/cacert.pem"
+    fi
+fi
+
 # Esecuzione asincrona/in background delle migrazioni per non bloccare lo startup probe di Cloud Run
 (
     # Breve pausa per assicurare che FrankenPHP abbia effettuato il bind della porta
