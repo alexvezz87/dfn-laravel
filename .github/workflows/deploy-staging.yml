@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: ${{ secrets.GCP_REGION || 'europe-west1' }}
+  REGION: europe-west1
   GAR_REPOSITORY: ${{ secrets.GCP_GAR_REPOSITORY || 'dfn-laravel' }}
   SERVICE_NAME: dfn-laravel-staging
   IMAGE_NAME: dfn-laravel
