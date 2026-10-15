@@ -19,6 +19,7 @@ WORKDIR /app
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     APP_ENV=production \
     APP_DEBUG=false \
+    APP_KEY=base64:t6OfB9iGaVxtLi1SNgQTvyh0fDlSc/ewpMkziSegE3Y= \
     DB_CONNECTION=sqlite \
     DB_DATABASE=/app/database/database.sqlite
 
