@@ -1,0 +1,21 @@
+# 📜 Storico Modifiche & Interventi
+
+Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni di bug e refactoring eseguiti sul progetto.
+
+---
+
+| Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-16 | 🔧 Chore | #1 | Setup regole di sviluppo, linee guida AI, template GitHub e Wiki di progetto | Alex / Antigravity | `DEVELOPMENT.md`, `AGENTS.md`, template GitHub e cartella `wiki/` |
+
+---
+
+## 📌 Guida alla Compilazione
+Per ogni nuovo sviluppo o bug fix completato:
+1. Aggiungi una riga in cima alla tabella con:
+   - **Data**: Formato `YYYY-MM-DD`.
+   - **Tipo**: ✨ Feature / ⚡ Enhancement / 🐛 Bug Fix / 🚨 Hotfix / ♻️ Refactor / 🔧 Chore / 💡 PoC.
+   - **Rif. Issue**: Link o ID della Issue GitHub (es. `#42`).
+   - **Titolo Intervento**: Breve sintesi dell'operazione.
+   - **Autore / Agente**: Nome dello sviluppatore o AI Agent.
+   - **PR / Note**: Numero di Pull Request o link alla documentazione aggiornata.
