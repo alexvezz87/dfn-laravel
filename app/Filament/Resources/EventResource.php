@@ -249,7 +249,7 @@ class EventResource extends Resource
                     ->label('Capacità')
                     ->state(function (Event $record): string {
                         $booked = (int) $record->bookings()->where('status', 'confirmed')->sum('total_persons');
-                        $total = $record->total_capacity ?: ($record->slots()->sum('capacity') ?: 0);
+                        $total = $record->total_capacity ?: ($record->slots()->sum('max_capacity') ?: 0);
 
                         return $total > 0 ? "{$booked} / {$total}" : (string) $booked;
                     })

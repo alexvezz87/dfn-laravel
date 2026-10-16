@@ -5,6 +5,7 @@ namespace Tests\Feature\Filament;
 use App\Filament\Resources\EventResource;
 use App\Models\Booking;
 use App\Models\Event;
+use App\Models\Slot;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -48,6 +49,12 @@ class EventResourceTest extends TestCase
             'event_date_start' => now()->subDays(20)->toDateString(),
             'event_date_end' => now()->subDays(18)->toDateString(),
             'status' => 'archived',
+            'total_capacity' => 0,
+        ]);
+
+        Slot::factory()->create([
+            'event_id' => $pastEvent->id,
+            'max_capacity' => 100,
         ]);
 
         Livewire::actingAs($this->admin)
