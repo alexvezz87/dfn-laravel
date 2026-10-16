@@ -7,10 +7,14 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
 ## 🎯 Moduli Principali
 
 ### 1. Gestione Eventi e Luoghi
-- Configurazione di eventi con data d'inizio e fine.
+- Configurazione di eventi con data d'inizio e fine, orari di apertura e chiusura.
 - Impostazione di politiche tariffarie differenziate: quota standard vs quota agevolata soci FAI.
-- Controllo automatico data di apertura prenotazioni (`booking_opening_date`).
-- Modalità test (`is_test_event`) con recapito notifiche a email dedicata.
+- Controllo automatico data di apertura prenotazioni (`booking_opening_date`) con countdown.
+- Gestione flessibile della modalità di accesso: *Flusso Libero* (con capienza complessiva) o *Fasce Orarie* (a turni).
+- Selettore del layout pubblico della scheda: *Automatico*, *Layout 1 — Galleria* o *Layout 2 — Locandina*.
+- Gestione completa asset multimediali: locandina principale (`featured_image`), slider immagini pre-evento (`gallery_images`), e wall ricordi con foto/video post-evento (`wall_media`).
+- Modalità test (`is_test_event`) con recapito notifiche a email dedicata e toggle recensioni front-end.
+- Funzione rapida di duplicazione evento con clonazione automatica dei turni (in stato bozza e azzeramento prenotazioni).
 
 ### 2. Generazione e Controllo Slot
 - Generazione automatica o manuale dei turni orari di visita.
