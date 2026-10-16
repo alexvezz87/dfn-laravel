@@ -28,6 +28,19 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
   - 🎟️ **Prenotazioni**: link diretto alla lista prenotazioni prefiltrata per l'evento selezionato.
   - ✏️ **Modifica**: apertura della scheda di dettaglio/modifica dell'evento.
 
+- **Form di Creazione / Modifica Evento (Layout a 2 Colonne stile Bedrock)**:
+  - **Colonna Sinistra (Dettagli & Logistica)**:
+    - *Titolo Evento & Associazione Prodotto*: titolo evento sincronizzato con prodotto WooCommerce/Stripe e ID di riferimento.
+    - *Logistica & Orari*: date inizio/fine, orari apertura/chiusura, data di apertura prenotazioni con countdown, location e città, descrizione evento con RichEditor.
+    - *Tipologia Accesso, Capienza & Tariffe*: scelta tra Flusso Libero e Fasce Orarie, modalità di allocazione (automatica o self-selection), capienza massima complessiva, quota Standard (€) e quota agevolata Socio FAI (€).
+  - **Colonna Destra (Pubblica & Workflow)**:
+    - *Stato Evento*: Pubblicato (Attivo), Bozza, Archiviato.
+    - *Workflow Approvazione*: Conferma automatica o Approvazione manuale tessere FAI.
+    - *Stato Modalità Prenotazione*: Aperte (Form Online), Chiuse / Sold Out, In Arrivo.
+    - *Modalità di Pagamento*: Solo Online (Stripe), Solo in Loco, o Entrambe.
+    - *Annullamento Automatico*: timeout in ore per cancellare ordini non pagati.
+    - *Modalità Evento di Test*: isolamento notifiche su email di collaudo dedicata.
+
 ---
 
 ### 2. Gestione Prenotazioni per Evento (`ManageEventBookings`)
@@ -62,11 +75,21 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
 - **Navigazione**: menu laterale *FAI Prenotazioni* > *Verifica Prenotazioni FAI* (con badge rosso del conteggio in attesa).
 - Schermata centralizzata per gli operatori di segreteria per verificare e approvare rapidamente le tessere soci FAI caricate dagli utenti.
 
-### 3. Risorsa Slot (`SlotResource`)
+---
+
+### 4. Gestione Turni (`SlotResource`)
 - Visualizzazione e gestione dei singoli turni orari per ciascun evento.
 - Monitoraggio della capienza e dei posti residui per ogni turno.
 
 ---
 
-### 4. Risorsa Membri FAI (`FaiMemberResource`)
-- Consultazione anagrafica soci e verifica validità tessere.
+### 5. Anagrafica Soci FAI (`FaiMemberResource`)
+- **Navigazione**: menu laterale *FAI Prenotazioni* > *Soci FAI*.
+- **Elenco e Ricerca**:
+  - Visualizzazione dei 65 soci FAI sincronizzati dal database di produzione.
+  - Ricerca rapida per numero tessera (con funzione di copia con 1 clic), nominativo, email o telefono.
+  - Colonna Scadenza con colore dinamico: verde se tessera in corso di validità, rosso se scaduta.
+  - Badge di stato: *Attivo* (verde) o *Inattivo* (rosso).
+- **Filtri di Tabella**:
+  - Filtro *Solo Tessere Valide*: estrae i soci con stato attivo e data di scadenza futura.
+  - Filtro *Solo Tessere Scadute*: isola le tessere da rinnovare.

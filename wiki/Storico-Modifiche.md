@@ -6,7 +6,8 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-10-17 | ⚡ Enhancement | #5 | Import dati reali Netsons (155 prenotazioni, 2 eventi) e vista ManageEventBookings per singolo evento 1:1 con Bedrock | Alex / Antigravity | Comando `dfn:sync-netsons`, pagina `ManageEventBookings`, progress bar slot e navigazione FAI Prenotazioni |
+| 2026-10-17 | ⚡ Enhancement | #9 | Allineamento Form Evento allo Screenshot 4 e implementazione anagrafica Soci FAI (FaiMemberResource) | Alex / Antigravity | Form Evento a 2 colonne, anagrafica Soci FAI con ricerca e filtri validità, test e guida |
+| 2026-10-17 | ⚡ Enhancement | #7 | Import dati reali Netsons (155 prenotazioni, 2 eventi) e vista ManageEventBookings per singolo evento 1:1 con Bedrock | Alex / Antigravity | Comando `dfn:sync-netsons`, pagina `ManageEventBookings`, progress bar slot e navigazione FAI Prenotazioni |
 | 2026-10-16 | ⚡ Enhancement | #5 | Replica dashboard Bedrock (KPI card, tab prenotazioni/eventi, badge FAI) e connessione Cloud Run TiDB | Alex / Antigravity | BookingStatsOverviewWidget, tab su ListBookings e ListEvents, fix sicurezza APP_KEY GitGuardian |
 | 2026-10-16 | ✨ Feature | #3 | Implementazione BookingResource e gestione prenotazioni in Filament | Alex / Antigravity | Tabella, filtri, azioni check-in/approva FAI, test e guida |
 | 2026-10-16 | 🔧 Chore | #1 | Setup regole di sviluppo, linee guida AI, template GitHub e Wiki di progetto | Alex / Antigravity | `DEVELOPMENT.md`, `AGENTS.md`, template GitHub e cartella `wiki/` |
