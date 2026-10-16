@@ -68,12 +68,23 @@ erDiagram
 ### 1. `events`
 Rappresenta un evento o luogo visitabile.
 - `title`: Titolo dell'evento.
-- `access_type`: Modalità di accesso (es. `slots`, `open`).
-- `price_standard` / `price_fai`: Quote di partecipazione differenziate.
-- `event_date_start` / `event_date_end`: Date di validità evento.
-- `slot_duration`: Durata in minuti di ciascun turno.
+- `product_id`: Riferimento legacy facoltativo a prodotto WooCommerce pregresso.
+- `access_type`: Modalità di accesso (`free_flow` per flusso libero, `time_slots` per fasce orarie).
+- `allocation_mode`: Algoritmo di allocazione (`automatic` o `self_selection`).
+- `price_standard` / `price_fai`: Quote di partecipazione differenziate (Standard e Soci FAI).
+- `event_date_start` / `event_date_end`: Date di inizio e fine evento.
+- `event_time_start` / `event_time_end`: Orari apertura e chiusura.
+- `slot_duration`: Durata in minuti di ciascun turno (min. 5).
 - `slot_capacity`: Capienza base per turno.
-- `booking_opening_date`: Timestamp di apertura prenotazioni.
+- `slot_bonus`: Capienza bonus (staff/live).
+- `total_capacity`: Capienza massima complessiva (flusso libero).
+- `booking_opening_date`: Timestamp di apertura prenotazioni con countdown.
+- `detail_layout`: Layout scheda pubblica (`auto`, `layout1` Galleria, `layout2` Locandina).
+- `featured_image`: Locandina/copertina principale dell'evento (path storage).
+- `gallery_images`: Foto descrittive per slider pre-evento (JSON array).
+- `wall_media`: Foto e video mp4/webm per il wall post-evento (JSON array).
+- `show_reviews_frontend`: Toggle per mostrare la valutazione e recensioni nel front-end (boolean).
+- `staff_config`: Note operative interne e istruzioni cassa.
 
 ### 2. `slots`
 Turni orari associati a un evento per gestire ingressi contingentati.

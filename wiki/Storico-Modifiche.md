@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-17 | ⚡ Enhancement | #13 | Parità completa Form Modifica Evento e stile FAI con WordPress Bedrock | Alex / Antigravity | Allineamento 100% schema form (`EventResource`), 7 box sidebar, media upload, layout selector, duplicazione evento, CSS FAI (`dfn-admin-custom.css`), test e wiki |
 | 2026-10-17 | 🐛 Bug Fix | #11 | Fix errore 500 su tab Eventi Conclusi & Passati (query colonna `max_capacity` su slot) | Alex / Antigravity | Correzione query capacità slot in `EventResource`, regression test PHPUnit e doc FAQ |
 | 2026-10-17 | ⚡ Enhancement | #9 | Allineamento Form Evento allo Screenshot 4 e implementazione anagrafica Soci FAI (FaiMemberResource) | Alex / Antigravity | Form Evento a 2 colonne, anagrafica Soci FAI con ricerca e filtri validità, test e guida |
 | 2026-10-17 | ⚡ Enhancement | #7 | Import dati reali Netsons (155 prenotazioni, 2 eventi) e vista ManageEventBookings per singolo evento 1:1 con Bedrock | Alex / Antigravity | Comando `dfn:sync-netsons`, pagina `ManageEventBookings`, progress bar slot e navigazione FAI Prenotazioni |

@@ -1,0 +1,114 @@
+/**
+ * DFN Booking System 2.0 — Filament FAI Custom Stylesheet
+ * Replica dell'interfaccia FAI Bedrock (dfn-events-manager.css)
+ */
+
+:root {
+    --dfn-primary: #004b23;
+    --dfn-primary-dark: #002f16;
+    --dfn-accent: #c69c3a;
+    --dfn-accent-orange: #ea580c;
+    --dfn-border: #e2e8f0;
+    --dfn-card-bg: #ffffff;
+    --dfn-card-header: #f8fafc;
+}
+
+/* Filament Sections & Cards */
+.fi-section {
+    border-radius: 8px !important;
+    border: 1px solid var(--dfn-border) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+    overflow: hidden;
+}
+
+.fi-section-header {
+    background-color: var(--dfn-card-header) !important;
+    border-bottom: 1px solid var(--dfn-border) !important;
+    padding: 14px 20px !important;
+}
+
+.fi-section-header-heading {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: var(--dfn-primary) !important;
+    letter-spacing: -0.2px;
+}
+
+.fi-section-header-icon {
+    color: var(--dfn-primary) !important;
+}
+
+/* Focus and Border acccents */
+.fi-input:focus,
+.fi-select-input:focus,
+.fi-textarea:focus {
+    border-color: var(--dfn-primary) !important;
+    box-shadow: 0 0 0 1px var(--dfn-primary) !important;
+}
+
+/* Primary Action Buttons */
+.fi-btn-primary {
+    background-color: var(--dfn-primary) !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    transition: all 0.15s ease-in-out !important;
+}
+
+.fi-btn-primary:hover {
+    background-color: var(--dfn-primary-dark) !important;
+    transform: translateY(-1px);
+}
+
+/* Secondary Action Buttons */
+.fi-btn-secondary {
+    border: 1px solid var(--dfn-border) !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    color: var(--dfn-primary) !important;
+}
+
+.fi-btn-secondary:hover {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* Box Evidenza Apertura Prenotazioni */
+.dfn-gold-highlight-box {
+    background: #fffdf5;
+    border: 1px solid #c69c3a;
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+/* Box Modalità Evento di Test */
+.dfn-test-mode-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+/* Box Recensioni */
+.dfn-reviews-box {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+/* Helper text descriptions */
+.fi-fo-field-wrp-helper-text {
+    font-size: 12px !important;
+    color: #64748b !important;
+}
+
+/* Badges */
+.fi-badge-warning {
+    background-color: #ffedd5 !important;
+    color: #c2410c !important;
+}
+
+.fi-badge-success {
+    background-color: #dcfce7 !important;
+    color: #15803d !important;
+}

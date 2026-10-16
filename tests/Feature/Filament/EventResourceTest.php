@@ -98,4 +98,65 @@ class EventResourceTest extends TestCase
             ])
             ->assertCanSeeTableRecords([$booking]);
     }
+
+    public function test_can_render_event_edit_page(): void
+    {
+        $this->actingAs($this->admin);
+
+        $event = Event::factory()->create([
+            'title' => 'Visita Guidata al Borgo',
+            'detail_layout' => 'layout2',
+            'price_standard' => 15.00,
+            'price_fai' => 10.00,
+            'show_reviews_frontend' => true,
+        ]);
+
+        $response = $this->get(EventResource::getUrl('edit', ['record' => $event]));
+
+        $response->assertSuccessful();
+
+        Livewire::actingAs($this->admin)
+            ->test(EventResource\Pages\EditEvent::class, [
+                'record' => $event->getRouteKey(),
+            ])
+            ->assertActionExists('duplicate')
+            ->assertActionExists('back')
+            ->assertActionExists('bookings');
+    }
+
+    public function test_can_duplicate_event(): void
+    {
+        $event = Event::factory()->create([
+            'title' => 'Concerto Candle Vibes',
+            'status' => 'published',
+            'price_standard' => 20.00,
+        ]);
+
+        $slot = Slot::factory()->create([
+            'event_id' => $event->id,
+            'max_capacity' => 50,
+            'booked_count' => 10,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(EventResource\Pages\EditEvent::class, [
+                'record' => $event->getRouteKey(),
+            ])
+            ->callAction('duplicate');
+
+        $this->assertDatabaseHas('events', [
+            'title' => '(Copia) Concerto Candle Vibes',
+            'status' => 'draft',
+            'price_standard' => 20.00,
+        ]);
+
+        $duplicatedEvent = Event::where('title', '(Copia) Concerto Candle Vibes')->first();
+        $this->assertNotNull($duplicatedEvent);
+
+        $this->assertDatabaseHas('slots', [
+            'event_id' => $duplicatedEvent->id,
+            'max_capacity' => 50,
+            'booked_count' => 0,
+        ]);
+    }
 }

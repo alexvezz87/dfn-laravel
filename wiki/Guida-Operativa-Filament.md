@@ -28,18 +28,29 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
   - 🎟️ **Prenotazioni**: link diretto alla lista prenotazioni prefiltrata per l'evento selezionato.
   - ✏️ **Modifica**: apertura della scheda di dettaglio/modifica dell'evento.
 
-- **Form di Creazione / Modifica Evento (Layout a 2 Colonne stile Bedrock)**:
-  - **Colonna Sinistra (Dettagli & Logistica)**:
-    - *Titolo Evento & Associazione Prodotto*: titolo evento sincronizzato con prodotto WooCommerce/Stripe e ID di riferimento.
-    - *Logistica & Orari*: date inizio/fine, orari apertura/chiusura, data di apertura prenotazioni con countdown, location e città, descrizione evento con RichEditor.
-    - *Tipologia Accesso, Capienza & Tariffe*: scelta tra Flusso Libero e Fasce Orarie, modalità di allocazione (automatica o self-selection), capienza massima complessiva, quota Standard (€) e quota agevolata Socio FAI (€).
-  - **Colonna Destra (Pubblica & Workflow)**:
-    - *Stato Evento*: Pubblicato (Attivo), Bozza, Archiviato.
-    - *Workflow Approvazione*: Conferma automatica o Approvazione manuale tessere FAI.
-    - *Stato Modalità Prenotazione*: Aperte (Form Online), Chiuse / Sold Out, In Arrivo.
-    - *Modalità di Pagamento*: Solo Online (Stripe), Solo in Loco, o Entrambe.
-    - *Annullamento Automatico*: timeout in ore per cancellare ordini non pagati.
-    - *Modalità Evento di Test*: isolamento notifiche su email di collaudo dedicata.
+- **Form di Creazione / Modifica Evento (Parità 100% con WordPress Bedrock & Tema FAI)**:
+  - **Header & Azioni della Pagina (`EditEvent.php`)**:
+    - Titolo istituzionale: **Modifica Evento FAI** (o *Configura Nuovo Evento FAI* in creazione).
+    - 🎟️ **Tabellone Prenotazioni**: link rapido alla schermata `ManageEventBookings` per l'evento corrente.
+    - 📄 **Duplica questo Evento**: azione modale con conferma che genera istantaneamente una copia identica dell'evento in stato *Bozza*, duplicando anche tutti i relativi turni/slot (resettando i posti prenotati a 0).
+    - ⬅️ **Torna al Tabellone**: link diretto all'indice degli eventi.
+    - 💾 **Pulsante Principale Verde FAI**: etichetta personalizzata **`Aggiorna Configurazione`** (o *Crea Evento FAI*).
+  - **Colonna Sinistra (Dettagli Principali & Logistica)**:
+    - *Titolo Evento & Associazione Prodotto*: titolo dell'evento e campo per eventuale ID di riferimento legacy a WooCommerce (senza dipendenza da WooCommerce per i nuovi eventi).
+    - *Logistica & Orari*: date inizio/fine, orari apertura/chiusura, data di apertura prenotazioni con countdown, indirizzo di ritrovo (`location`), comune/città e descrizione con RichEditor.
+    - *Tipologia Accesso & Algoritmo di Allocazione*: selezione tra *Flusso Libero (Senza fasce)* con campo *Capacità Massima Evento*, oppure *Fasce Orarie (a turni)* con durata turno (min), capacità standard, capacità bonus staff, e orari del primo/ultimo turno.
+  - **Colonna Destra (Sidebar Modulare - 7 Box Ufficiali Bedrock)**:
+    - 1. **Pubblica**: stato evento (Pubblicato/Bozza/Archiviato), workflow approvazione (Automatica o Manuale FAI), stato prenotazioni (Aperte/Chiuse/In Arrivo), modalità pagamento (Online, In Loco, Entrambi), timeout annullamento automatico in ore, modalità test isolata su email dedicata, toggle *Mostra Recensioni nel Front-End*.
+    - 2. **Immagine in Evidenza**: upload e preview della locandina o copertina principale dell'evento.
+    - 3. **Galleria Slider (Pre-Evento)**: upload multiplo per le foto descrittive mostrate nello slider della scheda evento (jpg, png, webp).
+    - 4. **Wall dei Ricordi (Post-Evento)**: caricamento multimediale di foto e video (mp4, webm) dell'evento concluso.
+    - 5. **Layout Pagina Dettaglio**: selezione radio tra *Automatico*, *Layout 1 — Galleria* (slider in cima) e *Layout 2 — Locandina* (locandina verticale a sinistra).
+    - 6. **Listino Contributi**: Biglietto Standard (€) e Quota agevolata Socio FAI (€).
+    - 7. **Staff & Note Interne**: note operative e istruzioni riservate alla cassa e ai volontari.
+  - **Stile Visivo FAI Personalizzato (`dfn-admin-custom.css`)**:
+    - Palette istituzionale FAI: Forest Green (`#004b23`), Dark Green (`#002f16`), Ocra/Oro (`#c69c3a`), Arancio FAI (`#ea580c`).
+    - Intestazioni delle schede evidenziate con sfondo `#f8fafc` e testi in verde FAI bold.
+    - Focus ring e pulsanti principali conformi al brand.
 
 ---
 

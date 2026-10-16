@@ -39,12 +39,14 @@ class EventResource extends Resource
                                     ->label('Titolo dell\'Evento / Biglietto')
                                     ->required()
                                     ->maxLength(255)
-                                    ->helperText('Puoi modificare il titolo dell\'evento in qualsiasi momento. La modifica aggiornerà automaticamente anche il nome del Prodotto WooCommerce/Stripe collegato.'),
+                                    ->placeholder('Es: Visita al Castello Visconteo')
+                                    ->helperText('Puoi modificare il titolo dell\'evento in qualsiasi momento. La modifica aggiornerà automaticamente la scheda pubblica.'),
 
                                 Forms\Components\TextInput::make('product_id')
-                                    ->label('ID Prodotto WooCommerce / Riferimento Collegato')
+                                    ->label('Prodotto WooCommerce Collegato (Opzionale / Riferimento)')
                                     ->numeric()
-                                    ->helperText('Collega questa configurazione di turni e listino ad un Prodotto WooCommerce esistente. Il prodotto funge da carrello per il check-out.'),
+                                    ->placeholder('Es. ID numerico (lascia vuoto per nuovi eventi)')
+                                    ->helperText('Collega questa configurazione ad un eventuale Prodotto WooCommerce/ID catalogo pregresso. Per i nuovi eventi non è necessario generare un prodotto WooCommerce.'),
                             ]),
 
                         Forms\Components\Section::make('Logistica & Orari')
@@ -54,44 +56,52 @@ class EventResource extends Resource
                                     ->schema([
                                         Forms\Components\DatePicker::make('event_date_start')
                                             ->label('Data Inizio')
+                                            ->native(false)
                                             ->required(),
                                         Forms\Components\DatePicker::make('event_date_end')
-                                            ->label('Data Fine (Opzionale)'),
+                                            ->label('Data Fine (Opzionale)')
+                                            ->native(false),
                                         Forms\Components\TimePicker::make('event_time_start')
                                             ->label('Orario Apertura Inizio')
+                                            ->seconds(false)
                                             ->required(),
                                         Forms\Components\TimePicker::make('event_time_end')
-                                            ->label('Orario Chiusura Fine (Opzionale)'),
+                                            ->label('Orario Chiusura Fine (Opzionale)')
+                                            ->seconds(false),
                                     ]),
 
                                 Forms\Components\DateTimePicker::make('booking_opening_date')
                                     ->label('Data e Ora Apertura Prenotazioni (Opzionale)')
+                                    ->native(false)
                                     ->helperText('Se compilata, le prenotazioni rimarranno bloccate e un countdown indicherà agli utenti il momento esatto di apertura.'),
 
                                 Forms\Components\Grid::make(2)
                                     ->schema([
-                                        Forms\Components\TextInput::make('location')
-                                            ->label('Luogo di Ritrovo')
-                                            ->placeholder('es. Quadriportico della Canonica, Vicolo Canonica 9'),
+                                        Forms\Components\Textarea::make('location')
+                                            ->label('Luogo dell\'Evento / Luogo di Ritrovo')
+                                            ->required()
+                                            ->rows(2)
+                                            ->placeholder('Es: Basilica di San Gaudenzio - Via S. Gaudenzio, 22'),
                                         Forms\Components\TextInput::make('city')
-                                            ->label('Città')
-                                            ->placeholder('es. Novara'),
+                                            ->label('Comune / Città')
+                                            ->placeholder('Es: Novara, Arona, Galliate...'),
                                     ]),
 
                                 Forms\Components\RichEditor::make('description')
-                                    ->label('Descrizione e Note dell\'Evento')
+                                    ->label('Descrizione')
+                                    ->helperText('Inserisci testo descrittivo, cenni storici, raccomandazioni per i partecipanti, ecc.')
                                     ->columnSpanFull(),
                             ]),
 
-                        Forms\Components\Section::make('Tipologia Accesso, Capienza & Tariffe')
-                            ->icon('heroicon-o-ticket')
+                        Forms\Components\Section::make('Tipologia Accesso & Algoritmo di Allocazione')
+                            ->icon('heroicon-o-users')
                             ->schema([
-                                Forms\Components\Grid::make(3)
+                                Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\Select::make('access_type')
-                                            ->label('Tipologia Accesso')
+                                            ->label('Modalità di Accesso')
                                             ->options([
-                                                'free_flow' => 'Flusso Libero (senza turni fissi)',
+                                                'free_flow' => 'Flusso Libero (Senza fasce)',
                                                 'time_slots' => 'Fasce Orarie (a turni)',
                                             ])
                                             ->default('free_flow')
@@ -99,38 +109,60 @@ class EventResource extends Resource
                                             ->live(),
 
                                         Forms\Components\Select::make('allocation_mode')
-                                            ->label('Modalità Allocazione')
+                                            ->label('Algoritmo di Allocazione')
                                             ->options([
-                                                'automatic' => 'Automatica dal sistema',
-                                                'self_selection' => 'Self-selection (l\'utente sceglie il turno)',
+                                                'automatic' => 'Assegnazione Automatica (Default)',
+                                                'self_selection' => 'Scelta autonoma utente',
                                             ])
-                                            ->default('automatic'),
-
-                                        Forms\Components\TextInput::make('total_capacity')
-                                            ->label('Capacità Totale Posti')
-                                            ->numeric()
-                                            ->default(0)
-                                            ->helperText('Posti massimi complessivi previsti.'),
-
-                                        Forms\Components\TextInput::make('price_standard')
-                                            ->label('Quota Intera (Standard)')
-                                            ->numeric()
-                                            ->prefix('€')
-                                            ->default(0.00)
+                                            ->default('automatic')
                                             ->required(),
-
-                                        Forms\Components\TextInput::make('price_fai')
-                                            ->label('Quota Ridotta Socio FAI')
-                                            ->numeric()
-                                            ->prefix('€')
-                                            ->default(0.00),
-
-                                        Forms\Components\TextInput::make('slot_duration')
-                                            ->label('Durata Slot (minuti)')
-                                            ->numeric()
-                                            ->default(30)
-                                            ->visible(fn (Forms\Get $get): bool => $get('access_type') === 'time_slots'),
                                     ]),
+
+                                Forms\Components\Fieldset::make('Parametri Flusso Libero')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('total_capacity')
+                                            ->label('Capacità Massima Evento')
+                                            ->numeric()
+                                            ->default(100)
+                                            ->minValue(1)
+                                            ->helperText('Capacità totale massima di persone ammesse all\'evento.'),
+                                    ])
+                                    ->visible(fn (Forms\Get $get): bool => $get('access_type') === 'free_flow'),
+
+                                Forms\Components\Fieldset::make('Parametri Fasce Orarie')
+                                    ->schema([
+                                        Forms\Components\Grid::make(3)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('slot_duration')
+                                                    ->label('Durata Turno (min)')
+                                                    ->numeric()
+                                                    ->default(30)
+                                                    ->minValue(5),
+                                                Forms\Components\TextInput::make('slot_capacity')
+                                                    ->label('Capacità Standard Turno')
+                                                    ->numeric()
+                                                    ->default(20)
+                                                    ->minValue(1),
+                                                Forms\Components\TextInput::make('slot_bonus')
+                                                    ->label('Capacità Bonus (Staff/Live)')
+                                                    ->numeric()
+                                                    ->default(5)
+                                                    ->minValue(0),
+                                            ]),
+
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TimePicker::make('first_slot_time')
+                                                    ->label('Orario Primo Turno')
+                                                    ->seconds(false)
+                                                    ->default('10:00'),
+                                                Forms\Components\TimePicker::make('last_slot_time')
+                                                    ->label('Orario Ultimo Turno')
+                                                    ->seconds(false)
+                                                    ->default('18:00'),
+                                            ]),
+                                    ])
+                                    ->visible(fn (Forms\Get $get): bool => $get('access_type') === 'time_slots'),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),
@@ -170,9 +202,9 @@ class EventResource extends Resource
                                 Forms\Components\Select::make('payment_mode')
                                     ->label('Modalità di Pagamento')
                                     ->options([
-                                        'online' => 'Solo Pagamento Online (Stripe)',
+                                        'online' => 'Solo Pagamento Online',
                                         'in_loco' => 'Solo Pagamento in Loco',
-                                        'both' => 'Online o in Loco',
+                                        'both' => 'Entrambi (Online o in Loco)',
                                     ])
                                     ->default('online'),
 
@@ -190,11 +222,97 @@ class EventResource extends Resource
                                 Forms\Components\TextInput::make('test_notification_email')
                                     ->label('Email Notifiche di Test')
                                     ->email()
+                                    ->placeholder('es. tua.email@dominio.it')
                                     ->visible(fn (Forms\Get $get): bool => (bool) $get('is_test_event')),
 
-                                Forms\Components\Toggle::make('is_active')
-                                    ->label('Visibile Online')
-                                    ->default(true),
+                                Forms\Components\Toggle::make('show_reviews_frontend')
+                                    ->label('Mostra Recensioni nel Front-End')
+                                    ->default(true)
+                                    ->helperText('Se attivo, quando l\'evento è concluso mostra la valutazione media e le recensioni verificate sulla scheda dell\'evento.'),
+                            ]),
+
+                        Forms\Components\Section::make('Immagine in Evidenza')
+                            ->icon('heroicon-o-photo')
+                            ->schema([
+                                Forms\Components\FileUpload::make('featured_image')
+                                    ->label('Locandina Principale')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('events/featured')
+                                    ->imageEditor()
+                                    ->helperText('Locandina o copertina principale dell\'evento.'),
+                            ]),
+
+                        Forms\Components\Section::make('Galleria Slider (Pre-Evento)')
+                            ->icon('heroicon-o-squares-2x2')
+                            ->schema([
+                                Forms\Components\FileUpload::make('gallery_images')
+                                    ->label('Foto Slider')
+                                    ->image()
+                                    ->multiple()
+                                    ->reorderable()
+                                    ->disk('public')
+                                    ->directory('events/gallery')
+                                    ->helperText('Foto descrittive inserite nello slider della scheda evento (Solo immagini: jpg, png, webp).'),
+                            ]),
+
+                        Forms\Components\Section::make('Wall dei Ricordi (Post-Evento)')
+                            ->icon('heroicon-o-video-camera')
+                            ->schema([
+                                Forms\Components\FileUpload::make('wall_media')
+                                    ->label('Media Wall Ricordi')
+                                    ->multiple()
+                                    ->disk('public')
+                                    ->directory('events/wall')
+                                    ->acceptedFileTypes(['image/*', 'video/mp4', 'video/webm', 'video/ogg'])
+                                    ->helperText('Carica foto e video (mp4, webm) registrati durante l\'evento per la vista conclusa.'),
+                            ]),
+
+                        Forms\Components\Section::make('Layout Pagina Dettaglio')
+                            ->icon('heroicon-o-window')
+                            ->schema([
+                                Forms\Components\Radio::make('detail_layout')
+                                    ->label('Layout Scheda Pubblica')
+                                    ->options([
+                                        'auto' => 'Automatico (Layout 2 se ha galleria, oppure 1 se locandina)',
+                                        'layout1' => 'Layout 1 — Galleria (Slider in cima + form a destra)',
+                                        'layout2' => 'Layout 2 — Locandina (Locandina a sinistra + form a destra)',
+                                    ])
+                                    ->default('auto')
+                                    ->helperText('Scegli come visualizzare l\'evento nella pagina di dettaglio pubblica.'),
+                            ]),
+
+                        Forms\Components\Section::make('Listino Contributi')
+                            ->icon('heroicon-o-currency-euro')
+                            ->description('Contributo minimo per il rispettivo biglietto:')
+                            ->schema([
+                                Forms\Components\TextInput::make('price_standard')
+                                    ->label('Biglietto Standard (€)')
+                                    ->numeric()
+                                    ->prefix('€')
+                                    ->default(10.00)
+                                    ->required()
+                                    ->minValue(0)
+                                    ->step(0.01),
+
+                                Forms\Components\TextInput::make('price_fai')
+                                    ->label('Socio FAI / Scontato (€)')
+                                    ->numeric()
+                                    ->prefix('€')
+                                    ->placeholder('Es. 8.00')
+                                    ->minValue(0)
+                                    ->step(0.01)
+                                    ->helperText('Opzionale. Tariffa agevolata per soci FAI.'),
+                            ]),
+
+                        Forms\Components\Section::make('Staff & Note Interne')
+                            ->icon('heroicon-o-clipboard-document-list')
+                            ->schema([
+                                Forms\Components\Textarea::make('staff_config')
+                                    ->label('Configurazione Staff / Istruzioni')
+                                    ->rows(4)
+                                    ->placeholder('Assegnazione autorizzazioni o istruzioni speciali per la cassa...')
+                                    ->helperText('Note visibili solo allo staff per la gestione operativa.'),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
