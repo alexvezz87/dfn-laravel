@@ -3,6 +3,7 @@
 namespace Tests\Feature\Filament;
 
 use App\Filament\Resources\EventResource;
+use App\Models\Booking;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -64,5 +65,30 @@ class EventResourceTest extends TestCase
         $response = $this->get(EventResource::getUrl('create'));
 
         $response->assertSuccessful();
+    }
+
+    public function test_can_render_manage_event_bookings_page(): void
+    {
+        $this->actingAs($this->admin);
+
+        $event = Event::factory()->create([
+            'title' => 'United Gospel 2026',
+        ]);
+
+        $booking = Booking::factory()->create([
+            'event_id' => $event->id,
+            'customer_name' => 'Simona Greco',
+            'status' => 'confirmed',
+        ]);
+
+        $response = $this->get(EventResource::getUrl('bookings', ['record' => $event]));
+
+        $response->assertSuccessful();
+
+        Livewire::actingAs($this->admin)
+            ->test(EventResource\Pages\ManageEventBookings::class, [
+                'record' => $event->getRouteKey(),
+            ])
+            ->assertCanSeeTableRecords([$booking]);
     }
 }

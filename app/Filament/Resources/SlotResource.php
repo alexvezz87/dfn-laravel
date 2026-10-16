@@ -16,6 +16,12 @@ class SlotResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
 
+    protected static ?string $navigationGroup = 'FAI Prenotazioni';
+
+    protected static ?string $navigationLabel = 'Gestione Turni';
+
+    protected static ?int $navigationSort = 3;
+
     public static function form(Form $form): Form
     {
         return $form

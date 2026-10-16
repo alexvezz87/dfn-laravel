@@ -29,6 +29,11 @@ class ListBookings extends ListRecords
         ];
     }
 
+    public function getDefaultActiveTab(): string|int|null
+    {
+        return 'active';
+    }
+
     public function getTabs(): array
     {
         $activeCount = Booking::query()->whereIn('status', ['confirmed', 'pending_approval'])->count();

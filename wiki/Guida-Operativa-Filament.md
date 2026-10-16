@@ -30,33 +30,37 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
 
 ---
 
-### 2. Risorsa Prenotazioni (`BookingResource`)
-- **Navigazione**: menu laterale *Gestione Eventi* > *Prenotazioni*.
-- **Riepilogo Statistico (KPI Cards)** in cima alla vista:
-  - 🎟️ **Prenotazioni Attive**: totale delle prenotazioni confermate nel sistema.
-  - 👥 **Posti Occupati**: somma complessiva dei partecipanti confermati.
-  - 📊 **Tasso di Occupazione**: percentuale calcolata sulla capienza totale prevista per gli eventi attivi.
-  - ⚠️ **Tessere FAI da Verificare**: conteggio delle richieste in attesa con evidenziazione in giallo/ambra.
-- **Navigazione a Tab (come in Bedrock `dfn-slot-manager`)**:
-  - 🟢 **Prenotazioni Attive & Confermate**: mostra le prenotazioni valide (confermate e in attesa approvazione FAI).
-  - ⚠️ **Verifica FAI**: filtro rapido dedicato esclusivamente alle prenotazioni con tessere FAI da convalidare (`pending_approval`).
-  - ⏱️ **Storico Annullate & Tentativi**: visualizza i movimenti incompleti, falliti o annullati.
-  - 📋 **Tutte le Prenotazioni**: visualizzazione globale.
+### 2. Gestione Prenotazioni per Evento (`ManageEventBookings`)
+- **Accesso**: dal Tabellone Eventi, cliccando sul pulsante verde **`[Prenotazioni]`** in corrispondenza dell'evento desiderato (es. *United Gospel 2026*).
+- **Intestazione con Ritorno Rapido**: pulsante in alto a sinistra **`[← Torna agli Eventi]`** per tornare immediatamente al Tabellone.
+- **Riepilogo Statistico (KPI Cards calcolate per l'evento)**:
+  - 🎟️ **PRENOTAZIONI ATTIVE**: totale confermato per l'evento selezionato.
+  - 👥 **POSTI OCCUPATI**: posti occupati dai partecipanti registrati a questo evento.
+  - 📊 **TASSO DI OCCUPAZIONE**: percentuale calcolata in tempo reale sulla capienza totale dell'evento (es. `9% (90 / 948)`).
+  - ⚠️ **TESSERE FAI DA VERIFICARE**: richieste pendenti di approvazione tessera per questo evento.
+- **Banner Slot / Turno con Progress Bar**:
+  - Mostra tipologia (*Flusso Libero* o *Fasce Orarie*), orari del turno e barra di avanzamento dinamica della capienza con conteggio partecipanti e prenotazioni.
+- **Navigazione a Tab (in stile `dfn-slot-manager`)**:
+  - 🟢 **Prenotazioni Attive & Confermate**: partecipanti validi confermati.
+  - ⚠️ **Storico Movimenti & Tentativi (Incompleti / Annullati)**: tentativi non andati a buon fine, pagamenti pendenti o ordini cancellati.
+  - 📋 **Tutte le Prenotazioni**: panoramica completa per l'evento.
 - **Colonne della Tabella**:
-  - **#ID**: badge identificativo della prenotazione.
-  - **Evento**: titolo dell'evento e orario del turno/slot.
-  - **Cliente**: nome in evidenza, email e recapito telefonico formattato.
-  - **Tipologia**: badge arancione in evidenza `SOCIO FAI` se la prenotazione include soci FAI, altrimenti `Standard`.
-  - **Partecipanti**: totale posti con breakdown dei biglietti (es. `2 (1 Std, 1 FAI)`).
-  - **Importo**: importo totale dovuto con indicazione del metodo di pagamento.
-  - **Stato**: badge semantico (*Confermata*, *Verifica FAI*, *In attesa pag.*, *Annullata*).
-  - **Check-in**: badge *Effettuato* con data e ora o *Da effettuare*.
-- **Azioni di Riga**:
-  - 🎟️ **Check-in**: registra l'ingresso istantaneo per il visitatore.
-  - ↩️ **Annulla Check-in**: ripristina lo stato da effettuare in caso di errore.
-  - 🛡️ **Approva FAI**: convalida la tessera FAI e conferma la prenotazione.
+  - **Ordine #**: codice numerico ordine WooCommerce/Stripe (es. `#2455`).
+  - **Cliente**: nome intestatario in grassetto, email sottostante.
+  - **Qualifica**: badge arancione in evidenza **`SOCIO FAI`** per i soci, altrimenti `Standard`.
+  - **Telefono**: recapito telefonico con link diretto `tel:`.
+  - **Biglietti**: numero partecipanti per la prenotazione.
+  - **Pagamento**: badge verde `✔ Pagato` con metodo (Stripe, Dfn_in_loco) o `In attesa`.
+  - **Prenotazione registrata**: data e ora della prenotazione (`d/m/Y - H:i`).
+- **Azioni Rapide**:
+  - 🎟️ **Check-in**: per registrare l'ingresso del visitatore al banchetto.
+  - 🛡️ **Approva FAI**: per convalidare la tessera socio FAI in 1 clic.
 
 ---
+
+### 3. Verifica Prenotazioni FAI (`BookingResource`)
+- **Navigazione**: menu laterale *FAI Prenotazioni* > *Verifica Prenotazioni FAI* (con badge rosso del conteggio in attesa).
+- Schermata centralizzata per gli operatori di segreteria per verificare e approvare rapidamente le tessere soci FAI caricate dagli utenti.
 
 ### 3. Risorsa Slot (`SlotResource`)
 - Visualizzazione e gestione dei singoli turni orari per ciascun evento.
