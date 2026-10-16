@@ -15,17 +15,20 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Imposta la directory di lavoro dell'applicazione
 WORKDIR /app
 
-# Variabili d'ambiente di default per produzione e database SQLite
+# Variabili d'ambiente di default per staging/produzione su TiDB Cloud
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
-    APP_ENV=production \
+    APP_ENV=staging \
     APP_DEBUG=false \
-    APP_KEY=base64:t6OfB9iGaVxtLi1SNgQTvyh0fDlSc/ewpMkziSegE3Y= \
     PORT=8080 \
     SERVER_NAME=:8080 \
+    DB_CONNECTION=mysql \
+    DB_HOST=gateway01.eu-central-1.prod.aws.tidbcloud.com \
+    DB_PORT=4000 \
+    DB_DATABASE=dfn_laravel \
+    DB_USERNAME=44TAgT2sNGA1Pni.root \
+    DB_PASSWORD=W8tj0eXmd8X1xoOD \
     MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt \
-    MAIL_MAILER=log \
-    DB_CONNECTION=sqlite \
-    DB_DATABASE=/app/database/database.sqlite
+    MAIL_MAILER=log
 
 # Ottimizzazione della cache dei layer Docker per Composer
 COPY composer.json composer.lock ./
