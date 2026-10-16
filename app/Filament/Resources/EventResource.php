@@ -30,64 +30,176 @@ class EventResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('product_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('title'),
-                Forms\Components\TextInput::make('access_type')
-                    ->required(),
-                Forms\Components\TextInput::make('allocation_mode'),
-                Forms\Components\TextInput::make('approval_workflow'),
-                Forms\Components\TextInput::make('payment_mode')
-                    ->required(),
-                Forms\Components\TextInput::make('price_standard')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-                Forms\Components\TextInput::make('price_fai')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
-                Forms\Components\DatePicker::make('event_date_start'),
-                Forms\Components\DatePicker::make('event_date_end'),
-                Forms\Components\TextInput::make('event_time_start'),
-                Forms\Components\TextInput::make('event_time_end'),
-                Forms\Components\TextInput::make('location'),
-                Forms\Components\TextInput::make('city'),
-                Forms\Components\Textarea::make('description')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('slot_duration')
-                    ->numeric()
-                    ->default(30),
-                Forms\Components\TextInput::make('slot_capacity')
-                    ->numeric()
-                    ->default(0),
-                Forms\Components\TextInput::make('slot_bonus')
-                    ->numeric()
-                    ->default(0),
-                Forms\Components\TextInput::make('first_slot_time'),
-                Forms\Components\TextInput::make('last_slot_time'),
-                Forms\Components\TextInput::make('total_capacity')
-                    ->numeric()
-                    ->default(0),
-                Forms\Components\Textarea::make('staff_config')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('status'),
-                Forms\Components\TextInput::make('auto_cancel_hours')
-                    ->required()
-                    ->numeric()
-                    ->default(24),
-                Forms\Components\TextInput::make('detail_layout')
-                    ->required(),
-                Forms\Components\DateTimePicker::make('booking_opening_date'),
-                Forms\Components\TextInput::make('booking_status')
-                    ->required(),
-                Forms\Components\Toggle::make('is_test_event')
-                    ->required(),
-                Forms\Components\TextInput::make('test_notification_email')
-                    ->email(),
-            ]);
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Titolo Evento & Associazione Prodotto')
+                            ->icon('heroicon-o-pencil-square')
+                            ->schema([
+                                Forms\Components\TextInput::make('title')
+                                    ->label('Titolo dell\'Evento / Biglietto')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->helperText('Puoi modificare il titolo dell\'evento in qualsiasi momento. La modifica aggiornerà automaticamente anche il nome del Prodotto WooCommerce/Stripe collegato.'),
+
+                                Forms\Components\TextInput::make('product_id')
+                                    ->label('ID Prodotto WooCommerce / Riferimento Collegato')
+                                    ->numeric()
+                                    ->helperText('Collega questa configurazione di turni e listino ad un Prodotto WooCommerce esistente. Il prodotto funge da carrello per il check-out.'),
+                            ]),
+
+                        Forms\Components\Section::make('Logistica & Orari')
+                            ->icon('heroicon-o-map-pin')
+                            ->schema([
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\DatePicker::make('event_date_start')
+                                            ->label('Data Inizio')
+                                            ->required(),
+                                        Forms\Components\DatePicker::make('event_date_end')
+                                            ->label('Data Fine (Opzionale)'),
+                                        Forms\Components\TimePicker::make('event_time_start')
+                                            ->label('Orario Apertura Inizio')
+                                            ->required(),
+                                        Forms\Components\TimePicker::make('event_time_end')
+                                            ->label('Orario Chiusura Fine (Opzionale)'),
+                                    ]),
+
+                                Forms\Components\DateTimePicker::make('booking_opening_date')
+                                    ->label('Data e Ora Apertura Prenotazioni (Opzionale)')
+                                    ->helperText('Se compilata, le prenotazioni rimarranno bloccate e un countdown indicherà agli utenti il momento esatto di apertura.'),
+
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('location')
+                                            ->label('Luogo di Ritrovo')
+                                            ->placeholder('es. Quadriportico della Canonica, Vicolo Canonica 9'),
+                                        Forms\Components\TextInput::make('city')
+                                            ->label('Città')
+                                            ->placeholder('es. Novara'),
+                                    ]),
+
+                                Forms\Components\RichEditor::make('description')
+                                    ->label('Descrizione e Note dell\'Evento')
+                                    ->columnSpanFull(),
+                            ]),
+
+                        Forms\Components\Section::make('Tipologia Accesso, Capienza & Tariffe')
+                            ->icon('heroicon-o-ticket')
+                            ->schema([
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\Select::make('access_type')
+                                            ->label('Tipologia Accesso')
+                                            ->options([
+                                                'free_flow' => 'Flusso Libero (senza turni fissi)',
+                                                'time_slots' => 'Fasce Orarie (a turni)',
+                                            ])
+                                            ->default('free_flow')
+                                            ->required()
+                                            ->live(),
+
+                                        Forms\Components\Select::make('allocation_mode')
+                                            ->label('Modalità Allocazione')
+                                            ->options([
+                                                'automatic' => 'Automatica dal sistema',
+                                                'self_selection' => 'Self-selection (l\'utente sceglie il turno)',
+                                            ])
+                                            ->default('automatic'),
+
+                                        Forms\Components\TextInput::make('total_capacity')
+                                            ->label('Capacità Totale Posti')
+                                            ->numeric()
+                                            ->default(0)
+                                            ->helperText('Posti massimi complessivi previsti.'),
+
+                                        Forms\Components\TextInput::make('price_standard')
+                                            ->label('Quota Intera (Standard)')
+                                            ->numeric()
+                                            ->prefix('€')
+                                            ->default(0.00)
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('price_fai')
+                                            ->label('Quota Ridotta Socio FAI')
+                                            ->numeric()
+                                            ->prefix('€')
+                                            ->default(0.00),
+
+                                        Forms\Components\TextInput::make('slot_duration')
+                                            ->label('Durata Slot (minuti)')
+                                            ->numeric()
+                                            ->default(30)
+                                            ->visible(fn (Forms\Get $get): bool => $get('access_type') === 'time_slots'),
+                                    ]),
+                            ]),
+                    ])
+                    ->columnSpan(['lg' => 2]),
+
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Pubblica')
+                            ->icon('heroicon-o-globe-alt')
+                            ->schema([
+                                Forms\Components\Select::make('status')
+                                    ->label('Stato Evento')
+                                    ->options([
+                                        'published' => 'Pubblicato (Attivo)',
+                                        'draft' => 'Bozza (Non visibile)',
+                                        'archived' => 'Archiviato',
+                                    ])
+                                    ->default('published')
+                                    ->required(),
+
+                                Forms\Components\Select::make('approval_workflow')
+                                    ->label('Workflow Approvazione')
+                                    ->options([
+                                        'auto' => 'Conferma Automatica',
+                                        'manual' => 'Richiede Approvazione Manuale FAI',
+                                    ])
+                                    ->default('auto'),
+
+                                Forms\Components\Select::make('booking_status')
+                                    ->label('Stato Modalità Prenotazione')
+                                    ->options([
+                                        'open' => 'Prenotazioni Aperte (Form Online)',
+                                        'closed' => 'Prenotazioni Chiuse / Sold Out',
+                                        'upcoming' => 'In Arrivo / Countdown',
+                                    ])
+                                    ->default('open'),
+
+                                Forms\Components\Select::make('payment_mode')
+                                    ->label('Modalità di Pagamento')
+                                    ->options([
+                                        'online' => 'Solo Pagamento Online (Stripe)',
+                                        'in_loco' => 'Solo Pagamento in Loco',
+                                        'both' => 'Online o in Loco',
+                                    ])
+                                    ->default('online'),
+
+                                Forms\Components\TextInput::make('auto_cancel_hours')
+                                    ->label('Annullamento Automatico (ore)')
+                                    ->numeric()
+                                    ->default(24)
+                                    ->helperText('Dopo quante ore un ordine non pagato viene annullato automaticamente. Imposta 0 per disabilitare.'),
+
+                                Forms\Components\Toggle::make('is_test_event')
+                                    ->label('Modalità Evento di Test')
+                                    ->helperText('Se attivo, le notifiche per lo Staff verranno inviate solo all\'email di test.')
+                                    ->live(),
+
+                                Forms\Components\TextInput::make('test_notification_email')
+                                    ->label('Email Notifiche di Test')
+                                    ->email()
+                                    ->visible(fn (Forms\Get $get): bool => (bool) $get('is_test_event')),
+
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Visibile Online')
+                                    ->default(true),
+                            ]),
+                    ])
+                    ->columnSpan(['lg' => 1]),
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table
