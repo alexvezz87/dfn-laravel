@@ -19,6 +19,12 @@ class EditEvent extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('preview')
+                ->label('Anteprima Evento')
+                ->icon('heroicon-o-eye')
+                ->color('primary')
+                ->url(fn (): string => route('event.preview', ['event' => $this->record->id]), shouldOpenInNewTab: true),
+
             Actions\Action::make('bookings')
                 ->label('Tabellone Prenotazioni')
                 ->icon('heroicon-o-ticket')

@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-17 | ⚡ Enhancement | #15 | Tooltip popup modali esplicativi, layout picker visivo, rimozione campo WooCommerce e anteprima pubblica scheda evento | Alex / Antigravity | Tooltip modali con pulsanti `(?)`, layout picker con miniature scheletriche, rotta `/evento/{event}` e preview 1:1, rimozione `product_id`, test e wiki |
 | 2026-10-17 | ⚡ Enhancement | #13 | Parità completa Form Modifica Evento e stile FAI con WordPress Bedrock | Alex / Antigravity | Allineamento 100% schema form (`EventResource`), 7 box sidebar, media upload, layout selector, duplicazione evento, CSS FAI (`dfn-admin-custom.css`), test e wiki |
 | 2026-10-17 | 🐛 Bug Fix | #11 | Fix errore 500 su tab Eventi Conclusi & Passati (query colonna `max_capacity` su slot) | Alex / Antigravity | Correzione query capacità slot in `EventResource`, regression test PHPUnit e doc FAQ |
 | 2026-10-17 | ⚡ Enhancement | #9 | Allineamento Form Evento allo Screenshot 4 e implementazione anagrafica Soci FAI (FaiMemberResource) | Alex / Antigravity | Form Evento a 2 colonne, anagrafica Soci FAI con ricerca e filtri validità, test e guida |

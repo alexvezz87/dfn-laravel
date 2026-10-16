@@ -31,26 +31,29 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
 - **Form di Creazione / Modifica Evento (Parità 100% con WordPress Bedrock & Tema FAI)**:
   - **Header & Azioni della Pagina (`EditEvent.php`)**:
     - Titolo istituzionale: **Modifica Evento FAI** (o *Configura Nuovo Evento FAI* in creazione).
+    - 👁️ **Anteprima Evento**: apre in una nuova scheda l'anteprima pubblica fedele 1:1 della scheda evento (`/evento/{event}`), con locandina, orari, posti disponibili e selettore interattivo partecipanti intero/socio FAI.
     - 🎟️ **Tabellone Prenotazioni**: link rapido alla schermata `ManageEventBookings` per l'evento corrente.
     - 📄 **Duplica questo Evento**: azione modale con conferma che genera istantaneamente una copia identica dell'evento in stato *Bozza*, duplicando anche tutti i relativi turni/slot (resettando i posti prenotati a 0).
     - ⬅️ **Torna al Tabellone**: link diretto all'indice degli eventi.
     - 💾 **Pulsante Principale Verde FAI**: etichetta personalizzata **`Aggiorna Configurazione`** (o *Crea Evento FAI*).
   - **Colonna Sinistra (Dettagli Principali & Logistica)**:
-    - *Titolo Evento & Associazione Prodotto*: titolo dell'evento e campo per eventuale ID di riferimento legacy a WooCommerce (senza dipendenza da WooCommerce per i nuovi eventi).
-    - *Logistica & Orari*: date inizio/fine, orari apertura/chiusura, data di apertura prenotazioni con countdown, indirizzo di ritrovo (`location`), comune/città e descrizione con RichEditor.
-    - *Tipologia Accesso & Algoritmo di Allocazione*: selezione tra *Flusso Libero (Senza fasce)* con campo *Capacità Massima Evento*, oppure *Fasce Orarie (a turni)* con durata turno (min), capacità standard, capacità bonus staff, e orari del primo/ultimo turno.
+    - *Informazioni Principali dell'Evento*: titolo dell'evento (senza alcun campo WooCommerce o dipendenza da e-commerce esterno).
+    - *Logistica & Orari*: date inizio/fine, orari apertura/chiusura, data di apertura prenotazioni con countdown e tooltip modale esplicativo, indirizzo di ritrovo (`location`), comune/città e descrizione con RichEditor.
+    - *Tipologia Accesso & Algoritmo di Allocazione*: selezione tra *Flusso Libero (Senza fasce)* con campo *Capacità Massima Evento*, oppure *Fasce Orarie (a turni)* con durata turno (min), capacità standard, capacità bonus staff, e orari del primo/ultimo turno. Tutti i campi dispongono di tooltip modali con popup `(?)`.
   - **Colonna Destra (Sidebar Modulare - 7 Box Ufficiali Bedrock)**:
-    - 1. **Pubblica**: stato evento (Pubblicato/Bozza/Archiviato), workflow approvazione (Automatica o Manuale FAI), stato prenotazioni (Aperte/Chiuse/In Arrivo), modalità pagamento (Online, In Loco, Entrambi), timeout annullamento automatico in ore, modalità test isolata su email dedicata, toggle *Mostra Recensioni nel Front-End*.
+    - 1. **Pubblica**: stato evento (Pubblicato/Bozza/Archiviato), workflow approvazione (con popup esplicativo), stato prenotazioni (Aperte/Chiuse/In Arrivo con popup), modalità pagamento (Online, In Loco, Entrambi con popup), timeout annullamento automatico in ore (con popup), modalità test isolata su email dedicata, toggle *Mostra Recensioni nel Front-End*.
     - 2. **Immagine in Evidenza**: upload e preview della locandina o copertina principale dell'evento.
     - 3. **Galleria Slider (Pre-Evento)**: upload multiplo per le foto descrittive mostrate nello slider della scheda evento (jpg, png, webp).
-    - 4. **Wall dei Ricordi (Post-Evento)**: caricamento multimediale di foto e video (mp4, webm) dell'evento concluso.
-    - 5. **Layout Pagina Dettaglio**: selezione radio tra *Automatico*, *Layout 1 — Galleria* (slider in cima) e *Layout 2 — Locandina* (locandina verticale a sinistra).
+    - 4. **Wall dei Ricordi (Post-Evento)**: caricamento multimediale di foto e video (mp4, webm) con popup esplicativo sul funzionamento post-evento.
+    - 5. **Layout Pagina Dettaglio**: selettore visivo interattivo con wireframe scheletrici delle tre opzioni (*Automatico*, *Layout 1 — Galleria* con slider in cima, *Layout 2 — Locandina* con locandina a sinistra e form a destra).
     - 6. **Listino Contributi**: Biglietto Standard (€) e Quota agevolata Socio FAI (€).
     - 7. **Staff & Note Interne**: note operative e istruzioni riservate alla cassa e ai volontari.
+  - **Tooltip Modali Esplicativi (`(?)`)**:
+    - Ogni campo rilevante include un pulsante circolare verde `(?)` che apre un popup con intestazione verde scuro FAI, testo dettagliato, box di suggerimento verde (`Caso d'uso tipico`) e box di attenzione ambra.
   - **Stile Visivo FAI Personalizzato (`dfn-admin-custom.css`)**:
     - Palette istituzionale FAI: Forest Green (`#004b23`), Dark Green (`#002f16`), Ocra/Oro (`#c69c3a`), Arancio FAI (`#ea580c`).
     - Intestazioni delle schede evidenziate con sfondo `#f8fafc` e testi in verde FAI bold.
-    - Focus ring e pulsanti principali conformi al brand.
+    - Focus ring, pulsanti principali e tooltip buttons conformi al brand.
 
 ---
 

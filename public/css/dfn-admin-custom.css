@@ -112,3 +112,51 @@
     background-color: #dcfce7 !important;
     color: #15803d !important;
 }
+
+/* Tooltip Hint Actions (?) */
+.dfn-tooltip-trigger,
+.fi-fo-field-wrp-hint button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 9999px !important;
+    background-color: #f0fdf4 !important;
+    border: 1.5px solid var(--dfn-primary) !important;
+    color: var(--dfn-primary) !important;
+    transition: all 0.2s ease !important;
+}
+
+.dfn-tooltip-trigger:hover,
+.fi-fo-field-wrp-hint button:hover {
+    background-color: var(--dfn-primary) !important;
+    color: #ffffff !important;
+    transform: scale(1.1) !important;
+}
+
+/* Tooltip Modal Header in FAI Green */
+.fi-modal-window {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}
+
+.fi-modal-header {
+    background-color: var(--dfn-primary) !important;
+    padding: 16px 20px !important;
+}
+
+.fi-modal-heading {
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+}
+
+.fi-modal-close-btn {
+    color: #ffffff !important;
+    opacity: 0.8 !important;
+}
+
+.fi-modal-close-btn:hover {
+    opacity: 1 !important;
+}
