@@ -146,37 +146,50 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('id')
                     ->label('#ID')
                     ->sortable()
-                    ->badge(),
+                    ->badge()
+                    ->color('gray'),
                 Tables\Columns\TextColumn::make('event.title')
                     ->label('Evento')
                     ->searchable()
                     ->sortable()
-                    ->limit(25),
+                    ->weight('bold')
+                    ->description(fn (Booking $record): ?string => $record->slot ? $record->slot->slot_time_start.' - '.$record->slot->slot_time_end : null)
+                    ->limit(30),
                 Tables\Columns\TextColumn::make('customer_name')
-                    ->label('Intestatario')
+                    ->label('Cliente')
                     ->searchable()
                     ->sortable()
-                    ->description(fn (Booking $record): ?string => $record->customer_email),
+                    ->weight('semibold')
+                    ->description(fn (Booking $record): string => trim(($record->customer_email ?? '').($record->customer_phone ? ' • '.$record->customer_phone : ''))),
+                Tables\Columns\TextColumn::make('membership_type')
+                    ->label('Tipologia')
+                    ->badge()
+                    ->state(fn (Booking $record): string => $record->persons_fai > 0 ? 'SOCIO FAI' : 'Standard')
+                    ->color(fn (string $state): string => $state === 'SOCIO FAI' ? 'warning' : 'gray')
+                    ->icon(fn (string $state): string => $state === 'SOCIO FAI' ? 'heroicon-m-identification' : 'heroicon-m-user')
+                    ->alignCenter(),
                 Tables\Columns\TextColumn::make('total_persons')
-                    ->label('Tot. Pax')
+                    ->label('Partecipanti')
                     ->badge()
                     ->color('primary')
+                    ->formatStateUsing(function (Booking $record): string {
+                        $details = [];
+                        if ($record->persons_standard > 0) {
+                            $details[] = "{$record->persons_standard} Std";
+                        }
+                        if ($record->persons_fai > 0) {
+                            $details[] = "{$record->persons_fai} FAI";
+                        }
+
+                        return $details ? "{$record->total_persons} (".implode(', ', $details).')' : (string) $record->total_persons;
+                    })
                     ->sortable()
                     ->alignCenter(),
-                Tables\Columns\TextColumn::make('persons_standard')
-                    ->label('Std')
-                    ->badge()
-                    ->color('gray')
-                    ->alignCenter(),
-                Tables\Columns\TextColumn::make('persons_fai')
-                    ->label('FAI')
-                    ->badge()
-                    ->color('warning')
-                    ->alignCenter(),
                 Tables\Columns\TextColumn::make('amount_due')
-                    ->label('Totale')
+                    ->label('Importo')
                     ->money('EUR')
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn (Booking $record): ?string => $record->payment_method ? ucfirst($record->payment_method) : null),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Stato')
                     ->badge()
@@ -187,18 +200,28 @@ class BookingResource extends Resource
                         'cancelled' => 'danger',
                         default => 'gray',
                     })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'confirmed' => 'heroicon-m-check-circle',
+                        'pending_approval' => 'heroicon-m-exclamation-triangle',
+                        'pending_payment' => 'heroicon-m-clock',
+                        'cancelled' => 'heroicon-m-x-circle',
+                        default => 'heroicon-m-question-mark-circle',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'confirmed' => 'Confermata',
-                        'pending_approval' => 'In attesa FAI',
+                        'pending_approval' => 'Verifica FAI',
                         'pending_payment' => 'In attesa pag.',
                         'cancelled' => 'Annullata',
                         default => $state,
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('checkin_at')
+                Tables\Columns\TextColumn::make('checkin_status')
                     ->label('Check-in')
-                    ->dateTime('d/m/Y H:i')
-                    ->placeholder('Non effettuato')
+                    ->badge()
+                    ->state(fn (Booking $record): string => $record->checkin_at ? 'Effettuato' : 'Da effettuare')
+                    ->color(fn (string $state): string => $state === 'Effettuato' ? 'success' : 'gray')
+                    ->icon(fn (string $state): string => $state === 'Effettuato' ? 'heroicon-m-check-badge' : 'heroicon-m-arrow-path')
+                    ->description(fn (Booking $record): ?string => $record->checkin_at ? $record->checkin_at->format('d/m H:i') : null)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Data Creazione')
@@ -294,6 +317,13 @@ class BookingResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            BookingResource\Widgets\BookingStatsOverviewWidget::class,
         ];
     }
 

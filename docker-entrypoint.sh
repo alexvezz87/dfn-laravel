@@ -20,7 +20,8 @@ chmod 664 /app/database/database.sqlite 2>/dev/null || true
 
 # Assicura che APP_KEY sia presente per crittografia e sessioni
 if [ -z "$APP_KEY" ]; then
-    export APP_KEY="base64:t6OfB9iGaVxtLi1SNgQTvyh0fDlSc/ewpMkziSegE3Y="
+    echo "[Entrypoint] Generazione dinamica di APP_KEY..."
+    export APP_KEY=$(php artisan key:generate --show --no-interaction)
 fi
 
 # Se DB_DATABASE è impostato a 'sys' (database di sistema TiDB), correggi in 'dfn_laravel'
