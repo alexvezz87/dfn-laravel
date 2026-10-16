@@ -26,13 +26,30 @@ class EventResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function makeHelpAction(string $name, string $title, string $intro, array $items = [], ?string $tip = null, ?string $warn = null): Forms\Components\Actions\Action
+    {
+        return Forms\Components\Actions\Action::make($name)
+            ->label('?')
+            ->tooltip('Informazioni: '.$title)
+            ->modalHeading($title)
+            ->modalContent(view('filament.forms.components.tooltip-content', [
+                'intro' => $intro,
+                'items' => $items,
+                'tip' => $tip,
+                'warn' => $warn,
+            ]))
+            ->modalSubmitAction(false)
+            ->modalCancelActionLabel('Chiudi')
+            ->extraAttributes(['class' => 'dfn-tooltip-trigger']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\Section::make('Titolo Evento & Associazione Prodotto')
+                        Forms\Components\Section::make('Informazioni Principali dell\'Evento')
                             ->icon('heroicon-o-pencil-square')
                             ->schema([
                                 Forms\Components\TextInput::make('title')
@@ -41,12 +58,6 @@ class EventResource extends Resource
                                     ->maxLength(255)
                                     ->placeholder('Es: Visita al Castello Visconteo')
                                     ->helperText('Puoi modificare il titolo dell\'evento in qualsiasi momento. La modifica aggiornerà automaticamente la scheda pubblica.'),
-
-                                Forms\Components\TextInput::make('product_id')
-                                    ->label('Prodotto WooCommerce Collegato (Opzionale / Riferimento)')
-                                    ->numeric()
-                                    ->placeholder('Es. ID numerico (lascia vuoto per nuovi eventi)')
-                                    ->helperText('Collega questa configurazione ad un eventuale Prodotto WooCommerce/ID catalogo pregresso. Per i nuovi eventi non è necessario generare un prodotto WooCommerce.'),
                             ]),
 
                         Forms\Components\Section::make('Logistica & Orari')
@@ -73,7 +84,17 @@ class EventResource extends Resource
                                 Forms\Components\DateTimePicker::make('booking_opening_date')
                                     ->label('Data e Ora Apertura Prenotazioni (Opzionale)')
                                     ->native(false)
-                                    ->helperText('Se compilata, le prenotazioni rimarranno bloccate e un countdown indicherà agli utenti il momento esatto di apertura.'),
+                                    ->helperText('Se compilata, le prenotazioni rimarranno bloccate e un countdown indicherà agli utenti il momento esatto di apertura.')
+                                    ->hintAction(
+                                        self::makeHelpAction(
+                                            'help_booking_opening',
+                                            '⏱️ Data e Ora Apertura Prenotazioni',
+                                            'Se compilata, questa data e ora <strong>blocca il form di prenotazione</strong> fino al momento indicato. Gli utenti che visitano la pagina pubblica dell\'evento vedono un <strong>countdown live</strong> che indica quanto manca all\'apertura delle prenotazioni.<br><br>Al raggiungimento dell\'orario, il form si sblocca automaticamente senza necessità di intervento manuale.',
+                                            [],
+                                            '«Le prenotazioni apriranno sabato 15 marzo alle ore 10:00» — configura questa data e il sito gestirà tutto in automatico, creando attesa e urgenza tra i visitatori.',
+                                            'Se il campo viene lasciato vuoto, le prenotazioni sono immediatamente disponibili (compatibilmente con lo stato Booking Status).'
+                                        )
+                                    ),
 
                                 Forms\Components\Grid::make(2)
                                     ->schema([
@@ -106,7 +127,20 @@ class EventResource extends Resource
                                             ])
                                             ->default('free_flow')
                                             ->required()
-                                            ->live(),
+                                            ->live()
+                                            ->hintAction(
+                                                self::makeHelpAction(
+                                                    'help_access_type',
+                                                    '🎛️ Modalità di Accesso',
+                                                    'Definisce <strong>come gli utenti accedono all\'evento</strong> e come vengono organizzate le prenotazioni.',
+                                                    [
+                                                        '<strong>⏰ Fasce Orarie (Slot):</strong> l\'evento è diviso in turni orari con capacità fissa per turno. Il sistema genera automaticamente gli slot in base a durata, orario primo/ultimo turno e numero di giorni. Ideale per visite guidate e attività a flusso controllato.',
+                                                        '<strong>🚪 Flusso Libero:</strong> non ci sono turni orari distinti. Gli utenti prenotano senza scegliere un orario specifico, fino al raggiungimento della capacità totale. Ideale per mostre, concerti o giornate a ingresso continuo.',
+                                                    ],
+                                                    null,
+                                                    'Cambiare modalità su un evento già attivo con prenotazioni potrebbe richiedere un reset degli slot. Procedi con attenzione.'
+                                                )
+                                            ),
 
                                         Forms\Components\Select::make('allocation_mode')
                                             ->label('Algoritmo di Allocazione')
@@ -115,7 +149,19 @@ class EventResource extends Resource
                                                 'self_selection' => 'Scelta autonoma utente',
                                             ])
                                             ->default('automatic')
-                                            ->required(),
+                                            ->required()
+                                            ->hintAction(
+                                                self::makeHelpAction(
+                                                    'help_allocation_mode',
+                                                    '🤖 Algoritmo di Allocazione',
+                                                    'Determina <strong>chi sceglie il turno orario</strong> durante il processo di prenotazione.',
+                                                    [
+                                                        '<strong>🤖 Assegnazione Automatica (Default):</strong> il sistema assegna automaticamente il turno meno affollato. L\'utente non vede né sceglie l\'orario: il turno viene ottimizzato dal backend per distribuire uniformemente i visitatori.',
+                                                        '<strong>👈 Selezione Turno Libera (Self-selection):</strong> l\'utente può scegliere autonomamente il proprio turno orario da un calendario visivo.',
+                                                    ],
+                                                    'La Self-selection mostra un selettore visivo degli slot con indicazione dei posti disponibili in tempo reale.'
+                                                )
+                                            ),
                                     ]),
 
                                 Forms\Components\Fieldset::make('Parametri Flusso Libero')
@@ -142,12 +188,30 @@ class EventResource extends Resource
                                                     ->label('Capacità Standard Turno')
                                                     ->numeric()
                                                     ->default(20)
-                                                    ->minValue(1),
+                                                    ->minValue(1)
+                                                    ->hintAction(
+                                                        self::makeHelpAction(
+                                                            'help_slot_capacity',
+                                                            '🪑 Capacità Standard Turno',
+                                                            'Indica il <strong>numero massimo di persone accettate in ogni turno orario</strong> attraverso il form di prenotazione online.',
+                                                            [],
+                                                            'La capacità totale dell\'evento è calcolata come: <em>Capacità Turno × Numero Slot × Giorni</em>. Puoi aumentare singolarmente la capacità di uno slot specifico dalla sezione Gestione Turni.'
+                                                        )
+                                                    ),
                                                 Forms\Components\TextInput::make('slot_bonus')
                                                     ->label('Capacità Bonus (Staff/Live)')
                                                     ->numeric()
                                                     ->default(5)
-                                                    ->minValue(0),
+                                                    ->minValue(0)
+                                                    ->hintAction(
+                                                        self::makeHelpAction(
+                                                            'help_slot_bonus',
+                                                            '➕ Capacità Bonus (Staff/Live)',
+                                                            'I posti <strong>Bonus</strong> sono posti aggiuntivi riservati a inserimenti manuali da parte dello staff (banchetto, scanner, inserimento rapido). <strong>Non sono prenotabili online</strong> dagli utenti tramite il form pubblico.',
+                                                            [],
+                                                            'Imposta a 0 se vuoi che la capienza del turno sia esclusivamente quella online, senza margini di staff.'
+                                                        )
+                                                    ),
                                             ]),
 
                                         Forms\Components\Grid::make(2)
@@ -188,7 +252,19 @@ class EventResource extends Resource
                                         'auto' => 'Conferma Automatica',
                                         'manual' => 'Richiede Approvazione Manuale FAI',
                                     ])
-                                    ->default('auto'),
+                                    ->default('auto')
+                                    ->hintAction(
+                                        self::makeHelpAction(
+                                            'help_approval',
+                                            '✅ Workflow Approvazione Prenotazioni',
+                                            'Controlla la procedura di conferma delle prenotazioni.',
+                                            [
+                                                '<strong>Conferma Automatica:</strong> la prenotazione è immediatamente confermata e il biglietto è emesso all\'istante dopo il completamento.',
+                                                '<strong>Richiede Approvazione Manuale FAI:</strong> la prenotazione rimane in stato «In attesa di approvazione» finché un operatore non convalida la tessera FAI o la richiesta.',
+                                            ],
+                                            'Usa «Manuale» per eventi con quota associativa FAI da verificare, gruppi su invito o capienza ristretta.'
+                                        )
+                                    ),
 
                                 Forms\Components\Select::make('booking_status')
                                     ->label('Stato Modalità Prenotazione')
@@ -197,7 +273,21 @@ class EventResource extends Resource
                                         'closed' => 'Prenotazioni Chiuse / Sold Out',
                                         'upcoming' => 'In Arrivo / Countdown',
                                     ])
-                                    ->default('open'),
+                                    ->default('open')
+                                    ->hintAction(
+                                        self::makeHelpAction(
+                                            'help_booking_status',
+                                            '🔒 Stato Modalità Prenotazione',
+                                            'Determina l\'operatività del form pubblico di prenotazione.',
+                                            [
+                                                '<strong>Prenotazioni Aperte:</strong> il form di prenotazione è attivo per tutti i visitatori.',
+                                                '<strong>Prenotazioni Chiuse / Sold Out:</strong> il form è bloccato e indica il termine dei posti disponibili.',
+                                                '<strong>In Arrivo:</strong> mostra un badge di evento imminente con blocco prenotazioni.',
+                                            ],
+                                            null,
+                                            'Questo campo controlla solo la visibilità del form pubblico, non lo stato interno dell\'evento (bozza/pubblicato).'
+                                        )
+                                    ),
 
                                 Forms\Components\Select::make('payment_mode')
                                     ->label('Modalità di Pagamento')
@@ -206,13 +296,34 @@ class EventResource extends Resource
                                         'in_loco' => 'Solo Pagamento in Loco',
                                         'both' => 'Entrambi (Online o in Loco)',
                                     ])
-                                    ->default('online'),
+                                    ->default('online')
+                                    ->hintAction(
+                                        self::makeHelpAction(
+                                            'help_payment_mode',
+                                            '💳 Modalità di Pagamento',
+                                            'Determina <strong>come e quando l\'utente versa il contributo</strong> di partecipazione.',
+                                            [
+                                                '<strong>Solo Pagamento Online:</strong> l\'utente completa il versamento direttamente tramite checkout online con carta. Il posto è confermato subito dopo la transazione.',
+                                                '<strong>Solo Saldo in Loco:</strong> il posto è riservato senza pagamento anticipato. Il saldo avviene al banchetto il giorno dell\'evento.',
+                                                '<strong>Entrambi (Online o in Loco):</strong> l\'utente sceglie autonomamente la modalità preferita.',
+                                            ]
+                                        )
+                                    ),
 
                                 Forms\Components\TextInput::make('auto_cancel_hours')
                                     ->label('Annullamento Automatico (ore)')
                                     ->numeric()
                                     ->default(24)
-                                    ->helperText('Dopo quante ore un ordine non pagato viene annullato automaticamente. Imposta 0 per disabilitare.'),
+                                    ->helperText('Dopo quante ore un ordine non pagato viene annullato automaticamente. Imposta 0 per disabilitare.')
+                                    ->hintAction(
+                                        self::makeHelpAction(
+                                            'help_auto_cancel',
+                                            '⏳ Annullamento Automatico',
+                                            'Se impostato a un valore maggiore di zero, il sistema annulla automaticamente le prenotazioni non pagate dopo il numero di ore indicato dalla creazione dell\'ordine, liberando i posti per altri utenti.',
+                                            [],
+                                            '24 ore: valore consigliato per prenotazioni online. 0 (disabilitato): consigliato per pagamenti in loco o eventi gratuiti.'
+                                        )
+                                    ),
 
                                 Forms\Components\Toggle::make('is_test_event')
                                     ->label('Modalità Evento di Test')
@@ -258,6 +369,13 @@ class EventResource extends Resource
 
                         Forms\Components\Section::make('Wall dei Ricordi (Post-Evento)')
                             ->icon('heroicon-o-video-camera')
+                            ->headerActions([
+                                self::makeHelpAction(
+                                    'help_wall',
+                                    '📸🎬 Wall dei Ricordi (Post-Evento)',
+                                    'Questo spazio è dedicato a foto e video clip (.mp4, .webm) registrati durante lo svolgimento dell\'iniziativa.<br><br>A differenza della galleria descrittiva (usata prima dell\'evento per presentarlo), questi media vengono mostrati pubblicamente nella scheda dell\'evento solo quando l\'evento risulta concluso, creando un archivio multimediale per visitatori e soci.'
+                                ),
+                            ])
                             ->schema([
                                 Forms\Components\FileUpload::make('wall_media')
                                     ->label('Media Wall Ricordi')
@@ -270,16 +388,24 @@ class EventResource extends Resource
 
                         Forms\Components\Section::make('Layout Pagina Dettaglio')
                             ->icon('heroicon-o-window')
+                            ->headerActions([
+                                self::makeHelpAction(
+                                    'help_layout',
+                                    '📐 Layout Pagina Dettaglio',
+                                    'Controlla <strong>il template visivo</strong> della pagina pubblica di dettaglio dell\'evento.',
+                                    [
+                                        '<strong>Automatico:</strong> il sistema sceglie in autonomia il layout migliore. Se non ci sono immagini in galleria viene usato il Layout 2 (Locandina); se c\'è galleria viene usato il Layout 1.',
+                                        '<strong>Layout 1 — Galleria:</strong> slider fotografico orizzontale in cima alla pagina, seguito da descrizione e form di prenotazione in una griglia a due colonne. Ottimale con più foto di alta qualità.',
+                                        '<strong>Layout 2 — Locandina:</strong> immagine verticale (locandina) a sinistra della pagina e form di prenotazione a destra. Ideale per concerti e locandine istituzionali.',
+                                    ]
+                                ),
+                            ])
                             ->schema([
-                                Forms\Components\Radio::make('detail_layout')
+                                Forms\Components\ViewField::make('detail_layout')
                                     ->label('Layout Scheda Pubblica')
-                                    ->options([
-                                        'auto' => 'Automatico (Layout 2 se ha galleria, oppure 1 se locandina)',
-                                        'layout1' => 'Layout 1 — Galleria (Slider in cima + form a destra)',
-                                        'layout2' => 'Layout 2 — Locandina (Locandina a sinistra + form a destra)',
-                                    ])
+                                    ->view('filament.forms.components.layout-picker')
                                     ->default('auto')
-                                    ->helperText('Scegli come visualizzare l\'evento nella pagina di dettaglio pubblica.'),
+                                    ->helperText('Scegli come visualizzare l\'evento nella pagina di dettaglio pubblica. La modalità "Auto" usa il Layout 2 (locandina) se non c\'è galleria.'),
                             ]),
 
                         Forms\Components\Section::make('Listino Contributi')

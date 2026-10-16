@@ -119,9 +119,32 @@ class EventResourceTest extends TestCase
             ->test(EventResource\Pages\EditEvent::class, [
                 'record' => $event->getRouteKey(),
             ])
+            ->assertActionExists('preview')
             ->assertActionExists('duplicate')
             ->assertActionExists('back')
-            ->assertActionExists('bookings');
+            ->assertActionExists('bookings')
+            ->assertFormFieldDoesNotExist('product_id');
+    }
+
+    public function test_can_render_public_event_preview_page(): void
+    {
+        $event = Event::factory()->create([
+            'title' => 'United Gospel 2026 - Cento Voci un solo Cuore',
+            'location' => 'Basilica di San Gaudenzio - Via S. Gaudenzio, 22',
+            'city' => 'Novara',
+            'price_standard' => 15.00,
+            'price_fai' => 10.00,
+            'detail_layout' => 'layout2',
+        ]);
+
+        $response = $this->get(route('event.preview', ['event' => $event->id]));
+
+        $response->assertSuccessful();
+        $response->assertSee('United Gospel 2026 - Cento Voci un solo Cuore');
+        $response->assertSee('Basilica di San Gaudenzio');
+        $response->assertSee('15.00');
+        $response->assertSee('10.00');
+        $response->assertSee('Modalità Anteprima Scheda Evento');
     }
 
     public function test_can_duplicate_event(): void
