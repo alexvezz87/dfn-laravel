@@ -13,6 +13,8 @@ class ListEvents extends ListRecords
 {
     protected static string $resource = EventResource::class;
 
+    protected static ?string $title = 'FAI Prenotazioni — Tabellone Eventi';
+
     protected function getHeaderActions(): array
     {
         return [

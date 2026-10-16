@@ -16,17 +16,29 @@ class BookingResource extends Resource
 {
     protected static ?string $model = Booking::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static ?string $navigationLabel = 'Prenotazioni';
+    protected static ?string $navigationLabel = 'Verifica Prenotazioni FAI';
 
     protected static ?string $modelLabel = 'Prenotazione';
 
     protected static ?string $pluralModelLabel = 'Prenotazioni';
 
-    protected static ?string $navigationGroup = 'Gestione Eventi';
+    protected static ?string $navigationGroup = 'FAI Prenotazioni';
 
     protected static ?int $navigationSort = 2;
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::where('status', 'pending_approval')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'danger';
+    }
 
     public static function form(Form $form): Form
     {

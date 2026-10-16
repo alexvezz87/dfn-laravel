@@ -14,7 +14,17 @@ class EventResource extends Resource
 {
     protected static ?string $model = Event::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+
+    protected static ?string $navigationGroup = 'FAI Prenotazioni';
+
+    protected static ?string $navigationLabel = 'Eventi';
+
+    protected static ?string $modelLabel = 'Evento';
+
+    protected static ?string $pluralModelLabel = 'Eventi';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -178,14 +188,8 @@ class EventResource extends Resource
                 Tables\Actions\Action::make('bookings')
                     ->label('Prenotazioni')
                     ->icon('heroicon-o-ticket')
-                    ->color('primary')
-                    ->url(fn (Event $record): string => BookingResource::getUrl('index', [
-                        'tableFilters' => [
-                            'event_id' => [
-                                'value' => $record->id,
-                            ],
-                        ],
-                    ])),
+                    ->color('success')
+                    ->url(fn (Event $record): string => EventResource::getUrl('bookings', ['record' => $record])),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -208,6 +212,7 @@ class EventResource extends Resource
             'index' => Pages\ListEvents::route('/'),
             'create' => Pages\CreateEvent::route('/create'),
             'edit' => Pages\EditEvent::route('/{record}/edit'),
+            'bookings' => Pages\ManageEventBookings::route('/{record}/bookings'),
         ];
     }
 }
