@@ -33,6 +33,15 @@ Questa pagina raccoglie la risoluzione di problemi noti, anomalie risolte (bug f
 - **Fix applicato & Regression Test**: Corretto il nome della colonna in `max_capacity` ed esteso `test_can_list_upcoming_and_past_events` in `tests/Feature/Filament/EventResourceTest.php` con evento passato e slot associato.
 - **Issue GitHub di riferimento**: [#11](https://github.com/alexvezz87/dfn-laravel/issues/11)
 
+### 2. Alert di Sicurezza GitGuardian: Credenziali Database in chiaro (MySQL Assignment)
+- **Descrizione del problema**: GitGuardian ha intercettato una credenziale MySQL esposta (`DB_PASSWORD`) nel repository GitHub.
+- **Causa scatenante**: Nel `Dockerfile` e nel workflow di deployment `deploy-staging.yml` era stato inserito un valore di fallback in chiaro per la password di TiDB Cloud in assenza dei GitHub Secrets configurati.
+- **Fix applicato & Best Practice**: 
+  1. Rimosse tutte le credenziali e password in chiaro da `Dockerfile` e `.github/workflows/deploy-staging.yml`.
+  2. Registrati i secret cifrati in GitHub Actions (`STAGING_DB_PASSWORD`, `STAGING_DB_HOST`, `STAGING_DB_PORT`, `STAGING_DB_DATABASE`, `STAGING_DB_USERNAME`).
+  3. Procedura di rotazione della password su TiDB Cloud e chiusura alert su GitGuardian.
+- **Issue GitHub di riferimento**: [#17](https://github.com/alexvezz87/dfn-laravel/issues/17)
+
 ---
 
 ## 📝 Regola di Aggiornamento

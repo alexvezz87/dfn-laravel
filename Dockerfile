@@ -22,11 +22,6 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
     PORT=8080 \
     SERVER_NAME=:8080 \
     DB_CONNECTION=mysql \
-    DB_HOST=gateway01.eu-central-1.prod.aws.tidbcloud.com \
-    DB_PORT=4000 \
-    DB_DATABASE=dfn_laravel \
-    DB_USERNAME=44TAgT2sNGA1Pni.root \
-    DB_PASSWORD=W8tj0eXmd8X1xoOD \
     MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt \
     MAIL_MAILER=log
 
