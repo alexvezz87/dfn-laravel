@@ -42,6 +42,15 @@ Questa pagina raccoglie la risoluzione di problemi noti, anomalie risolte (bug f
   3. Procedura di rotazione della password su TiDB Cloud e chiusura alert su GitGuardian.
 - **Issue GitHub di riferimento**: [#17](https://github.com/alexvezz87/dfn-laravel/issues/17)
 
+### 3. Alert di Sicurezza GitGuardian: Dati Personali e Credenziali FTP (Netsons)
+- **Descrizione del problema**: GitGuardian ha segnalato "Company Email Password" su `scripts/export_netsons_data.py` e multiple occorrenze "Generic High Entropy Secret" su `storage/sync/netsons_prod_data.json`.
+- **Causa scatenante**: Lo script di migrazione conteneva in chiaro la password dell'utente FTP di Netsons (`upload@dfnprenotazioni.it`), mentre il file JSON di dump conteneva i `qr_token` casuali a 32 caratteri delle 155 prenotazioni storiche e i dati dei clienti.
+- **Fix applicato & Best Practice**:
+  1. Rimossi completamente dal tracking Git `scripts/export_netsons_data.py` e `storage/sync/netsons_prod_data.json`.
+  2. Inseriti `/storage/sync/` e `/scripts/` in `.gitignore` per evitare qualsiasi leak accidentale futuro.
+  3. Procedura di rotazione della password FTP su cPanel Netsons e chiusura degli alert sulla dashboard GitGuardian.
+- **Issue GitHub di riferimento**: [#19](https://github.com/alexvezz87/dfn-laravel/issues/19)
+
 ---
 
 ## 📝 Regola di Aggiornamento
