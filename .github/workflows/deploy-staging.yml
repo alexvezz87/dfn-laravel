@@ -76,11 +76,11 @@ jobs:
             APP_ENV=staging
             APP_DEBUG=false
             DB_CONNECTION=mysql
-            DB_HOST=${{ secrets.STAGING_DB_HOST || 'gateway01.eu-central-1.prod.aws.tidbcloud.com' }}
-            DB_PORT=${{ secrets.STAGING_DB_PORT || '4000' }}
-            DB_DATABASE=${{ secrets.STAGING_DB_DATABASE || 'dfn_laravel' }}
-            DB_USERNAME=${{ secrets.STAGING_DB_USERNAME || '44TAgT2sNGA1Pni.root' }}
-            DB_PASSWORD=${{ secrets.STAGING_DB_PASSWORD || 'W8tj0eXmd8X1xoOD' }}
+            DB_HOST=${{ secrets.STAGING_DB_HOST }}
+            DB_PORT=${{ secrets.STAGING_DB_PORT }}
+            DB_DATABASE=${{ secrets.STAGING_DB_DATABASE }}
+            DB_USERNAME=${{ secrets.STAGING_DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.STAGING_DB_PASSWORD }}
             MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt
 
       - name: Show Deployed Cloud Run Service URL
