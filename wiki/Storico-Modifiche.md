@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-20 | 🔧 Chore | #21 | Allineamento governance AGENTS.md e setup bacheca tasks/ per pattern Orchestratore ed Esecutore | Alex / Antigravity | Allineamento Sezione 6 di AGENTS.md, esclusione bacheca tasks/ in .gitignore e salvaguardia .gitkeep |
 | 2026-10-17 | 🔧 Chore | #19 | Rimozione dati sensibili di produzione Netsons e credenziali script (GitGuardian) | Alex / Antigravity | Eliminazione `netsons_prod_data.json` e `export_netsons_data.py`, inclusione `/storage/sync/` e `/scripts/` in `.gitignore` |
 | 2026-10-17 | 🔧 Chore | #17 | Risoluzione leak di sicurezza credenziali database (GitGuardian) e configurazione GitHub Secrets | Alex / Antigravity | Rimozione password in chiaro da Dockerfile e deploy workflow, configurazione secret protetti su GitHub Actions |
 | 2026-10-17 | ⚡ Enhancement | #15 | Tooltip popup modali esplicativi, layout picker visivo, rimozione campo WooCommerce e anteprima pubblica scheda evento | Alex / Antigravity | Tooltip modali con pulsanti `(?)`, layout picker con miniature scheletriche, rotta `/evento/{event}` e preview 1:1, rimozione `product_id`, test e wiki |
