@@ -5,10 +5,12 @@ namespace Tests\Feature\Filament;
 use App\Actions\OptimizeImageAction;
 use App\Filament\Pages\ManageMediaSettings;
 use App\Filament\Resources\EventResource;
+use App\Models\Event;
 use App\Models\Setting;
 use App\Models\User;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -85,18 +87,34 @@ class MediaSettingsTest extends TestCase
         $this->assertSame('12', Setting::get('media_max_image_mb'));
     }
 
-    public function test_event_form_respects_configured_max_upload_size(): void
+    public function test_event_form_allows_large_image_upload_when_auto_compress_is_enabled(): void
     {
-        Setting::set('media_max_image_mb', 14, 'media');
+        Setting::set('media_auto_compress', true, 'media');
+        Setting::set('media_max_image_mb', 4, 'media');
+
+        Livewire::actingAs($this->admin)
+            ->test(EventResource\Pages\CreateEvent::class)
+            ->assertFormFieldExists('featured_image', function (FileUpload $field): bool {
+                return $field->getMaxSize() === 50 * 1024;
+            })
+            ->assertFormFieldExists('gallery_images', function (FileUpload $field): bool {
+                return $field->getMaxSize() === 50 * 1024;
+            });
+    }
+
+    public function test_event_form_enforces_strict_max_size_when_auto_compress_is_disabled(): void
+    {
+        Setting::set('media_auto_compress', false, 'media');
+        Setting::set('media_max_image_mb', 4, 'media');
         Setting::set('media_max_video_mb', 35, 'media');
 
         Livewire::actingAs($this->admin)
             ->test(EventResource\Pages\CreateEvent::class)
             ->assertFormFieldExists('featured_image', function (FileUpload $field): bool {
-                return $field->getMaxSize() === 14 * 1024;
+                return $field->getMaxSize() === 4 * 1024;
             })
             ->assertFormFieldExists('gallery_images', function (FileUpload $field): bool {
-                return $field->getMaxSize() === 14 * 1024;
+                return $field->getMaxSize() === 4 * 1024;
             })
             ->assertFormFieldExists('wall_media', function (FileUpload $field): bool {
                 return $field->getMaxSize() === 35 * 1024;
@@ -136,5 +154,51 @@ class MediaSettingsTest extends TestCase
         $this->assertSame(1920, imagesx($resultImg));
         $this->assertSame(960, imagesy($resultImg));
         imagedestroy($resultImg);
+
+        // Verifica tracciamento byte e statistiche
+        $this->assertGreaterThan(0, $action->getOriginalBytes());
+        $this->assertGreaterThan(0, $action->getFinalBytes());
+        $this->assertTrue($action->wasOptimized());
+        $this->assertNotNull($action->getSavingsSummary());
+    }
+
+    public function test_create_and_edit_event_hooks_optimize_images_and_notify(): void
+    {
+        Storage::fake('public');
+
+        $img = imagecreatetruecolor(2000, 1000);
+        $color = imagecolorallocate($img, 50, 120, 200);
+        imagefilledrectangle($img, 0, 0, 2000, 1000, $color);
+        ob_start();
+        imagejpeg($img);
+        $jpegData = ob_get_clean();
+        imagedestroy($img);
+
+        Storage::disk('public')->put('events/featured/original-locandina.jpg', $jpegData);
+
+        Setting::set('media_auto_compress', true, 'media');
+        Setting::set('media_max_dimension_px', 1280, 'media');
+        Setting::set('media_convert_webp', true, 'media');
+
+        Livewire::actingAs($this->admin)
+            ->test(EventResource\Pages\CreateEvent::class)
+            ->fillForm([
+                'title' => 'Concerto di Test Ottimizzazione',
+                'event_date_start' => now()->addDays(5)->toDateString(),
+                'event_time_start' => '18:00',
+                'location' => 'Piazza Duomo',
+                'price_standard' => 10.00,
+                'price_fai' => 8.00,
+                'featured_image' => UploadedFile::fake()->image('original-locandina.jpg', 2000, 1000),
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors()
+            ->assertNotified('Immagine ottimizzata automaticamente');
+
+        $event = Event::where('title', 'Concerto di Test Ottimizzazione')->first();
+        $this->assertNotNull($event);
+        $this->assertStringStartsWith('events/featured/', $event->featured_image);
+        $this->assertStringEndsWith('.webp', $event->featured_image);
+        $this->assertTrue(Storage::disk('public')->exists($event->featured_image));
     }
 }

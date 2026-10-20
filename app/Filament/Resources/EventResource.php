@@ -352,7 +352,7 @@ class EventResource extends Resource
                                     ->disk('public')
                                     ->directory('events/featured')
                                     ->imageEditor()
-                                    ->maxSize(Setting::getInt('media_max_image_mb', 8) * 1024)
+                                    ->maxSize(Setting::getBool('media_auto_compress', true) ? (50 * 1024) : (Setting::getInt('media_max_image_mb', 8) * 1024))
                                     ->when(
                                         Setting::getBool('media_auto_compress', true),
                                         fn (Forms\Components\FileUpload $component): Forms\Components\FileUpload => $component
@@ -361,7 +361,11 @@ class EventResource extends Resource
                                             ->imageResizeTargetHeight((string) Setting::getInt('media_max_dimension_px', 1920))
                                             ->imagePreviewHeight('250')
                                     )
-                                    ->helperText('Locandina o copertina principale dell\'evento.'),
+                                    ->helperText(
+                                        Setting::getBool('media_auto_compress', true)
+                                            ? 'ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i '.Setting::getInt('media_max_image_mb', 8).' MB (max '.Setting::getInt('media_max_dimension_px', 1920).'px, qualità '.Setting::getInt('media_quality_percent', 82).'%).'
+                                            : '⚠️ Limite massimo rigido: '.Setting::getInt('media_max_image_mb', 8).' MB per immagine.'
+                                    ),
                             ]),
 
                         Forms\Components\Section::make('Galleria Slider (Pre-Evento)')
@@ -374,7 +378,7 @@ class EventResource extends Resource
                                     ->reorderable()
                                     ->disk('public')
                                     ->directory('events/gallery')
-                                    ->maxSize(Setting::getInt('media_max_image_mb', 8) * 1024)
+                                    ->maxSize(Setting::getBool('media_auto_compress', true) ? (50 * 1024) : (Setting::getInt('media_max_image_mb', 8) * 1024))
                                     ->when(
                                         Setting::getBool('media_auto_compress', true),
                                         fn (Forms\Components\FileUpload $component): Forms\Components\FileUpload => $component
@@ -383,7 +387,11 @@ class EventResource extends Resource
                                             ->imageResizeTargetHeight((string) Setting::getInt('media_max_dimension_px', 1920))
                                             ->imagePreviewHeight('250')
                                     )
-                                    ->helperText('Foto descrittive inserite nello slider della scheda evento (Solo immagini: jpg, png, webp).'),
+                                    ->helperText(
+                                        Setting::getBool('media_auto_compress', true)
+                                            ? 'ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i '.Setting::getInt('media_max_image_mb', 8).' MB (max '.Setting::getInt('media_max_dimension_px', 1920).'px, qualità '.Setting::getInt('media_quality_percent', 82).'%).'
+                                            : '⚠️ Limite massimo rigido: '.Setting::getInt('media_max_image_mb', 8).' MB per immagine.'
+                                    ),
                             ]),
 
                         Forms\Components\Section::make('Wall dei Ricordi (Post-Evento)')
