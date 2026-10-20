@@ -74,4 +74,26 @@ L'attività di sviluppo **NON è conclusa** finché la documentazione non è all
 
 ## 📌 5. Riferimento Completo
 Per tutti i dettagli, esempi di codice, la matrice di aggiornamento Wiki e la checklist completa di chiusura:
-👉 **[DEVELOPMENT.md](./DEVELOPMENT.md)**
+👉 **[DEVELOPMENT.md](./DEVELOPMENT.md)**
+---
+
+## 📌 6. Flusso Orchestratore ("Cervello") & Esecutore ("Braccio")
+
+Il repository adotta il pattern di orchestrazione a due livelli: un *"Cervello"* analitico (sessione centrale ad alto ragionamento con visione globale su Bedrock e Laravel) e un *"Braccio"* esecutivo (istanza IDE locale focalizzata su Laravel).
+
+1. **Bacheca Incarichi (`tasks/`)**:
+   - I compiti dettagliati vengono depositati dal Cervello nella cartella locale `tasks/` (es. `tasks/task-<nome-lavoro>.md`), esclusa da Git via `.gitignore`.
+2. **Comportamento dell'Agente Locale ("Braccio")**:
+   - All'avvio di un task indicato in `tasks/`, l'agente legge immediatamente il file markdown specificato per comprendere contesto, Issue ID, branch da creare e requisiti tecnici.
+   - Rispetta la tassonomia ufficiale, applica `vendor/bin/pint --dirty`, esegue i test `php artisan test` e aggiorna la documentazione in `wiki/`.
+3. **Resoconto Finale in Calce al Task**:
+   - Al completamento dell'attività, l'agente appende in fondo al file `tasks/task-*.md`:
+     ```markdown
+     ## 📋 Esito Esecuzione (Braccio)
+     - **Stato**: Completato con successo / Bloccato
+     - **Issue & Branch**: `#<id>` su `<tipo>/#<id>-<nome>`
+     - **Commit**: `<tipo>(<ambito>): ... (ref #<id>)`
+     - **Test & Pint**: Esito `php artisan test` e `vendor/bin/pint`
+     - **Wiki Aggiornata**: Pagine modificate in `wiki/`
+     - **Note per il Cervello**: Eventuali dubbi architetturali o casi limite scoperti
+     ```

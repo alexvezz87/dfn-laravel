@@ -28,5 +28,8 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 *-*.json
-*.key.json
-
+*.key.json
+
+# Orchestrator Task board
+tasks/*
+!tasks/.gitkeep
