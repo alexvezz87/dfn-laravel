@@ -107,3 +107,19 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
 - **Filtri di Tabella**:
   - Filtro *Solo Tessere Valide*: estrae i soci con stato attivo e data di scadenza futura.
   - Filtro *Solo Tessere Scadute*: isola le tessere da rinnovare.
+
+---
+
+### 6. Impostazioni Media & Upload (`ManageMediaSettings`)
+- **Navigazione**: menu laterale *FAI Prenotazioni* > *Impostazioni Media & Upload*.
+- **Scopo**: permette agli amministratori di regolare in autonomia le policy di upload dei file e la compressione automatica delle immagini senza dover intervenire sul server o su `php.ini`.
+- **Sezioni di Configurazione**:
+  - **Limiti di Caricamento (Upload)**:
+    - *Dimensione Massima Immagini*: dimensione massima accettata (in MB, range 1-50 MB) per locandina principale e foto dello slider descrittivo.
+    - *Dimensione Massima Video*: dimensione massima per i video caricati nel Wall dei Ricordi (in MB, range 5-50 MB).
+  - **Compressione & Ottimizzazione Automatica**:
+    - *Attiva compressione e ottimizzazione automatica immagini*: toggle ON/OFF per prevenire upload di file pesanti non ottimizzati (es. foto ad altissima risoluzione non compresse).
+    - *Risoluzione Massima*: risoluzione massima consentita per il lato lungo (1280px HD, 1920px Full HD raccomandato, 2560px 2K).
+    - *Qualità Compressione*: percentuale di qualità JPEG/WebP (default 82%).
+    - *Converti automaticamente in WebP*: conversione al formato WebP per velocizzare significativamente il caricamento delle pagine front-end.
+- **Pulsante Salva Impostazioni**: salva immediatamente a database nella tabella `settings` con gruppo `media` e notifica di successo.

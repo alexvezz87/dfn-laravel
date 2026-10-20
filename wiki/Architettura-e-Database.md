@@ -59,6 +59,15 @@ erDiagram
         date expiry_date
         boolean is_valid
     }
+
+    SETTING {
+        bigint id PK
+        string key UK
+        text value
+        string group
+        datetime created_at
+        datetime updated_at
+    }
 ```
 
 ---
@@ -110,6 +119,21 @@ Registrazione delle prenotazioni effettuate da utenti standard o tesserati.
 Anagrafica soci per verificare la validità del tesseramento e applicare le tariffe agevolate.
 - `card_number`: Numero tessera FAI univoco.
 - `expiry_date`: Data di scadenza della tessera.
+
+### 5. `settings`
+Archivio chiave-valore per memorizzare le impostazioni applicative e le policy di caricamento media gestibili da Filament.
+- `key`: Chiave univoca dell'impostazione (string, unique, index).
+- `value`: Valore memorizzato in formato testo (text, nullable).
+- `group`: Gruppo semantico di appartenenza (string, default 'general', index, es. 'media').
+- `timestamps`: `created_at` e `updated_at`.
+
+Valori e chiavi per il gruppo `media`:
+- `media_max_image_mb`: Dimensione massima in MB per locandina e gallery (range: 1-50, default: 8).
+- `media_max_video_mb`: Dimensione massima in MB per video Wall (range: 5-50, default: 50).
+- `media_auto_compress`: Toggle compressione e ottimizzazione automatica (boolean, default: true).
+- `media_max_dimension_px`: Risoluzione massima in pixel lato lungo (1280, 1920, 2560, default: 1920).
+- `media_quality_percent`: Percentuale di qualità compressione (range: 50-95, default: 82).
+- `media_convert_webp`: Conversione automatica nel formato WebP (boolean, default: true).
 
 ---
 
