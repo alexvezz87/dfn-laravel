@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-21 | ⚡ Enhancement | #27 | Ottimizzazione automatica trasparente immagini: upload permissivo con resize e blocco rigido configurabile | Alex / Antigravity | Modalità trasparente con tetto server (50MB) e resize automatico, blocco rigido condizionato a `media_auto_compress`, trait `OptimizesEventImages` in `CreateEvent`/`EditEvent`, test e wiki |
 | 2026-10-21 | ✨ Feature | #25 | Gestione Media & Upload in Filament, tetto Docker 50MB e sistema di compressione/ottimizzazione automatica immagini | Alex / Antigravity | Tabella `settings` e modello `Setting`, pagina Filament `ManageMediaSettings`, limiti dinamici `EventResource`, `OptimizeImageAction` con GD, test PHPUnit e wiki |
 | 2026-10-20 | ✨ Feature | #23 | Funnel pubblico di prenotazione: selezione turno, form intestatario, verifica live tessere FAI e generazione biglietto | Alex / Antigravity | Migrazione DB `slot_id`/`booking_code`/`fai_cards`, `CreateBookingAction` atomica con lock capienza, endpoint `/api/check-fai-card`, pagina biglietto con QR `/prenotazione/{code}`, test e wiki |
 | 2026-10-20 | 🔧 Chore | #21 | Allineamento governance AGENTS.md e setup bacheca tasks/ per pattern Orchestratore ed Esecutore | Alex / Antigravity | Allineamento Sezione 6 di AGENTS.md, esclusione bacheca tasks/ in .gitignore e salvaguardia .gitkeep |

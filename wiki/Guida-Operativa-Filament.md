@@ -122,4 +122,7 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
     - *Risoluzione Massima*: risoluzione massima consentita per il lato lungo (1280px HD, 1920px Full HD raccomandato, 2560px 2K).
     - *Qualità Compressione*: percentuale di qualità JPEG/WebP (default 82%).
     - *Converti automaticamente in WebP*: conversione al formato WebP per velocizzare significativamente il caricamento delle pagine front-end.
+- **Comportamento dei Campi Upload (`featured_image` e `gallery_images`) in EventResource**:
+  - **Con Ottimizzazione Automatica ATTIVA**: FilePond accetta file fino al tetto del server (50 MB) senza bloccare l'operatore con messaggi d'errore FilePond `File is too large`. Durante l'upload e il salvataggio in `CreateEvent` ed `EditEvent`, il sistema ridimensiona l'immagine (client-side) e la ottimizza/converte in WebP (backend), mostrando una notifica con l'avvenuto risparmio di peso. Helper text: `ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i X MB`.
+  - **Con Ottimizzazione Automatica DISATTIVATA**: FilePond applica il limite rigido impostato dall'amministratore (es. 4 MB) bloccando all'ingresso i file superiori alla soglia senza modifiche. Helper text: `⚠️ Limite massimo rigido: X MB per immagine`.
 - **Pulsante Salva Impostazioni**: salva immediatamente a database nella tabella `settings` con gruppo `media` e notifica di successo.

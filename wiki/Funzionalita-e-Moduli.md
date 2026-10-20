@@ -53,9 +53,12 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
   - Risoluzione massima configurabile (`media_max_dimension_px`, opzioni: HD 1280px, Full HD 1920px, 2K 2560px).
   - Qualità di compressione modulare (`media_quality_percent`, range 50-95%, default 82%).
   - Generazione e conversione automatica nel formato WebP (`media_convert_webp`) per accelerare i tempi di caricamento e le prestazioni Core Web Vitals.
+- **Modalità Doppia di Upload**:
+  - **Modalità Trasparente & Ottimizzata (`media_auto_compress === true`)**: FilePond accetta file pesanti fino al tetto del server (50 MB) senza generare errori di blocco. Il client e il backend ridimensionano e comprimono automaticamente l'immagine al di sotto della soglia target con conversione WebP. Un hook in `CreateEvent` ed `EditEvent` elabora il file e invia una notifica toast informativa del risparmio di peso.
+  - **Modalità Rigida (`media_auto_compress === false`)**: Il componente `FileUpload` applica il limite rigido (`maxSize`) pari alla soglia configurata, bloccando all'ingresso i file oltre soglia senza alcuna manipolazione.
 - **Pipeline Client-Side & Server-Side**:
   - FilePond in Filament applica ridimensionamento client-side in base alla configurazione attiva su locandina principale e gallery.
-  - Action backend `OptimizeImageAction` con libreria nativa GD per ridimensionamento proporzionale e conversione WebP a zero dipendenze esterne.
+  - Action backend `OptimizeImageAction` con libreria nativa GD per ridimensionamento proporzionale, tracciamento byte e conversione WebP a zero dipendenze esterne.
 
 ---
 

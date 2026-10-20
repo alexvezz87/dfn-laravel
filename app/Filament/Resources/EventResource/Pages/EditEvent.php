@@ -3,17 +3,30 @@
 namespace App\Filament\Resources\EventResource\Pages;
 
 use App\Filament\Resources\EventResource;
+use App\Filament\Resources\EventResource\Pages\Concerns\OptimizesEventImages;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
 class EditEvent extends EditRecord
 {
+    use OptimizesEventImages;
+
     protected static string $resource = EventResource::class;
 
     public function getTitle(): string
     {
         return 'Modifica Evento FAI';
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return $this->optimizeMediaBeforeSave($data);
+    }
+
+    protected function afterSave(): void
+    {
+        $this->optimizeRecordMedia();
     }
 
     protected function getHeaderActions(): array
