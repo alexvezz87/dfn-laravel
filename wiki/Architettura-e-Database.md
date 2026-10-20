@@ -94,10 +94,17 @@ Turni orari associati a un evento per gestire ingressi contingentati.
 
 ### 3. `bookings`
 Registrazione delle prenotazioni effettuate da utenti standard o tesserati.
-- `event_id`, `user_id`, `slot_id`: Relazioni di appartenenza.
-- `total_persons`: Somma di `persons_standard` + `persons_fai`.
-- `amount_due` / `amount_paid`: Importi calcolati.
-- `checkin_at`: Timestamp per registrazione ingresso in loco.
+- `event_id`, `user_id`: Relazioni di appartenenza.
+- `slot_id`: FK facoltativa verso `slots` per eventi con accesso a turni orari contingentati.
+- `booking_code`: Codice univoco pubblico (es. `DFN-2026-XXXX`) utilizzato per consultare il biglietto e scansionare il QR code al check-in.
+- `customer_name`, `customer_email`, `customer_phone`: Anagrafica e recapiti dell'intestatario.
+- `total_persons`: Somma complessiva di `persons_standard` + `persons_fai`.
+- `persons_standard` / `persons_fai`: Conteggio differenziato delle tipologie di partecipante.
+- `fai_cards`: Elenco JSON dei numeri di tessera Socio FAI forniti e relativo stato di convalida.
+- `amount_due` / `amount_paid`: Importi calcolati in base al listino dell'evento.
+- `payment_method`: Metodo prescelto (`in_loco`, online o free).
+- `status`: Stato della prenotazione (`confirmed`, `pending_fai`, `pending_payment`, `cancelled`).
+- `checkin_status` / `checkin_at` / `checked_in_by`: Timestamp e dati per registrazione ingresso in loco.
 
 ### 4. `fai_members`
 Anagrafica soci per verificare la validità del tesseramento e applicare le tariffe agevolate.

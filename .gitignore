@@ -33,3 +33,4 @@ Thumbs.db
 # Orchestrator Task board
 tasks/*
 !tasks/.gitkeep
+tasks/*.md
