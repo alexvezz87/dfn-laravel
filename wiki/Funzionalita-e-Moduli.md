@@ -23,11 +23,23 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
 - Parametrizzazione della durata turno (`slot_duration`), capienza base (`slot_capacity`) e bonus capienza (`slot_bonus`).
 - Controllo capienza in tempo reale: blocco delle prenotazioni che eccedono i posti residui.
 
-### 3. Flusso Prenotazioni (Bookings)
-- Selezione evento -> Scelta slot orario -> Inserimento numero partecipanti.
-- Calcolo automatico della quota dovuta in base a partecipanti standard e soci FAI.
-- Supporto a workflow di approvazione o conferma automatica.
-- Gestione check-in all'ingresso (`checkin_at`) per monitorare le presenze effettive.
+### 3. Flusso Prenotazioni & Funnel Pubblico (Bookings)
+- **Funnel Pubblico Interattivo (`/evento/{event}`)**:
+  - Selezione partecipanti differenziata (Interi e Soci FAI) con aggiornamento dinamico del contributo totale.
+  - Selettore dei turni orari con disponibilità posti residui e disabilitazione automatica degli slot esauriti o con capienza insufficiente.
+  - Modulo anagrafico visitatore: Nome, Cognome, Email, Cellulare e Note facoltative.
+  - Gestione atomica della concorrenza (con `lockForUpdate` a database) per prevenire qualsiasi rischio di overbooking.
+- **Convalida Tessere Soci FAI**:
+  - Input dinamici per ciascun socio FAI dichiarato, con pulsante di verifica live (`/api/check-fai-card`) contro la tabella `fai_members`.
+  - Se tutte le tessere sono valide: stato prenotazione `confirmed`.
+  - Se vi sono tessere non censite o scadute: la prenotazione viene comunque registrata con stato `pending_fai` per verifica e regolarizzazione manuale all'ingresso.
+- **Biglietto Digitale Pubblico (`/prenotazione/{booking_code}`)**:
+  - Schermata di riepilogo con codice univoco alfanumerico (es. `DFN-2026-XXXX`).
+  - QR Code dinamico generato per scansione rapida all'ingresso con la PWA scanner.
+  - Dettaglio orari, indirizzo location e istruzioni per l'arrivo.
+  - Supporto nativo per stampa / salvataggio (`window.print()`).
+- **Gestione Check-in in Loco**:
+  - Registrazione ingresso dei visitatori (`checkin_at`, `checkin_status`) tramite back-office Filament o scanner mobile.
 
 ### 4. Verifica Soci FAI
 - Validazione in tempo reale del numero di tessera inserito contro la tabella `fai_members`.
