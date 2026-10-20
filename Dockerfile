@@ -7,7 +7,14 @@ RUN install-php-extensions \
     intl \
     zip \
     pcntl \
-    opcache
+    opcache \
+    gd
+
+# Configurazione limiti di upload per locandine ed elaborazione immagini
+RUN echo "upload_max_filesize = 50M" > /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size = 50M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_execution_time = 120" >> /usr/local/etc/php/conf.d/uploads.ini
 
 # Copia Composer dall'immagine ufficiale
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

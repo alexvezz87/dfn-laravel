@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EventResource\Pages;
 use App\Models\Event;
+use App\Models\Setting;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -351,6 +352,15 @@ class EventResource extends Resource
                                     ->disk('public')
                                     ->directory('events/featured')
                                     ->imageEditor()
+                                    ->maxSize(Setting::getInt('media_max_image_mb', 8) * 1024)
+                                    ->when(
+                                        Setting::getBool('media_auto_compress', true),
+                                        fn (Forms\Components\FileUpload $component): Forms\Components\FileUpload => $component
+                                            ->imageResizeMode('cover')
+                                            ->imageResizeTargetWidth((string) Setting::getInt('media_max_dimension_px', 1920))
+                                            ->imageResizeTargetHeight((string) Setting::getInt('media_max_dimension_px', 1920))
+                                            ->imagePreviewHeight('250')
+                                    )
                                     ->helperText('Locandina o copertina principale dell\'evento.'),
                             ]),
 
@@ -364,6 +374,15 @@ class EventResource extends Resource
                                     ->reorderable()
                                     ->disk('public')
                                     ->directory('events/gallery')
+                                    ->maxSize(Setting::getInt('media_max_image_mb', 8) * 1024)
+                                    ->when(
+                                        Setting::getBool('media_auto_compress', true),
+                                        fn (Forms\Components\FileUpload $component): Forms\Components\FileUpload => $component
+                                            ->imageResizeMode('cover')
+                                            ->imageResizeTargetWidth((string) Setting::getInt('media_max_dimension_px', 1920))
+                                            ->imageResizeTargetHeight((string) Setting::getInt('media_max_dimension_px', 1920))
+                                            ->imagePreviewHeight('250')
+                                    )
                                     ->helperText('Foto descrittive inserite nello slider della scheda evento (Solo immagini: jpg, png, webp).'),
                             ]),
 
@@ -383,6 +402,7 @@ class EventResource extends Resource
                                     ->disk('public')
                                     ->directory('events/wall')
                                     ->acceptedFileTypes(['image/*', 'video/mp4', 'video/webm', 'video/ogg'])
+                                    ->maxSize(Setting::getInt('media_max_video_mb', 50) * 1024)
                                     ->helperText('Carica foto e video (mp4, webm) registrati durante l\'evento per la vista conclusa.'),
                             ]),
 

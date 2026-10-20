@@ -6,7 +6,7 @@ export PORT="${PORT:-8080}"
 export SERVER_NAME=":${PORT}"
 
 # Crea le cartelle necessarie se non esistono
-mkdir -p /app/database /app/storage /app/bootstrap/cache
+mkdir -p /app/database /app/storage/app/public /app/storage/app/livewire-tmp /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/storage/logs /app/bootstrap/cache
 
 # Crea il file SQLite vuoto se non esiste (utile se DB_CONNECTION=sqlite)
 if [ ! -f /app/database/database.sqlite ]; then
@@ -17,6 +17,9 @@ fi
 chown -R www-data:www-data /app/database /app/storage /app/bootstrap/cache 2>/dev/null || true
 chmod -R 775 /app/database /app/storage /app/bootstrap/cache 2>/dev/null || true
 chmod 664 /app/database/database.sqlite 2>/dev/null || true
+
+# Genera il symlink storage se non presente
+php artisan storage:link --force || true
 
 # Assicura che APP_KEY sia presente per crittografia e sessioni
 if [ -z "$APP_KEY" ]; then

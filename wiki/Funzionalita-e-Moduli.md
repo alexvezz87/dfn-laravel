@@ -45,6 +45,18 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
 - Validazione in tempo reale del numero di tessera inserito contro la tabella `fai_members`.
 - Controllo data di scadenza della tessera per garantire l'accesso alla tariffa soci.
 
+### 5. Gestione Media & Ottimizzazione Immagini
+- **Configurazione Dinamica Parametri Media (`ManageMediaSettings`)**:
+  - Limite di upload configurabile per immagini (`media_max_image_mb`, range 1-50 MB, default 8 MB) e video per il Wall (`media_max_video_mb`, range 5-50 MB, default 50 MB).
+  - Tetto hardware e server Docker configurato su 50MB (`upload_max_filesize = 50M`, `post_max_size = 50M`, `memory_limit = 256M`) per consentire upload senza errori HTTP o timeout Cloud Run.
+  - Abilitazione/disabilitazione compressione e ottimizzazione automatica in tempo reale (`media_auto_compress`).
+  - Risoluzione massima configurabile (`media_max_dimension_px`, opzioni: HD 1280px, Full HD 1920px, 2K 2560px).
+  - Qualità di compressione modulare (`media_quality_percent`, range 50-95%, default 82%).
+  - Generazione e conversione automatica nel formato WebP (`media_convert_webp`) per accelerare i tempi di caricamento e le prestazioni Core Web Vitals.
+- **Pipeline Client-Side & Server-Side**:
+  - FilePond in Filament applica ridimensionamento client-side in base alla configurazione attiva su locandina principale e gallery.
+  - Action backend `OptimizeImageAction` con libreria nativa GD per ridimensionamento proporzionale e conversione WebP a zero dipendenze esterne.
+
 ---
 
 ## 💡 Idee di Sviluppo & Proposte Future (Backlog)
