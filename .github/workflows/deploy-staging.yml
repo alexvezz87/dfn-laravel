@@ -63,18 +63,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Ensure Cloud Storage Bucket for Media Persistence
+      - name: Verify Cloud Storage Bucket
         run: |
-          BUCKET_NAME="${{ env.PROJECT_ID }}-media-staging"
-          if ! gcloud storage buckets describe gs://${BUCKET_NAME} --project=${{ env.PROJECT_ID }} >/dev/null 2>&1; then
-            echo "Bucket gs://${BUCKET_NAME} does not exist. Attempting creation..."
-            gcloud storage buckets create gs://${BUCKET_NAME} \
-              --project=${{ env.PROJECT_ID }} \
-              --location=${{ env.REGION }} \
-              --uniform-bucket-level-access || true
-          else
-            echo "Bucket gs://${BUCKET_NAME} already exists."
-          fi
+          echo "Checking bucket gs://dfn_staging..."
+          gcloud storage buckets describe gs://dfn_staging || true
 
       - name: Deploy to Google Cloud Run
         id: deploy
@@ -86,7 +78,7 @@ jobs:
           flags: |
             --allow-unauthenticated
             --execution-environment=gen2
-            --add-volume=name=media-storage,type=cloud-storage,bucket=${{ env.PROJECT_ID }}-media-staging
+            --add-volume=name=media-storage,type=cloud-storage,bucket=dfn_staging
             --add-volume-mount=volume=media-storage,mount-path=/app/storage/app/public
           env_vars: |
             APP_ENV=staging

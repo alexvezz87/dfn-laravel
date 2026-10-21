@@ -82,19 +82,16 @@ Questa pagina raccoglie la risoluzione di problemi noti, anomalie risolte (bug f
 - **Fix applicato & Best Practice**:
   1. Utilizzo della funzionalità nativa di Cloud Run **Cloud Storage Volume Mounts** (basata su Cloud Storage FUSE e ambiente di esecuzione di seconda generazione `--execution-environment=gen2`).
   2. Nel workflow di deploy `.github/workflows/deploy-staging.yml`:
-     - Verifica/creazione del bucket dedicato di staging: `gs://${PROJECT_ID}-media-staging`.
+     - Verifica della presenza del bucket dedicato di staging: `gs://dfn_staging`.
      - Aggiunta delle flag di montaggio persistente:
        ```bash
        --execution-environment=gen2
-       --add-volume=name=media-storage,type=cloud-storage,bucket=${PROJECT_ID}-media-staging
+       --add-volume=name=media-storage,type=cloud-storage,bucket=dfn_staging
        --add-volume-mount=volume=media-storage,mount-path=/app/storage/app/public
        ```
   3. L'entrypoint Docker esegue `php artisan storage:link --force`, creando il collegamento simbolico tra `/app/public/storage` e il bucket montato.
-  4. **Procedura manuale di fallback (Console Google Cloud)** se il Service Account GitHub non dispone dei permessi per creare bucket:
-     - Aprire la [Console Cloud Storage](https://console.cloud.google.com/storage/browser).
-     - Creare il bucket `dfn-media-staging` (Location: `europe-west1`, Storage Class: `Standard`).
-     - Nella scheda *Autorizzazioni*, concedere al Service Account di Cloud Run e di GitHub Actions il ruolo **Storage Object Admin** (`roles/storage.objectAdmin`).
-- **Issue GitHub di riferimento**: [#39](https://github.com/alexvezz87/dfn-laravel/issues/39)
+  4. **Bucket Effettivo Configurato**: `dfn_staging` (Region: `europe-west1`, Class: `Standard`, Accesso gestito dal Service Account Cloud Run).
+- **Issue GitHub di riferimento**: [#39](https://github.com/alexvezz87/dfn-laravel/issues/39) e [#41](https://github.com/alexvezz87/dfn-laravel/issues/41)
 
 ---
 
