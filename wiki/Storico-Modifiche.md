@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-21 | ✨ Feature | #39 | Griglia Media 1:1 WordPress (tessere quadrate densità 2-10 cols) e persistenza GCS Volume Mounts su Cloud Run | Alex / Antigravity | Vista blade `media-grid-card`, densità fino a 10 colonne, switcher icone compatto, volume mount FUSE su `/app/storage/app/public` in workflow CI/CD, test e wiki |
 | 2026-10-21 | ✨ Feature | #37 | Visualizzazione a Griglia stile WordPress per Libreria Media con switcher e Slide-Over dettagli | Alex / Antigravity | Switcher Griglia/Elenco in `ListMedia`, `contentGrid` dinamico, card responsive con anteprima `h-44`, colonne adattive, `ViewAction` con cassetto slideOver, test PHPUnit e guida |
 | 2026-10-21 | ⚡ Enhancement | #35 | Preservazione nomi file leggibili upload e refresh istantaneo form evento | Alex / Antigravity | Nome originale slugificato con anti-collisione su FileUpload, pre-compilazione titolo da nome file, `$this->refreshFormData()` post-salvataggio in `EditEvent`, test PHPUnit e documentazione wiki |
 | 2026-10-21 | 🐛 Bug Fix | #33 | Fix URL anteprime media e FileUpload in Filament: percorsi storage root-relative e fix rotta 403 | Alex / Antigravity | Configurazione storage root-relative `/storage`, disattivazione `serve` su private, APP_URL in staging, regression test PHPUnit e FAQ |

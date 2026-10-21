@@ -76,7 +76,28 @@ Questa pagina raccoglie la risoluzione di problemi noti, anomalie risolte (bug f
   3. Configurato `APP_URL=https://dfn-laravel-staging.dfnprenotazioni.it` nel workflow di deploy Cloud Run.
 - **Issue GitHub di riferimento**: [#33](https://github.com/alexvezz87/dfn-laravel/issues/33)
 
+### 6. Perdita delle Immagini e Locandine ad ogni nuovo Deploy su Cloud Run (Stateless Container & GCS FUSE)
+- **Descrizione del problema**: Dopo ogni nuovo rilascio di codice (deploy su Cloud Run via GitHub Actions), le immagini e locandine precedentemente caricate dagli utenti o tramite eventi non risultavano più visibili su disco (`404 Not Found`).
+- **Causa scatenante**: Cloud Run è un'infrastruttura serverless *stateless*: ogni nuova revisione del container genera un'istanza con un filesystem locale pulito ed effimero, azzerando la cartella locale `/app/storage/app/public`.
+- **Fix applicato & Best Practice**:
+  1. Utilizzo della funzionalità nativa di Cloud Run **Cloud Storage Volume Mounts** (basata su Cloud Storage FUSE e ambiente di esecuzione di seconda generazione `--execution-environment=gen2`).
+  2. Nel workflow di deploy `.github/workflows/deploy-staging.yml`:
+     - Verifica/creazione del bucket dedicato di staging: `gs://${PROJECT_ID}-media-staging`.
+     - Aggiunta delle flag di montaggio persistente:
+       ```bash
+       --execution-environment=gen2
+       --add-volume=name=media-storage,type=cloud-storage,bucket=${PROJECT_ID}-media-staging
+       --add-volume-mount=volume=media-storage,mount-path=/app/storage/app/public
+       ```
+  3. L'entrypoint Docker esegue `php artisan storage:link --force`, creando il collegamento simbolico tra `/app/public/storage` e il bucket montato.
+  4. **Procedura manuale di fallback (Console Google Cloud)** se il Service Account GitHub non dispone dei permessi per creare bucket:
+     - Aprire la [Console Cloud Storage](https://console.cloud.google.com/storage/browser).
+     - Creare il bucket `dfn-media-staging` (Location: `europe-west1`, Storage Class: `Standard`).
+     - Nella scheda *Autorizzazioni*, concedere al Service Account di Cloud Run e di GitHub Actions il ruolo **Storage Object Admin** (`roles/storage.objectAdmin`).
+- **Issue GitHub di riferimento**: [#39](https://github.com/alexvezz87/dfn-laravel/issues/39)
+
 ---
 
 ## 📝 Regola di Aggiornamento
 Ogni risoluzione di bug che introduce una modifica a comportamenti critici o risolve un'anomalia complessa deve essere aggiunta a questa pagina per conservare la memoria storica del team.
+

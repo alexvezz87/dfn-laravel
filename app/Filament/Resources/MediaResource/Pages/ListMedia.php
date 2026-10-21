@@ -30,17 +30,23 @@ class ListMedia extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('switchToGrid')
-                ->label('Griglia')
-                ->icon('heroicon-o-squares-2x2')
-                ->color($this->viewMode === 'grid' ? 'primary' : 'gray')
-                ->action(fn () => $this->setViewMode('grid')),
+            Actions\ActionGroup::make([
+                Actions\Action::make('switchToGrid')
+                    ->label('Griglia')
+                    ->icon('heroicon-o-squares-2x2')
+                    ->color($this->viewMode === 'grid' ? 'primary' : 'gray')
+                    ->action(fn () => $this->setViewMode('grid')),
 
-            Actions\Action::make('switchToList')
-                ->label('Elenco')
-                ->icon('heroicon-o-bars-3')
-                ->color($this->viewMode === 'list' ? 'primary' : 'gray')
-                ->action(fn () => $this->setViewMode('list')),
+                Actions\Action::make('switchToList')
+                    ->label('Elenco')
+                    ->icon('heroicon-o-bars-3')
+                    ->color($this->viewMode === 'list' ? 'primary' : 'gray')
+                    ->action(fn () => $this->setViewMode('list')),
+            ])
+                ->label($this->viewMode === 'grid' ? 'Vista: Griglia' : 'Vista: Elenco')
+                ->icon($this->viewMode === 'grid' ? 'heroicon-o-squares-2x2' : 'heroicon-o-bars-3')
+                ->color('gray')
+                ->button(),
 
             Actions\CreateAction::make()
                 ->label('Carica Nuovo Media')
