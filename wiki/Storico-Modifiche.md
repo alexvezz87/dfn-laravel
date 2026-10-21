@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-21 | ⚡ Enhancement | #53 | Traduzione italiana interfaccia, footer modale a destra e pulsante Elimina nel popup | Alex / Antigravity | Locale `it` di default in config/app.php, allineamento footer modale a destra (.fi-modal-footer-actions), label italiane esplicite e DeleteAction extraModalFooterActions nel popup media |
 | 2026-10-21 | ✨ Feature | #51 | Controllo dinamico colonne Griglia Media nelle Impostazioni (Media & Upload) | Alex / Antigravity | Selettore 4-10 colonne in ManageMediaSettings, layout CSS Grid nativo con --dfn-grid-cols in media-grid, test PHPUnit e wiki |
 | 2026-10-21 | ⚡ Enhancement | #49 | Ottimizzazione popup dettagli media (scroll su .fi-modal-content, anteprima 260px, 50/50) e griglia 7 col | Alex / Antigravity | Correzione scroll overflow su .fi-modal-content con padding-bottom, anteprima max-h-[260px] con layout bilanciato 50/50 Grid::make(2), griglia fissa 7 colonne desktop con gap-3 |
 | 2026-10-21 | ⚡ Enhancement | #47 | Perfezionamento UI Libreria Media (hover CSS, modale 5xl, griglia 6-7 col) e Tabellone Eventi full-width | Alex / Antigravity | Classi CSS dedicate .dfn-media-* per hover matita e aspect-ratio 1:1, modale centrale scrollabile 5xl stile WordPress a 2 colonne, griglia a 6-7 col, rimozione colonna tariffe e getMaxContentWidth('full') in ListEvents |

@@ -136,7 +136,11 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
   - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`mountTableAction('edit')`), si apre al centro una finestra modale paritetica a due colonne (`Grid::make(2)`) in puro stile WordPress con titolo personalizzato (`Dettagli Allegato: Titolo File`).
   - **Colonna Sinistra (50%)**: anteprima dell'immagine compatta e centrata ad alta leggibilità (`max-h-[260px] object-contain`) o player video interattivo, priva di box di upload che disturbino la consultazione.
   - **Colonna Destra (50%)**: metadati editoriali modificabili (Titolo, Alt Text per SEO `alt_text`, Didascalia `caption`, Collezione), dati tecnici di sola lettura (Dimensione formattata, Risoluzione in pixel, MIME Type) e Link URL Pubblico con pulsante di copia negli appunti con un clic.
-  - **Scroll Verticale Fluido Garantito**: applicato direttamente sul container interno `.fi-modal-content` (`overflow-y: auto !important`, altezza massima `calc(88vh - 130px)` con `padding-bottom: 24px`), consentendo di scorrere tutti i campi e accedere comodamente ai tasti Salva / Annulla.
+  - **Scroll Verticale Fluido Garantito**: applicato direttamente sul container interno `.fi-modal-content` (`overflow-y: auto !important`, altezza massima `calc(88vh - 130px)` con `padding-bottom: 24px`), consentendo di scorrere tutti i campi e accedere comodamente ai tasti di azione.
+  - **Comandi Footer Modale Allineati a Destra**: pulsanti disposti ordinatamente in basso a destra (`.fi-modal-footer-actions { justify-content: flex-end }`):
+    - **Pulsante Salva Modifiche**: bottone primario verde per salvare i metadati aggiornati.
+    - **Pulsante Annulla**: chiude la modale senza salvare.
+    - **Pulsante Elimina (Rosso Pericolo)**: azione extra integrata nel footer (`DeleteAction` con icona cestino `heroicon-o-trash`), che richiede conferma esplicita in italiano (*"Elimina File Definitivamente"*) e rimuove definitivamente il file da database e storage fisico GCS, chiudendo contestualmente la modale.
 - **Visualizzazione Tabella / Elenco Nativa (Singola Riga Orizzontale Monoriga)**:
   - **Tabella HTML Nativa**: tabella classica `<table>` con intestazioni `<th>` e righe orizzontali `<tr>` monoriga, eliminando definitivamente le card verticali impilate.
   - **Miniatura**: anteprima quadrata arrotondata 40×40 px con visualizzazione fedele dell'immagine o icona per video/documenti.

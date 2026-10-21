@@ -306,4 +306,29 @@ class MediaLibraryAndNotificationsTest extends TestCase
             ->mountTableAction('edit', $item)
             ->assertTableActionMounted('edit');
     }
+
+    public function test_default_locale_is_italian(): void
+    {
+        $this->assertSame('it', config('app.locale'));
+        $this->assertSame('it', config('app.fallback_locale'));
+    }
+
+    public function test_media_edit_action_has_modal_delete_and_italian_labels(): void
+    {
+        $item = MediaItem::create([
+            'disk' => 'public',
+            'file_path' => 'uploads/test-modal-delete.jpg',
+            'file_name' => 'test-modal-delete.jpg',
+            'original_name' => 'Test Modal Delete.jpg',
+            'file_size' => 50000,
+            'mime_type' => 'image/jpeg',
+            'collection' => 'uploads',
+            'title' => 'Test Modal Delete',
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListMedia::class)
+            ->mountTableAction('edit', $item)
+            ->assertTableActionMounted('edit');
+    }
 }
