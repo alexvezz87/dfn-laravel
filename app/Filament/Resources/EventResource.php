@@ -4,11 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EventResource\Pages;
 use App\Models\Event;
+use App\Models\MediaItem;
 use App\Models\Setting;
 use Filament\Forms;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -67,6 +70,75 @@ class EventResource extends Resource
             ->modalSubmitAction(false)
             ->modalCancelActionLabel('Chiudi')
             ->extraAttributes(['class' => 'dfn-tooltip-trigger']);
+    }
+
+    public static function makeMediaPickerAction(
+        string $name,
+        string $label,
+        string $icon,
+        string $targetField,
+        bool $multiple = false
+    ): Forms\Components\Actions\Action {
+        return Forms\Components\Actions\Action::make($name)
+            ->label($label)
+            ->icon($icon)
+            ->color('gray')
+            ->modalWidth('6xl')
+            ->modalHeading('Seleziona dalla Libreria Media')
+            ->modalDescription($multiple ? 'Scegli uno o più file multimediali da aggiungere.' : 'Fai clic su un\'immagine per selezionarla e impostarla.')
+            ->modalSubmitActionLabel($multiple ? 'Aggiungi Selezionati' : 'Imposta Immagine')
+            ->modalCancelActionLabel('Annulla')
+            ->modalFooterActionsAlignment(Alignment::End)
+            ->form([
+                Forms\Components\ViewField::make('selected_media')
+                    ->label('')
+                    ->view('filament.forms.components.media-picker-modal')
+                    ->viewData([
+                        'multiple' => $multiple,
+                        'mediaItems' => MediaItem::query()->latest('id')->limit(120)->get(),
+                    ]),
+            ])
+            ->action(function (array $data, Forms\Set $set, Forms\Get $get) use ($targetField, $multiple): void {
+                $selected = $data['selected_media'] ?? null;
+                if (blank($selected)) {
+                    return;
+                }
+
+                if (! $multiple) {
+                    $path = is_array($selected) ? reset($selected) : $selected;
+                    if ($path) {
+                        $uuid = (string) Str::uuid();
+                        $set($targetField, [$uuid => $path]);
+
+                        Notification::make()
+                            ->title('Locandina impostata dalla Libreria Media')
+                            ->success()
+                            ->send();
+                    }
+                } else {
+                    $paths = (array) $selected;
+                    $current = $get($targetField) ?? [];
+                    if (! is_array($current)) {
+                        $current = [];
+                    }
+
+                    $added = 0;
+                    foreach ($paths as $path) {
+                        if (! in_array($path, $current, true)) {
+                            $uuid = (string) Str::uuid();
+                            $current[$uuid] = $path;
+                            $added++;
+                        }
+                    }
+
+                    $set($targetField, $current);
+
+                    Notification::make()
+                        ->title("{$added} file aggiunti dalla Libreria Media")
+                        ->success()
+                        ->send();
+                }
+            });
     }
 
     public static function form(Form $form): Form
@@ -370,6 +442,15 @@ class EventResource extends Resource
 
                         Forms\Components\Section::make('Immagine in Evidenza')
                             ->icon('heroicon-o-photo')
+                            ->headerActions([
+                                self::makeMediaPickerAction(
+                                    name: 'pick_featured_image',
+                                    label: 'Scegli da Libreria Media',
+                                    icon: 'heroicon-m-photo',
+                                    targetField: 'featured_image',
+                                    multiple: false
+                                ),
+                            ])
                             ->schema([
                                 Forms\Components\FileUpload::make('featured_image')
                                     ->label('Locandina Principale')
@@ -396,6 +477,15 @@ class EventResource extends Resource
 
                         Forms\Components\Section::make('Galleria Slider (Pre-Evento)')
                             ->icon('heroicon-o-squares-2x2')
+                            ->headerActions([
+                                self::makeMediaPickerAction(
+                                    name: 'pick_gallery_images',
+                                    label: 'Aggiungi da Libreria Media',
+                                    icon: 'heroicon-m-photo',
+                                    targetField: 'gallery_images',
+                                    multiple: true
+                                ),
+                            ])
                             ->schema([
                                 Forms\Components\FileUpload::make('gallery_images')
                                     ->label('Foto Slider')
@@ -428,6 +518,13 @@ class EventResource extends Resource
                                     'help_wall',
                                     '📸🎬 Wall dei Ricordi (Post-Evento)',
                                     'Questo spazio è dedicato a foto e video clip (.mp4, .webm) registrati durante lo svolgimento dell\'iniziativa.<br><br>A differenza della galleria descrittiva (usata prima dell\'evento per presentarlo), questi media vengono mostrati pubblicamente nella scheda dell\'evento solo quando l\'evento risulta concluso, creando un archivio multimediale per visitatori e soci.'
+                                ),
+                                self::makeMediaPickerAction(
+                                    name: 'pick_wall_media',
+                                    label: 'Aggiungi da Libreria Media',
+                                    icon: 'heroicon-m-photo',
+                                    targetField: 'wall_media',
+                                    multiple: true
                                 ),
                             ])
                             ->schema([

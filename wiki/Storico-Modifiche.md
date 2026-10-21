@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-21 | ✨ Feature | #57 | Selettore visivo da Libreria Media nei form Eventi (Locandina, Slider e Wall) | Alex / Antigravity | Pulsante 'Scegli/Aggiungi da Libreria Media' in EventResource con vista modale Alpine.js, ricerca live, selezione singola/multipla, iniezione FileUpload, test e wiki |
 | 2026-10-21 | ⚡ Enhancement | #55 | Allineamento a destra e padding superiore per bottoni footer popup media | Alex / Antigravity | Correzione CSS per .fi-modal-footer-actions con row-reverse e justify-content: flex-start per forzare l'ancoraggio a destra, padding-top: 20px su .fi-modal-footer per distanziare i bottoni dal contenuto |
 | 2026-10-21 | ⚡ Enhancement | #53 | Traduzione italiana interfaccia, footer modale a destra e pulsante Elimina nel popup | Alex / Antigravity | Locale `it` di default in config/app.php, allineamento footer modale a destra (.fi-modal-footer-actions), label italiane esplicite e DeleteAction extraModalFooterActions nel popup media |
 | 2026-10-21 | ✨ Feature | #51 | Controllo dinamico colonne Griglia Media nelle Impostazioni (Media & Upload) | Alex / Antigravity | Selettore 4-10 colonne in ManageMediaSettings, layout CSS Grid nativo con --dfn-grid-cols in media-grid, test PHPUnit e wiki |
