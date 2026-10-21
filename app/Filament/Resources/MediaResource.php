@@ -7,7 +7,6 @@ use App\Models\MediaItem;
 use Filament\Forms;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Form;
-use Filament\Infolists;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -57,16 +56,19 @@ class MediaResource extends Resource
                                             $slug = Str::slug($originalBase) ?: 'media';
                                             $ext = $file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'bin';
                                             $dir = $component->getDirectory();
+                                            $prefix = $dir ? $dir.'/' : '';
                                             $diskName = $component->getDiskName();
                                             /** @var FilesystemAdapter $storage */
                                             $storage = Storage::disk($diskName);
 
-                                            $filename = "{$slug}.{$ext}";
-                                            $counter = 1;
-                                            while ($storage->exists(($dir ? $dir.'/' : '').$filename)) {
-                                                $filename = "{$slug}-{$counter}.{$ext}";
+                                            $counter = 0;
+                                            do {
+                                                $candidateBase = $counter === 0 ? $slug : "{$slug}-{$counter}";
+                                                $filename = "{$candidateBase}.{$ext}";
+                                                $webpFilename = "{$candidateBase}.webp";
+                                                $exists = $storage->exists($prefix.$filename) || $storage->exists($prefix.$webpFilename);
                                                 $counter++;
-                                            }
+                                            } while ($exists);
 
                                             return $filename;
                                         }),
@@ -188,8 +190,8 @@ class MediaResource extends Resource
                 Tables\Columns\ImageColumn::make('file_path')
                     ->label('Anteprima')
                     ->disk('public')
-                    ->square()
-                    ->extraImgAttributes(['class' => 'rounded-lg object-cover shadow-sm'])
+                    ->size(40)
+                    ->extraImgAttributes(['class' => 'rounded-md object-cover shadow-xs'])
                     ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
 
                 Tables\Columns\TextColumn::make('title')
@@ -197,8 +199,8 @@ class MediaResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->description(fn (MediaItem $record): string => $record->file_name)
-                    ->wrap()
+                    ->limit(40)
+                    ->tooltip(fn (MediaItem $record): string => $record->file_name)
                     ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
 
                 Tables\Columns\TextColumn::make('collection')
@@ -248,7 +250,7 @@ class MediaResource extends Resource
                     ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
             ])
             ->defaultSort('created_at', 'desc')
-            ->recordAction('view')
+            ->recordAction('edit')
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
                     ->label('Tipo Contenuto')
@@ -279,51 +281,34 @@ class MediaResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make('view')
-                    ->label('Dettagli')
-                    ->modalHeading(fn (MediaItem $record): string => $record->title ?: $record->file_name)
+                Tables\Actions\EditAction::make('edit')
+                    ->label('Modifica')
                     ->slideOver()
-                    ->infolist([
-                        Infolists\Components\Section::make('Anteprima')
-                            ->schema([
-                                Infolists\Components\ImageEntry::make('file_path')
-                                    ->label('')
-                                    ->disk('public')
-                                    ->extraImgAttributes(['class' => 'max-h-80 w-auto mx-auto rounded-lg shadow-sm object-contain']),
-                            ]),
-                        Infolists\Components\Section::make('Informazioni File')
-                            ->columns(2)
-                            ->schema([
-                                Infolists\Components\TextEntry::make('title')->label('Titolo'),
-                                Infolists\Components\TextEntry::make('original_name')->label('Nome Originale'),
-                                Infolists\Components\TextEntry::make('collection')->label('Collezione')->badge(),
-                                Infolists\Components\TextEntry::make('formatted_size')->label('Dimensione File')->badge()->color('info'),
-                                Infolists\Components\TextEntry::make('dimensions')->label('Risoluzione')->state(fn (MediaItem $record): string => ($record->width && $record->height) ? "{$record->width} × {$record->height} px" : '—'),
-                                Infolists\Components\TextEntry::make('mime_type')->label('MIME Type')->badge()->color('gray'),
-                                Infolists\Components\TextEntry::make('created_at')->label('Data Caricamento')->dateTime('d/m/Y H:i'),
-                                Infolists\Components\TextEntry::make('url')->label('URL Pubblico')->copyable()->copyMessage('URL copiato negli appunti!'),
-                            ]),
-                    ])
-                    ->extraModalFooterActions([
-                        Tables\Actions\Action::make('edit_media')
-                            ->label('Modifica Metadati')
-                            ->icon('heroicon-o-pencil-square')
-                            ->url(fn (MediaItem $record): string => MediaResource::getUrl('edit', ['record' => $record])),
-                    ]),
+                    ->icon('heroicon-m-pencil-square')
+                    ->iconButton()
+                    ->tooltip('Dettagli e Modifica'),
+
                 Tables\Actions\Action::make('copy_url')
                     ->label('Copia Link')
                     ->icon('heroicon-o-clipboard-document')
+                    ->iconButton()
                     ->color('gray')
+                    ->tooltip('Copia Link URL')
                     ->action(function (MediaItem $record): void {
                         Notification::make()
                             ->title('Link copiato negli appunti')
                             ->body($record->url)
                             ->success()
                             ->send();
-                    }),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->label('Elimina'),
+                    })
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+
+                Tables\Actions\DeleteAction::make('delete')
+                    ->label('Elimina')
+                    ->icon('heroicon-o-trash')
+                    ->iconButton()
+                    ->tooltip('Elimina')
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

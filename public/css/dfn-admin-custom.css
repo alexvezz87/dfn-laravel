@@ -160,3 +160,8 @@
 .fi-modal-close-btn:hover {
     opacity: 1 !important;
 }
+
+/* Media Library Grid: nasconde la barra azioni sotto la singola card */
+.fi-ta-content-grid .fi-ta-actions {
+    display: none !important;
+}

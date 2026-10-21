@@ -63,13 +63,17 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
   - **Refresh Immediato del Form**: al salvataggio in `EditEvent`, l'invocazione di `$this->refreshFormData(['featured_image', 'gallery_images'])` sincronizza istantaneamente i box di upload con i percorsi `.webp` effettivi, eliminando lo svuotamento temporaneo del preview senza richiedere refresh F5.
 
 ### 6. Libreria Media Centralizzata (`MediaResource` stile WordPress)
-- **Doppia Modalità di Visualizzazione (Griglia 1:1 WordPress & Elenco)**:
-  - **Visualizzazione a Griglia (Default, Identica a WordPress)**: griglia ad alta densità a tessere quadrate (`aspect-square`, da 2 a 10 colonne in base alla risoluzione dello schermo). Ogni tessera (`media-grid-card.blade.php`) mostra l'immagine a riempimento 100% (`w-full h-full object-cover`) con micro-zoom al passaggio del mouse, un gradiente semitrasparente scuro in basso con il nome del file/titolo e icone vettoriali dedicate per video e documenti.
-  - **Visualizzazione ad Elenco**: tabella amministrativa classica con tutte le colonne analitiche visibili (Collezione, MIME type, Dimensione formattata con ordinamento per byte, Risoluzione e Data di caricamento).
-  - **Switcher Compatto in Testata**: switcher a pulsante compatto (`[ ≡ ] [ 田 ]`) per commutare la modalità al volo via Livewire.
-- **Pannello Dettagli al Clic (Slide-Over stile WordPress)**:
-  - Cliccando su qualsiasi elemento della griglia o dell'elenco (`recordAction('view')`) si apre un cassetto laterale (*Slide-Over*) a comparsa rapida.
-  - Presenta l'anteprima dell'immagine a dimensione estesa (o player video), tutti i metadati editoriali (Titolo, Nome Originale, Collezione), i dati tecnici (Dimensioni, Risoluzione pixel, MIME type, Data caricamento), il campo URL Pubblico copiabile con un clic e il pulsante per accedere direttamente alla modifica completa dei metadati.
+- **Doppia Modalità di Visualizzazione (Griglia 1:1 WordPress & Elenco Compatto)**:
+  - **Visualizzazione a Griglia (Default, Identica a WordPress)**: griglia ad alta densità a tessere quadrate pure (`aspect-square`, da 2 a 10 colonne). Ogni tessera (`media-grid-card.blade.php`) mostra esclusivamente l'immagine a riempimento 100% (`w-full h-full object-cover`), priva di testi o label inferiori per la massima pulizia visiva. Al passaggio del mouse si attiva un overlay scuro semitrasparente con ESCLUSIVAMENTE l'icona matita centrata (`heroicon-m-pencil-square`), mentre la barra delle azioni della tabella è nascosta.
+  - **Visualizzazione ad Elenco Compatta**: tabella amministrativa densa e orizzontale su singola riga per ciascun file, con miniatura compatta 40×40 px, titolo troncato monoriga a 40 caratteri, badge compatti e icone azione snelle (`iconButton`).
+  - **Switcher Icone Compatto in Testata**: due pulsanti icona affiancati compatti (`[ ⊞ ] [ ☰ ]`) per alternare istantaneamente la vista via Livewire senza layout shift.
+- **Pannello Modifica e Dettagli al Clic (Slide-Over stile WordPress)**:
+  - Cliccando su qualsiasi elemento della griglia o dell'elenco (`recordAction('edit')` o clic sulla tessera) si apre un cassetto laterale (*Slide-Over*) a comparsa rapida.
+  - Presenta l'anteprima dell'immagine (o player video), tutti i metadati editoriali modificabili (Titolo, Alt Text per SEO, Didascalia, Collezione), i dati tecnici di sola lettura (Dimensione formattata, Risoluzione pixel, MIME type) e il campo URL Pubblico con pulsante di copia negli appunti con 1 clic.
+- **Ottimizzazione Automatica & Conversione WebP su Caricamento Diretto (`CreateMedia`)**:
+  - Il caricamento diretto dalla Libreria Media (`CreateMedia`) è integrato con `OptimizeImageAction`.
+  - Le immagini caricate vengono automaticamente convertite in formato WebP, scalate alle dimensioni massime consentite (es. 1920px), compresse alla qualità target (es. 82%) e salvate con gestione anti-collisione sia sul nome originario sia sulla controparte WebP.
+  - Invio immediato di una notifica toast e di una notifica persistente nella campanella della topbar che riepiloga il risparmio in byte e la percentuale di riduzione ottenuta.
 - **Persistenza su Google Cloud Storage (GCS Volume Mount)**:
   - Risoluzione del problema di stateless container su Cloud Run: la cartella `/app/storage/app/public` è montata tramite Cloud Storage FUSE (`--execution-environment=gen2`, `--add-volume` e `--add-volume-mount`) su un bucket dedicato di Google Cloud Storage (`${PROJECT_ID}-media-staging`).
   - Tutti i file multimediali e le locandine caricate permangono intatti e disponibili attraverso ogni deploy e riavvio del container.
