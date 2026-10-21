@@ -44,6 +44,7 @@ class ManageMediaSettings extends Page implements HasForms
             'media_max_dimension_px' => Setting::getInt('media_max_dimension_px', 1920),
             'media_quality_percent' => Setting::getInt('media_quality_percent', 82),
             'media_convert_webp' => Setting::getBool('media_convert_webp', true),
+            'media_grid_columns' => Setting::getInt('media_grid_columns', 7),
         ]);
     }
 
@@ -121,6 +122,26 @@ class ManageMediaSettings extends Page implements HasForms
                             ->default(true),
                     ])
                     ->columns(2),
+
+                Section::make('Visualizzazione Libreria Media')
+                    ->description('Configura la densità della griglia dei file multimediali.')
+                    ->icon('heroicon-o-squares-2x2')
+                    ->schema([
+                        Select::make('media_grid_columns')
+                            ->label('Numero di Colonne Griglia (Desktop)')
+                            ->options([
+                                4 => '4 colonne (Immagini molto grandi)',
+                                5 => '5 colonne (Immagini grandi)',
+                                6 => '6 colonne (Medio-grandi)',
+                                7 => '7 colonne (Standard consigliato)',
+                                8 => '8 colonne (Compatte)',
+                                9 => '9 colonne (Molto compatte)',
+                                10 => '10 colonne (Piccole)',
+                            ])
+                            ->default(7)
+                            ->required()
+                            ->helperText('Determina quante tessere disporre su ciascuna riga nella visualizzazione a Griglia.'),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -135,6 +156,7 @@ class ManageMediaSettings extends Page implements HasForms
         Setting::set('media_max_dimension_px', $state['media_max_dimension_px'], 'media');
         Setting::set('media_quality_percent', $state['media_quality_percent'], 'media');
         Setting::set('media_convert_webp', (bool) $state['media_convert_webp'], 'media');
+        Setting::set('media_grid_columns', (int) ($state['media_grid_columns'] ?? 7), 'media');
 
         Notification::make()
             ->title('Impostazioni media aggiornate con successo')

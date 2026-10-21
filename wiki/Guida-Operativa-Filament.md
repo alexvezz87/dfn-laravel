@@ -129,8 +129,8 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
 - **Scopo**: offre un archivio centralizzato in stile WordPress per visualizzare, caricare, organizzare ed eliminare tutti i file multimediali utilizzati sul portale.
 - **Switcher Modalità di Visualizzazione (in Testata)**:
   - ⊞ **Griglia** / ☰ **Elenco**: due pulsanti icona compatti affiancati (`heroicon-o-squares-2x2` e `heroicon-o-bars-3`) con tooltip informativo per alternare all'istante tra la griglia fotografica WordPress e la vista tabellare compatta.
-- **Visualizzazione a Griglia 1:1 WordPress (7 Colonne Desktop ad Alta Densità)**:
-  - **Tessere Fluide & Compatte (`aspect-square`)**: disposizione a scacchiera fluida impostata su 7 colonne fisse su schermi desktop (`gap-3`), con tessere quadrate pure senza barre laterali di checkbox per visualizzare più asset contemporaneamente.
+- **Visualizzazione a Griglia 1:1 WordPress (Colonne Dinamiche da Impostazioni)**:
+  - **Tessere Fluide & Dinamiche (`aspect-square`)**: disposizione a scacchiera fluida gestita tramite CSS Grid nativo (`.dfn-media-grid` con `--dfn-grid-cols`), con numero di colonne su desktop regolabile direttamente da *Impostazioni &rarr; Media & Upload* (da 4 a 10 colonne, default 7 standard), 2 colonne su mobile e 4 su tablet. Tessere quadrate pure senza barre laterali di checkbox per massimizzare la visibilità.
   - **Hover Matita Indipendente**: classi CSS dedicate (`.dfn-media-card`, `.dfn-media-overlay`, `.dfn-media-pencil-btn`) che garantiscono al 100% l'aspetto quadrato, il micro-zoom dell'immagine e la comparsa al passaggio del mouse dell'icona matita centrata su cerchio bianco in rilievo.
 - **Popup Dettagli Allegato Compatto 50/50 Scrollabile (`modalWidth('5xl')` stile WordPress)**:
   - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`mountTableAction('edit')`), si apre al centro una finestra modale paritetica a due colonne (`Grid::make(2)`) in puro stile WordPress con titolo personalizzato (`Dettagli Allegato: Titolo File`).
@@ -161,7 +161,7 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
 
 ### 7. Impostazioni Media & Upload (`ManageMediaSettings`)
 - **Navigazione**: menu laterale *Impostazioni* > *Media & Upload* (icona slider/regolazioni).
-- **Scopo**: permette agli amministratori di regolare in autonomia le policy di upload dei file e la compressione automatica delle immagini senza dover intervenire sul server o su `php.ini`.
+- **Scopo**: permette agli amministratori di regolare in autonomia le policy di upload dei file, la compressione automatica delle immagini e la densità della libreria media senza dover intervenire sul server o su file di codice.
 - **Sezioni di Configurazione**:
   - **Limiti di Caricamento (Upload)**:
     - *Dimensione Massima Immagini*: dimensione massima accettata (in MB, range 1-50 MB) per locandina principale e foto dello slider descrittivo.
@@ -171,6 +171,8 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
     - *Risoluzione Massima*: risoluzione massima consentita per il lato lungo (1280px HD, 1920px Full HD raccomandato, 2560px 2K).
     - *Qualità Compressione*: percentuale di qualità JPEG/WebP (default 82%).
     - *Converti automaticamente in WebP*: conversione al formato WebP per velocizzare significativamente il caricamento delle pagine front-end.
+  - **Visualizzazione Libreria Media**:
+    - *Numero di Colonne Griglia (Desktop)*: selettore della densità a scacchiera su schermi desktop da 4 a 10 colonne (4 molto grandi, 5 grandi, 6 medio-grandi, 7 standard consigliato, 8 compatte, 9 molto compatte, 10 piccole).
 - **Comportamento dei Campi Upload (`featured_image` e `gallery_images`) in EventResource**:
   - **Con Ottimizzazione Automatica ATTIVA**: FilePond accetta file fino al tetto del server (50 MB) senza bloccare l'operatore con messaggi d'errore FilePond `File is too large`. Durante l'upload e il salvataggio in `CreateEvent` ed `EditEvent`, il sistema ridimensiona l'immagine (client-side) e la ottimizza/converte in WebP (backend), mostrando una notifica con l'avvenuto risparmio di peso. Helper text: `ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i X MB`.
   - **Con Ottimizzazione Automatica DISATTIVATA**: FilePond applica il limite rigido impostato dall'amministratore (es. 4 MB) bloccando all'ingresso i file superiori alla soglia senza modifiche. Helper text: `⚠️ Limite massimo rigido: X MB per immagine`.
