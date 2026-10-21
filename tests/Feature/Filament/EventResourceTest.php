@@ -199,11 +199,39 @@ class EventResourceTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(CreateEvent::class)
-            ->mountAction('pick_featured_image')
-            ->setActionData([
-                'selected_media' => $media->file_path,
+            ->callFormComponentAction('featured_image', 'openPicker', data: [
+                'selected_library_media' => [$media->file_path],
             ])
-            ->callMountedAction()
-            ->assertHasNoActionErrors();
+            ->assertHasNoFormComponentActionErrors()
+            ->assertSet('data.featured_image', $media->file_path);
+    }
+
+    public function test_can_select_gallery_images_from_media_library(): void
+    {
+        $this->actingAs($this->admin);
+
+        $media1 = MediaItem::create([
+            'disk' => 'public',
+            'file_path' => 'uploads/gallery-1.webp',
+            'file_name' => 'gallery-1.webp',
+            'collection' => 'gallery',
+            'title' => 'Gallery 1',
+        ]);
+
+        $media2 = MediaItem::create([
+            'disk' => 'public',
+            'file_path' => 'uploads/gallery-2.webp',
+            'file_name' => 'gallery-2.webp',
+            'collection' => 'gallery',
+            'title' => 'Gallery 2',
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(CreateEvent::class)
+            ->callFormComponentAction('gallery_images', 'openPicker', data: [
+                'selected_library_media' => [$media1->file_path, $media2->file_path],
+            ])
+            ->assertHasNoFormComponentActionErrors()
+            ->assertSet('data.gallery_images', [$media1->file_path, $media2->file_path]);
     }
 }

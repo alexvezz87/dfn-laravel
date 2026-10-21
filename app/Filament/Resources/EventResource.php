@@ -2,16 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\Components\WordpressMediaPicker;
 use App\Filament\Resources\EventResource\Pages;
 use App\Models\Event;
-use App\Models\MediaItem;
 use App\Models\Setting;
 use Filament\Forms;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -72,77 +70,11 @@ class EventResource extends Resource
             ->extraAttributes(['class' => 'dfn-tooltip-trigger']);
     }
 
-    public static function makeMediaPickerAction(
-        string $name,
-        string $label,
-        string $icon,
-        string $targetField,
-        bool $multiple = false
-    ): Forms\Components\Actions\Action {
-        return Forms\Components\Actions\Action::make($name)
-            ->label($label)
-            ->icon($icon)
-            ->color('gray')
-            ->modalWidth('6xl')
-            ->modalHeading('Seleziona dalla Libreria Media')
-            ->modalDescription($multiple ? 'Scegli uno o più file multimediali da aggiungere.' : 'Fai clic su un\'immagine per selezionarla e impostarla.')
-            ->modalSubmitActionLabel($multiple ? 'Aggiungi Selezionati' : 'Imposta Immagine')
-            ->modalCancelActionLabel('Annulla')
-            ->modalFooterActionsAlignment(Alignment::End)
-            ->form([
-                Forms\Components\ViewField::make('selected_media')
-                    ->label('')
-                    ->view('filament.forms.components.media-picker-modal')
-                    ->viewData([
-                        'multiple' => $multiple,
-                        'mediaItems' => MediaItem::query()->latest('id')->limit(120)->get(),
-                    ]),
-            ])
-            ->action(function (array $data, Forms\Set $set, Forms\Get $get) use ($targetField, $multiple): void {
-                $selected = $data['selected_media'] ?? null;
-                if (blank($selected)) {
-                    return;
-                }
-
-                if (! $multiple) {
-                    $path = is_array($selected) ? reset($selected) : $selected;
-                    if ($path) {
-                        $uuid = (string) Str::uuid();
-                        $set($targetField, [$uuid => $path]);
-
-                        Notification::make()
-                            ->title('Locandina impostata dalla Libreria Media')
-                            ->success()
-                            ->send();
-                    }
-                } else {
-                    $paths = (array) $selected;
-                    $current = $get($targetField) ?? [];
-                    if (! is_array($current)) {
-                        $current = [];
-                    }
-
-                    $added = 0;
-                    foreach ($paths as $path) {
-                        if (! in_array($path, $current, true)) {
-                            $uuid = (string) Str::uuid();
-                            $current[$uuid] = $path;
-                            $added++;
-                        }
-                    }
-
-                    $set($targetField, $current);
-
-                    Notification::make()
-                        ->title("{$added} file aggiunti dalla Libreria Media")
-                        ->success()
-                        ->send();
-                }
-            });
-    }
-
     public static function form(Form $form): Form
     {
+        $maxImageSizeKb = Setting::getBool('media_auto_compress', true) ? (50 * 1024) : (Setting::getInt('media_max_image_mb', 8) * 1024);
+        $maxVideoSizeKb = Setting::getBool('media_auto_compress', true) ? (50 * 1024) : (Setting::getInt('media_max_video_mb', 50) * 1024);
+
         return $form
             ->schema([
                 Forms\Components\Group::make()
@@ -442,73 +374,25 @@ class EventResource extends Resource
 
                         Forms\Components\Section::make('Immagine in Evidenza')
                             ->icon('heroicon-o-photo')
-                            ->headerActions([
-                                self::makeMediaPickerAction(
-                                    name: 'pick_featured_image',
-                                    label: 'Scegli da Libreria Media',
-                                    icon: 'heroicon-m-photo',
-                                    targetField: 'featured_image',
-                                    multiple: false
-                                ),
-                            ])
                             ->schema([
-                                Forms\Components\FileUpload::make('featured_image')
+                                WordpressMediaPicker::make('featured_image')
                                     ->label('Locandina Principale')
-                                    ->image()
-                                    ->disk('public')
                                     ->directory('events/featured')
-                                    ->getUploadedFileNameForStorageUsing(fn (BaseFileUpload $component, TemporaryUploadedFile $file): string => self::generateSecureUploadedFileName($component, $file, 'locandina'))
-                                    ->imageEditor()
-                                    ->maxSize(Setting::getBool('media_auto_compress', true) ? (50 * 1024) : (Setting::getInt('media_max_image_mb', 8) * 1024))
-                                    ->when(
-                                        Setting::getBool('media_auto_compress', true),
-                                        fn (Forms\Components\FileUpload $component): Forms\Components\FileUpload => $component
-                                            ->imageResizeMode('cover')
-                                            ->imageResizeTargetWidth((string) Setting::getInt('media_max_dimension_px', 1920))
-                                            ->imageResizeTargetHeight((string) Setting::getInt('media_max_dimension_px', 1920))
-                                            ->imagePreviewHeight('250')
-                                    )
-                                    ->helperText(
-                                        Setting::getBool('media_auto_compress', true)
-                                            ? 'ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i '.Setting::getInt('media_max_image_mb', 8).' MB (max '.Setting::getInt('media_max_dimension_px', 1920).'px, qualità '.Setting::getInt('media_quality_percent', 82).'%).'
-                                             : '⚠️ Limite massimo rigido: '.Setting::getInt('media_max_image_mb', 8).' MB per immagine.'
-                                    ),
+                                    ->collection('featured')
+                                    ->maxSize($maxImageSizeKb)
+                                    ->helperText('Formato raccomandato WebP/JPG. Risoluzione ideale: 1920×1080px.'),
                             ]),
 
                         Forms\Components\Section::make('Galleria Slider (Pre-Evento)')
                             ->icon('heroicon-o-squares-2x2')
-                            ->headerActions([
-                                self::makeMediaPickerAction(
-                                    name: 'pick_gallery_images',
-                                    label: 'Aggiungi da Libreria Media',
-                                    icon: 'heroicon-m-photo',
-                                    targetField: 'gallery_images',
-                                    multiple: true
-                                ),
-                            ])
                             ->schema([
-                                Forms\Components\FileUpload::make('gallery_images')
+                                WordpressMediaPicker::make('gallery_images')
                                     ->label('Foto Slider')
-                                    ->image()
                                     ->multiple()
-                                    ->reorderable()
-                                    ->disk('public')
                                     ->directory('events/gallery')
-                                    ->getUploadedFileNameForStorageUsing(fn (BaseFileUpload $component, TemporaryUploadedFile $file): string => self::generateSecureUploadedFileName($component, $file, 'gallery'))
-                                    ->maxSize(Setting::getBool('media_auto_compress', true) ? (50 * 1024) : (Setting::getInt('media_max_image_mb', 8) * 1024))
-                                    ->when(
-                                        Setting::getBool('media_auto_compress', true),
-                                        fn (Forms\Components\FileUpload $component): Forms\Components\FileUpload => $component
-                                            ->imageResizeMode('cover')
-                                            ->imageResizeTargetWidth((string) Setting::getInt('media_max_dimension_px', 1920))
-                                            ->imageResizeTargetHeight((string) Setting::getInt('media_max_dimension_px', 1920))
-                                            ->imagePreviewHeight('250')
-                                    )
-                                    ->helperText(
-                                        Setting::getBool('media_auto_compress', true)
-                                            ? 'ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i '.Setting::getInt('media_max_image_mb', 8).' MB (max '.Setting::getInt('media_max_dimension_px', 1920).'px, qualità '.Setting::getInt('media_quality_percent', 82).'%).'
-                                             : '⚠️ Limite massimo rigido: '.Setting::getInt('media_max_image_mb', 8).' MB per immagine.'
-                                    ),
+                                    ->collection('gallery')
+                                    ->maxSize($maxImageSizeKb)
+                                    ->helperText('Seleziona o carica una o più foto per lo slider orizzontale della scheda evento.'),
                             ]),
 
                         Forms\Components\Section::make('Wall dei Ricordi (Post-Evento)')
@@ -519,24 +403,15 @@ class EventResource extends Resource
                                     '📸🎬 Wall dei Ricordi (Post-Evento)',
                                     'Questo spazio è dedicato a foto e video clip (.mp4, .webm) registrati durante lo svolgimento dell\'iniziativa.<br><br>A differenza della galleria descrittiva (usata prima dell\'evento per presentarlo), questi media vengono mostrati pubblicamente nella scheda dell\'evento solo quando l\'evento risulta concluso, creando un archivio multimediale per visitatori e soci.'
                                 ),
-                                self::makeMediaPickerAction(
-                                    name: 'pick_wall_media',
-                                    label: 'Aggiungi da Libreria Media',
-                                    icon: 'heroicon-m-photo',
-                                    targetField: 'wall_media',
-                                    multiple: true
-                                ),
                             ])
                             ->schema([
-                                Forms\Components\FileUpload::make('wall_media')
+                                WordpressMediaPicker::make('wall_media')
                                     ->label('Media Wall Ricordi')
                                     ->multiple()
-                                    ->disk('public')
                                     ->directory('events/wall')
-                                    ->getUploadedFileNameForStorageUsing(fn (BaseFileUpload $component, TemporaryUploadedFile $file): string => self::generateSecureUploadedFileName($component, $file, 'wall'))
-                                    ->acceptedFileTypes(['image/*', 'video/mp4', 'video/webm', 'video/ogg'])
-                                    ->maxSize(Setting::getInt('media_max_video_mb', 50) * 1024)
-                                    ->helperText('Carica foto e video (mp4, webm) registrati durante l\'evento per la vista conclusa.'),
+                                    ->collection('wall')
+                                    ->maxSize($maxVideoSizeKb)
+                                    ->helperText('Carica o seleziona foto e video (.mp4, .webm) registrati durante l\'evento per la vista conclusa.'),
                             ]),
 
                         Forms\Components\Section::make('Layout Pagina Dettaglio')
