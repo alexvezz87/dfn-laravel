@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-21 | ⚡ Enhancement | #43 | Ottimizzazione automatica WebP in CreateMedia e redesign UI Griglia/Elenco Libreria Media | Alex / Antigravity | Integrazione `OptimizeImageAction` su caricamento diretto con conversione WebP e notifiche di risparmio, card griglia aspect-square pura con overlay matita, elenco compatto monoriga e switcher icone compatto |
 | 2026-10-21 | 🚨 Hotfix | #41 | Configurazione bucket GCS reale `dfn_staging` per persistenza media su Cloud Run | Alex / Antigravity | Collegamento bucket `dfn_staging` nel deploy workflow, volume mount Cloud Storage FUSE su `/app/storage/app/public`, verifica bucket e FAQ |
 | 2026-10-21 | ✨ Feature | #39 | Griglia Media 1:1 WordPress (tessere quadrate densità 2-10 cols) e persistenza GCS Volume Mounts su Cloud Run | Alex / Antigravity | Vista blade `media-grid-card`, densità fino a 10 colonne, switcher icone compatto, volume mount FUSE su `/app/storage/app/public` in workflow CI/CD, test e wiki |
 | 2026-10-21 | ✨ Feature | #37 | Visualizzazione a Griglia stile WordPress per Libreria Media con switcher e Slide-Over dettagli | Alex / Antigravity | Switcher Griglia/Elenco in `ListMedia`, `contentGrid` dinamico, card responsive con anteprima `h-44`, colonne adattive, `ViewAction` con cassetto slideOver, test PHPUnit e guida |

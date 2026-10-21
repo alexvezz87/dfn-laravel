@@ -129,40 +129,38 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
 - **Navigazione**: menu laterale *Media* > *Libreria Media*.
 - **Scopo**: offre un archivio centralizzato in stile WordPress per visualizzare, caricare, organizzare ed eliminare tutti i file multimediali utilizzati sul portale.
 - **Switcher Modalità di Visualizzazione (in Testata)**:
-  - ⏹️ **Griglia** / 📋 **Elenco**: switcher a pulsante compatto per alternare all'istante tra la griglia fotografica WordPress e la vista tabellare.
-- **Visualizzazione a Griglia 1:1 WordPress (Tessere Quadrate)**:
+  - ⊞ **Griglia** / ☰ **Elenco**: due pulsanti icona compatti affiancati (`heroicon-o-squares-2x2` e `heroicon-o-bars-3`) con tooltip informativo per alternare all'istante tra la griglia fotografica WordPress e la vista tabellare compatta.
+- **Visualizzazione a Griglia 1:1 WordPress (Tessere Quadrate Pure)**:
   - **Tessere ad Alta Densità (`aspect-square`)**: disposizione a scacchiera densa da 2 a 10 colonne che massimizza lo spazio a schermo.
-  - **Riempimento Totale 100%**: l'immagine occupa interamente il riquadro quadrato (`w-full h-full object-cover`) con bordi arrotondati, bordo neutro ed effetto micro-zoom al passaggio del mouse.
-  - **Etichetta Sovrimpressa Semitrasparente**: barra sfumata scura sul bordo inferiore con il nome del file / titolo dell'asset per un look identico a WordPress Media Library.
-  - **Supporto File Non-Immagine**: icone monocromatiche centrate per video e file generici.
-- **Pannello Dettagli Slide-Over (al Clic sulla Card o Riga)**:
-  - Cliccando su qualsiasi elemento si apre lateralmente un cassetto scorrevole (*Slide-Over*) in stile WordPress contenente:
-    - Anteprima ad alta risoluzione o player video.
-    - Metadati completi: Titolo, Nome originale del file, Collezione.
-    - Dati tecnici: Dimensione file formattata, Risoluzione in pixel, MIME Type, Data e ora caricamento.
-    - Link URL Pubblico copiabile con 1 clic.
-    - Pulsante rapido **`Modifica Metadati`** per accedere direttamente alla scheda di editing avanzata.
-- **Visualizzazione Tabella / Elenco Dettagliato**:
-  - **Anteprima**: miniatura quadrata arrotondata con visualizzazione fedele dell'immagine o icona per video.
-  - **Titolo & Nome File**: titolo descrittivo con nome file originario e path relativo sottostante.
-  - **Collezione**: badge colorato per distinguere l'ambito (`featured` verde/blu per locandine, `gallery` per slider, `wall` per wall dei ricordi, `uploads` per caricamenti diretti).
+  - **Riempimento Totale 100%**: l'immagine occupa interamente il riquadro quadrato (`w-full h-full object-cover`) con bordi arrotondati, priva di etichette di testo inferiori per preservare la pulizia visiva originale di WordPress.
+  - **Overlay Hover Centrato**: al passaggio del cursore su una tessera, compare uno strato scuro semitrasparente con ESCLUSIVAMENTE l'icona matita centrata (`heroicon-m-pencil-square`) all'interno di un cerchio bianco in rilievo.
+  - **Nessuna Barra Azioni Sottostante**: la barra delle azioni della tabella è nascosta in modalità griglia, garantendo una scacchiera visiva continua.
+- **Pannello Modifica e Dettagli Slide-Over (al Clic sulla Card o Riga)**:
+  - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`wire:click="mountTableAction('edit', ...)"` / `recordAction('edit')`), si apre lateralmente un cassetto scorrevole (*Slide-Over*) a comparsa rapida contenente:
+    - Anteprima ad alta risoluzione o player video interattivo.
+    - Metadati modificabili: Titolo, Testo alternativo per SEO (`alt_text`), Didascalia (`caption`), Collezione / Categoria.
+    - Dati tecnici di sola lettura: Dimensione file formattata (KB/MB), Risoluzione in pixel, MIME Type.
+    - Link URL Pubblico con pulsante integrato per la copia istantanea negli appunti.
+    - Pulsanti di salvataggio modifiche e chiusura cassetto.
+- **Visualizzazione Tabella / Elenco Compatta (Singola Riga Orizzontale)**:
+  - **Layout Orizzontale Compatto**: riga singola senza a capo, concepita per massimizzare la leggibilità tecnica degli asset.
+  - **Miniatura**: anteprima quadrata arrotondata 40×40 px con visualizzazione fedele dell'immagine o icona per video/documenti.
+  - **Titolo Monoriga**: titolo descrittivo troncato a 40 caratteri per evitare l'aumento dell'altezza di riga.
+  - **Collezione**: badge compatto colorato per distinguere l'ambito (`featured`, `gallery`, `wall`, `uploads`, `general`).
   - **MIME Type**: badge grigio con il tipo di file (es. `image/webp`, `image/jpeg`, `video/mp4`).
-  - **Dimensione Formattata**: badge blu con peso in KB/MB (es. `420 KB`, `1.4 MB`), con ordinamento per byte.
+  - **Dimensione Formattata**: badge blu con peso in KB/MB con ordinamento per byte reali.
   - **Risoluzione**: indicazione di larghezza per altezza (es. `1920 × 1080 px`).
   - **Data di Caricamento**: timestamp formattato `d/m/Y H:i`.
+  - **Azioni Compatte (`iconButton`)**: pulsanti ad icona senza testo per Modifica (Slide-Over), Copia Link negli appunti ed Eliminazione.
 - **Filtri di Tabella**:
   - Filtro per *Tipo Contenuto* (*Tutti*, *Immagini*, *Video*).
   - Filtro per *Collezione* (*Locandine*, *Galleria Slider*, *Wall dei Ricordi*, *Caricamenti Diretti*, *Generale*).
-- **Azioni Disponibili**:
-  - 👁️ **Dettagli**: apre il pannello Slide-Over con tutti i metadati e anteprima estesa.
-  - 📋 **Copia Link**: copia istantaneamente l'URL pubblico assoluto dell'asset negli appunti e mostra notifica di conferma.
-  - ✏️ **Modifica**: apre la scheda di modifica dei metadati (titolo, testo alternativo SEO/accessibilità `alt_text`, didascalia `caption`, categoria/collezione), visualizzando a lato l'anteprima attuale e i dati tecnici (peso, risoluzione, mime, data e URL pubblico).
-  - 🗑️ **Eliminazione Singola e Massiva**: l'eliminazione rimuove fisicamente il file dal disco storage (`public`), evitando l'accumulo di file orfani.
-- **Caricamento Nuovo Media (`CreateMedia`)**:
+- **Caricamento Nuovo Media con Ottimizzazione WebP (`CreateMedia`)**:
   - Pulsante in alto a destra *Carica Nuovo Media*.
-  - Upload drag-and-drop con memorizzazione su storage preservando il nome file originale in formato slug web-safe (es. `locandina-united-gospel-2026.jpg`) e gestione anti-collisione incrementale (`nome-1.ext`).
+  - Upload drag-and-drop con memorizzazione su storage preservando il nome file originale in formato slug web-safe con gestione anti-collisione incrementale (sia per estensione originale sia per controparte `.webp`).
   - Pre-compilazione automatica del Titolo: se il campo *Titolo* viene lasciato vuoto, il sistema imposta automaticamente il nome originale del file senza estensione.
-  - Estrazione automatica di dimensioni, risoluzione pixel e mime type all'atto del salvataggio.
+  - **Ottimizzazione Automatica WebP**: conversione automatica delle immagini in WebP, ridimensionamento alla risoluzione configurata (es. 1920px), compressione e calcolo dinamico di dimensioni, mime type e risoluzione.
+  - **Notifiche di Risparmio**: notifica toast immediata e notifica permanente nella campanella topbar con i byte risparmiati e la percentuale di compressione.
 
 ---
 

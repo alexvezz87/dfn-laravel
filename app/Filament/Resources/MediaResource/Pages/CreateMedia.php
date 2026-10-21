@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\MediaResource\Pages;
 
+use App\Actions\OptimizeImageAction;
 use App\Filament\Resources\MediaResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class CreateMedia extends CreateRecord
@@ -32,14 +35,52 @@ class CreateMedia extends CreateRecord
         $disk = 'public';
 
         $data['disk'] = $disk;
-        $data['file_path'] = $path;
-        $data['file_name'] = basename($path);
         $data['original_name'] = $data['original_name'] ?? basename($path);
         $data['collection'] = $data['collection'] ?? 'uploads';
 
         if (empty($data['title'])) {
             $data['title'] = pathinfo($data['original_name'] ?? basename($path), PATHINFO_FILENAME);
         }
+
+        // Ottimizzazione e conversione WebP automatica
+        if ($path !== '') {
+            $action = new OptimizeImageAction;
+            $optimizedPath = $action->execute($path, $disk);
+            $path = $optimizedPath;
+
+            if ($action->wasOptimized()) {
+                $totalOriginal = $action->getOriginalBytes();
+                $totalFinal = $action->getFinalBytes();
+                $savingsSummary = '';
+                if ($totalOriginal > $totalFinal && $totalFinal > 0) {
+                    $saved = $totalOriginal - $totalFinal;
+                    $percent = (int) round(($saved / $totalOriginal) * 100);
+                    $savingsSummary = sprintf(
+                        ' (da %s a %s, -%d%%)',
+                        $action->formatBytes($totalOriginal),
+                        $action->formatBytes($totalFinal),
+                        $percent
+                    );
+                }
+
+                $notification = Notification::make()
+                    ->info()
+                    ->title('Immagine ottimizzata e convertita in WebP')
+                    ->body('Il file è stato compresso automaticamente per garantire massime prestazioni'.$savingsSummary.'.')
+                    ->icon('heroicon-o-sparkles')
+                    ->iconColor('success');
+
+                $notification->send();
+
+                $user = Auth::user();
+                if ($user) {
+                    $notification->sendToDatabase($user);
+                }
+            }
+        }
+
+        $data['file_path'] = $path;
+        $data['file_name'] = basename($path);
 
         /** @var FilesystemAdapter $storage */
         $storage = Storage::disk($disk);

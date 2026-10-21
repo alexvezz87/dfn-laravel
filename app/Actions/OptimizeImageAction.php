@@ -96,7 +96,14 @@ class OptimizeImageAction
         if ($convertToWebp) {
             $pathInfo = pathinfo($path);
             $dir = ($pathInfo['dirname'] !== '.' && $pathInfo['dirname'] !== '') ? $pathInfo['dirname'].'/' : '';
-            $destinationPath = $dir.$pathInfo['filename'].'.webp';
+            $baseName = $pathInfo['filename'];
+            $destinationPath = $dir.$baseName.'.webp';
+
+            $counter = 1;
+            while ($storage->exists($destinationPath) && $destinationPath !== $path) {
+                $destinationPath = $dir.$baseName.'-'.$counter.'.webp';
+                $counter++;
+            }
         }
 
         ob_start();

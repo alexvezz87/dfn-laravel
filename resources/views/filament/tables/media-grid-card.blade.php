@@ -4,7 +4,10 @@
     $isVideo = str_starts_with($record->mime_type ?? '', 'video/');
 @endphp
 
-<div class="group relative aspect-square w-full overflow-hidden rounded-md border border-gray-200 bg-gray-50 shadow-xs transition duration-150 hover:border-primary-500 hover:shadow-md hover:ring-2 hover:ring-primary-500/20 dark:border-white/10 dark:bg-white/5 cursor-pointer">
+<div 
+    wire:click="mountTableAction('edit', '{{ $record->getKey() }}')"
+    class="group relative aspect-square w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-xs transition duration-150 hover:border-primary-500 hover:shadow-md dark:border-white/10 dark:bg-gray-800 cursor-pointer"
+>
     @if ($isImage)
         <img 
             src="{{ $record->url }}" 
@@ -24,10 +27,10 @@
         </div>
     @endif
 
-    {{-- Didascalia / Titolo in sovrimpressione inferiore stile WordPress --}}
-    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-1.5 pt-3">
-        <p class="truncate text-center text-[11px] font-medium text-white select-none">
-            {{ $record->title ?: $record->file_name }}
-        </p>
+    {{-- Overlay in hover: compare ESCLUSIVAMENTE l'icona matita per la modifica --}}
+    <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <div class="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-gray-800 shadow-xl backdrop-blur-xs transition transform group-hover:scale-110">
+            <x-heroicon-m-pencil-square class="h-6 w-6 text-gray-900" />
+        </div>
     </div>
 </div>

@@ -208,7 +208,8 @@ class MediaLibraryAndNotificationsTest extends TestCase
         $this->assertNotNull($mediaItem);
         $this->assertStringContainsString('locandina-united-gospel-2026', $mediaItem->file_name);
         $this->assertStringContainsString('locandina-united-gospel-2026', $mediaItem->file_path);
-        $this->assertStringEndsWith('.jpg', $mediaItem->file_path);
+        $this->assertStringEndsWith('.webp', $mediaItem->file_path);
+        $this->assertSame('image/webp', $mediaItem->mime_type);
         $this->assertStringContainsString('locandina-united-gospel-2026', strtolower($mediaItem->title));
         $this->assertTrue(Storage::disk('public')->exists($mediaItem->file_path));
 
@@ -229,8 +230,34 @@ class MediaLibraryAndNotificationsTest extends TestCase
         $secondItem = MediaItem::latest('id')->first();
 
         $this->assertNotSame($mediaItem->id, $secondItem->id);
-        $this->assertSame('locandina-united-gospel-2026-1.jpg', $secondItem->file_name);
+        $this->assertSame('locandina-united-gospel-2026-1.webp', $secondItem->file_name);
         $this->assertTrue(Storage::disk('public')->exists($secondItem->file_path));
+    }
+
+    public function test_upload_in_create_media_converts_image_to_webp_and_optimizes_size(): void
+    {
+        Storage::fake('public');
+
+        $file = UploadedFile::fake()->image('foto-castello-grande.png', 1600, 1200);
+
+        Livewire::actingAs($this->admin)
+            ->test(CreateMedia::class)
+            ->fillForm([
+                'title' => 'Foto Castello Visconteo',
+                'collection' => 'gallery',
+                'file_path' => $file,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        /** @var MediaItem $mediaItem */
+        $mediaItem = MediaItem::where('title', 'Foto Castello Visconteo')->first();
+
+        $this->assertNotNull($mediaItem);
+        $this->assertStringEndsWith('.webp', $mediaItem->file_path);
+        $this->assertSame('image/webp', $mediaItem->mime_type);
+        $this->assertSame('gallery', $mediaItem->collection);
+        $this->assertTrue(Storage::disk('public')->exists($mediaItem->file_path));
     }
 
     public function test_can_toggle_between_grid_and_list_view_modes(): void
@@ -261,7 +288,7 @@ class MediaLibraryAndNotificationsTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(ListMedia::class)
-            ->mountTableAction('view', $item)
-            ->assertTableActionMounted('view');
+            ->mountTableAction('edit', $item)
+            ->assertTableActionMounted('edit');
     }
 }
