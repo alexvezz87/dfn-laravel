@@ -128,7 +128,20 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
 ### 6. Libreria Media (`MediaResource`)
 - **Navigazione**: menu laterale *Media* > *Libreria Media*.
 - **Scopo**: offre un archivio centralizzato in stile WordPress per visualizzare, caricare, organizzare ed eliminare tutti i file multimediali utilizzati sul portale.
-- **Visualizzazione Tabella / Griglia Asset**:
+- **Switcher Modalità di Visualizzazione (in Testata)**:
+  - ⏹️ **Griglia** (icona 4 quadrati): modalità predefinita all'accesso, focalizzata sull'impatto visivo di locandine e foto.
+  - 📋 **Elenco** (icona elenco puntato): vista tabellare classica con tutte le colonne analitiche visibili.
+- **Visualizzazione a Griglia (Cards)**:
+  - **Anteprima Grande**: immagine in risalto (`h-44 object-cover`) con effetto micro-zoom al passaggio del mouse.
+  - **Titolo & Informazioni Compatte**: titolo dell'asset e, nel sottotitolo, la combinazione immediata di dimensione e collezione (es. `303.1 KB • featured`).
+- **Pannello Dettagli Slide-Over (al Clic sulla Card o Riga)**:
+  - Cliccando su qualsiasi elemento si apre lateralmente un cassetto scorrevole (*Slide-Over*) in stile WordPress contenente:
+    - Anteprima ad alta risoluzione o player video.
+    - Metadati completi: Titolo, Nome originale del file, Collezione.
+    - Dati tecnici: Dimensione file formattata, Risoluzione in pixel, MIME Type, Data e ora caricamento.
+    - Link URL Pubblico copiabile con 1 clic.
+    - Pulsante rapido **`Modifica Metadati`** per accedere direttamente alla scheda di editing avanzata.
+- **Visualizzazione Tabella / Elenco Dettagliato**:
   - **Anteprima**: miniatura quadrata arrotondata con visualizzazione fedele dell'immagine o icona per video.
   - **Titolo & Nome File**: titolo descrittivo con nome file originario e path relativo sottostante.
   - **Collezione**: badge colorato per distinguere l'ambito (`featured` verde/blu per locandine, `gallery` per slider, `wall` per wall dei ricordi, `uploads` per caricamenti diretti).
@@ -140,6 +153,7 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
   - Filtro per *Tipo Contenuto* (*Tutti*, *Immagini*, *Video*).
   - Filtro per *Collezione* (*Locandine*, *Galleria Slider*, *Wall dei Ricordi*, *Caricamenti Diretti*, *Generale*).
 - **Azioni Disponibili**:
+  - 👁️ **Dettagli**: apre il pannello Slide-Over con tutti i metadati e anteprima estesa.
   - 📋 **Copia Link**: copia istantaneamente l'URL pubblico assoluto dell'asset negli appunti e mostra notifica di conferma.
   - ✏️ **Modifica**: apre la scheda di modifica dei metadati (titolo, testo alternativo SEO/accessibilità `alt_text`, didascalia `caption`, categoria/collezione), visualizzando a lato l'anteprima attuale e i dati tecnici (peso, risoluzione, mime, data e URL pubblico).
   - 🗑️ **Eliminazione Singola e Massiva**: l'eliminazione rimuove fisicamente il file dal disco storage (`public`), evitando l'accumulo di file orfani.

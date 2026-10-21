@@ -232,4 +232,36 @@ class MediaLibraryAndNotificationsTest extends TestCase
         $this->assertSame('locandina-united-gospel-2026-1.jpg', $secondItem->file_name);
         $this->assertTrue(Storage::disk('public')->exists($secondItem->file_path));
     }
+
+    public function test_can_toggle_between_grid_and_list_view_modes(): void
+    {
+        Livewire::actingAs($this->admin)
+            ->test(ListMedia::class)
+            ->assertSet('viewMode', 'grid')
+            ->call('setViewMode', 'list')
+            ->assertSet('viewMode', 'list')
+            ->call('setViewMode', 'grid')
+            ->assertSet('viewMode', 'grid');
+    }
+
+    public function test_can_view_media_item_slide_over_details(): void
+    {
+        $item = MediaItem::create([
+            'disk' => 'public',
+            'file_path' => 'uploads/test-preview.jpg',
+            'file_name' => 'test-preview.jpg',
+            'original_name' => 'Test Preview.jpg',
+            'file_size' => 102400,
+            'mime_type' => 'image/jpeg',
+            'width' => 1200,
+            'height' => 800,
+            'collection' => 'featured',
+            'title' => 'Locandina Test Preview',
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListMedia::class)
+            ->mountTableAction('view', $item)
+            ->assertTableActionMounted('view');
+    }
 }

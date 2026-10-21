@@ -7,6 +7,7 @@ use App\Models\MediaItem;
 use Filament\Forms;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Form;
+use Filament\Infolists;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -166,19 +167,40 @@ class MediaResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->contentGrid(function ($livewire): ?array {
+                if (method_exists($livewire, 'isGridView') && ! $livewire->isGridView()) {
+                    return null;
+                }
+
+                return [
+                    'default' => 2,
+                    'sm' => 2,
+                    'md' => 3,
+                    'lg' => 4,
+                    'xl' => 5,
+                    '2xl' => 6,
+                ];
+            })
             ->columns([
                 Tables\Columns\ImageColumn::make('file_path')
                     ->label('Anteprima')
                     ->disk('public')
-                    ->square()
-                    ->extraImgAttributes(['class' => 'rounded-lg object-cover shadow-sm']),
+                    ->extraImgAttributes(fn ($livewire): array => [
+                        'class' => (method_exists($livewire, 'isGridView') && $livewire->isGridView())
+                            ? 'w-full h-44 object-cover rounded-t-xl transition duration-200 hover:scale-105'
+                            : 'rounded-lg object-cover shadow-sm',
+                    ]),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Titolo & File')
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->description(fn (MediaItem $record): string => $record->file_name)
+                    ->limit(24)
+                    ->description(fn (MediaItem $record, $livewire): string => (method_exists($livewire, 'isGridView') && $livewire->isGridView())
+                        ? "{$record->formatted_size} • {$record->collection}"
+                        : $record->file_name
+                    )
                     ->wrap(),
 
                 Tables\Columns\TextColumn::make('collection')
@@ -198,31 +220,37 @@ class MediaResource extends Resource
                         'success' => 'uploads',
                         'gray' => 'general',
                     ])
-                    ->sortable(),
+                    ->sortable()
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
 
                 Tables\Columns\TextColumn::make('mime_type')
                     ->label('MIME Type')
                     ->badge()
                     ->color('gray')
-                    ->searchable(),
+                    ->searchable()
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
 
                 Tables\Columns\TextColumn::make('formatted_size')
                     ->label('Dimensione')
                     ->badge()
                     ->color('info')
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('file_size', $direction)),
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('file_size', $direction))
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
 
                 Tables\Columns\TextColumn::make('resolution')
                     ->label('Risoluzione')
                     ->state(fn (MediaItem $record): string => ($record->width && $record->height) ? "{$record->width} × {$record->height}" : '—')
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Caricato il')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
             ])
             ->defaultSort('created_at', 'desc')
+            ->recordAction('view')
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
                     ->label('Tipo Contenuto')
@@ -253,6 +281,37 @@ class MediaResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make('view')
+                    ->label('Dettagli')
+                    ->modalHeading(fn (MediaItem $record): string => $record->title ?: $record->file_name)
+                    ->slideOver()
+                    ->infolist([
+                        Infolists\Components\Section::make('Anteprima')
+                            ->schema([
+                                Infolists\Components\ImageEntry::make('file_path')
+                                    ->label('')
+                                    ->disk('public')
+                                    ->extraImgAttributes(['class' => 'max-h-80 w-auto mx-auto rounded-lg shadow-sm object-contain']),
+                            ]),
+                        Infolists\Components\Section::make('Informazioni File')
+                            ->columns(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')->label('Titolo'),
+                                Infolists\Components\TextEntry::make('original_name')->label('Nome Originale'),
+                                Infolists\Components\TextEntry::make('collection')->label('Collezione')->badge(),
+                                Infolists\Components\TextEntry::make('formatted_size')->label('Dimensione File')->badge()->color('info'),
+                                Infolists\Components\TextEntry::make('dimensions')->label('Risoluzione')->state(fn (MediaItem $record): string => ($record->width && $record->height) ? "{$record->width} × {$record->height} px" : '—'),
+                                Infolists\Components\TextEntry::make('mime_type')->label('MIME Type')->badge()->color('gray'),
+                                Infolists\Components\TextEntry::make('created_at')->label('Data Caricamento')->dateTime('d/m/Y H:i'),
+                                Infolists\Components\TextEntry::make('url')->label('URL Pubblico')->copyable()->copyMessage('URL copiato negli appunti!'),
+                            ]),
+                    ])
+                    ->extraModalFooterActions([
+                        Tables\Actions\Action::make('edit_media')
+                            ->label('Modifica Metadati')
+                            ->icon('heroicon-o-pencil-square')
+                            ->url(fn (MediaItem $record): string => MediaResource::getUrl('edit', ['record' => $record])),
+                    ]),
                 Tables\Actions\Action::make('copy_url')
                     ->label('Copia Link')
                     ->icon('heroicon-o-clipboard-document')
