@@ -3,14 +3,13 @@
 namespace Tests\Feature\Filament;
 
 use App\Actions\OptimizeImageAction;
+use App\Filament\Forms\Components\WordpressMediaPicker;
 use App\Filament\Pages\ManageMediaSettings;
 use App\Filament\Resources\EventResource;
 use App\Models\Event;
 use App\Models\Setting;
 use App\Models\User;
-use Filament\Forms\Components\FileUpload;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -97,10 +96,10 @@ class MediaSettingsTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(EventResource\Pages\CreateEvent::class)
-            ->assertFormFieldExists('featured_image', function (FileUpload $field): bool {
+            ->assertFormFieldExists('featured_image', function (WordpressMediaPicker $field): bool {
                 return $field->getMaxSize() === 50 * 1024;
             })
-            ->assertFormFieldExists('gallery_images', function (FileUpload $field): bool {
+            ->assertFormFieldExists('gallery_images', function (WordpressMediaPicker $field): bool {
                 return $field->getMaxSize() === 50 * 1024;
             });
     }
@@ -113,13 +112,13 @@ class MediaSettingsTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(EventResource\Pages\CreateEvent::class)
-            ->assertFormFieldExists('featured_image', function (FileUpload $field): bool {
+            ->assertFormFieldExists('featured_image', function (WordpressMediaPicker $field): bool {
                 return $field->getMaxSize() === 4 * 1024;
             })
-            ->assertFormFieldExists('gallery_images', function (FileUpload $field): bool {
+            ->assertFormFieldExists('gallery_images', function (WordpressMediaPicker $field): bool {
                 return $field->getMaxSize() === 4 * 1024;
             })
-            ->assertFormFieldExists('wall_media', function (FileUpload $field): bool {
+            ->assertFormFieldExists('wall_media', function (WordpressMediaPicker $field): bool {
                 return $field->getMaxSize() === 35 * 1024;
             });
     }
@@ -192,7 +191,7 @@ class MediaSettingsTest extends TestCase
                 'location' => 'Piazza Duomo',
                 'price_standard' => 10.00,
                 'price_fai' => 8.00,
-                'featured_image' => UploadedFile::fake()->image('original-locandina.jpg', 2000, 1000),
+                'featured_image' => 'events/featured/original-locandina.jpg',
             ])
             ->call('create')
             ->assertHasNoFormErrors()

@@ -90,13 +90,19 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
   - L'eliminazione di un singolo elemento o la cancellazione massiva rimuove fisicamente il file dallo storage GCS, prevenendo sprechi di spazio.
 - **Tracciamento Automatico da Eventi**:
   - In `CreateEvent` ed `EditEvent`, il salvataggio di locandine (`featured_image`), slider galleria (`gallery_images`) o video/foto del Wall (`wall_media`) esegue la registrazione automatica via `MediaItem::createFromStoragePath(...)`, garantendo che tutti gli asset caricati tramite gli eventi siano immediatamente censiti nella Libreria Media.
-- **Selettore da Libreria Media nei Form Eventi (`makeMediaPickerAction` stile WordPress)**:
-  - Nei form di creazione e modifica evento (`CreateEvent`, `EditEvent`), pulsanti dedicati negli header delle sezioni per riutilizzare file multimediali già presenti a portale:
-    - *Immagine in Evidenza*: pulsante `[ 🖼️ Scegli da Libreria Media ]` con selezione singola (`featured_image`).
-    - *Galleria Slider*: pulsante `[ 🖼️ Aggiungi da Libreria Media ]` con selezione multipla (`gallery_images`).
-    - *Wall dei Ricordi*: pulsante `[ 🖼️🎬 Aggiungi da Libreria Media ]` con selezione multipla (`wall_media`).
-  - **Modale Interattivo Alpine.js**: finestra a 6 colonne (`modalWidth('6xl')`) con barra di ricerca live (filtra istantaneamente per titolo o nome file), preview proporzionali per immagini e icone per video, anello di evidenziazione verde e checkmark al clic.
-  - **Iniezione Diretta con UUID nello Stato di FileUpload**: iniezione trasparente delle chiavi UUID nei componenti `FileUpload` con anteprima immediata e notifica toast di conferma, evitando upload duplicati e spreco di storage.
+- **Selettore Media WordPress 1:1 nei Form Eventi (`WordpressMediaPicker`)**:
+  - Nei form di creazione e modifica evento (`CreateEvent`, `EditEvent`), l'esperienza utente replica fedelmente 1:1 il Media Picker di WordPress:
+    - **Header Sezioni Puliti**: rimozione totale di `headerActions` dalle intestazioni di sezione, garantendo che i titoli *"Immagine in Evidenza"*, *"Galleria Slider"* e *"Wall dei Ricordi"* rimangano rigorosamente monoriga e non vadano mai a capo.
+    - **Aspetto sul Form (Immagine Singola)**:
+      - Quando vuoto: box compatto con bordo tratteggiato e pulsante `[ 🖼️ Imposta immagine in evidenza ]`.
+      - Quando valorizzato: anteprima fedele dell'immagine (`max-h-48`) con barra pulsanti `[ 🔄 Sostituisci ]` e `[ 🗑️ Rimuovi ]`.
+    - **Aspetto sul Form (Gallerie & Multipli)**:
+      - Griglia a tessere quadrate delle immagini selezionate, ciascuna dotata di pulsante circolare di rimozione rapida `(x)`.
+      - Pulsante dedicato tratteggiato `[ ➕ Aggiungi immagini alla galleria ]`.
+  - **Finestra Modale a Due Tab (`modalWidth('6xl')`)**:
+    - **Tab 1: "Libreria media"**: griglia nativa a tessere quadrate fisse da 130px (`repeat(auto-fill, minmax(130px, 1fr))`), campo di ricerca live istantanea per titolo e nome file, checkmark di spunta verde in sovrimpressione sull'angolo superiore destro e anello perimetrale all'elemento selezionato.
+    - **Tab 2: "Carica file"**: area di caricamento drag-and-drop con integrazione `OptimizeImageAction`, conversione automatica in WebP, ridimensionamento e registrazione immediata nel database `MediaItem`.
+  - **Footer Modale Allineato a Destra**: pulsante di conferma verde primario (`Alignment::End`) con etichetta dinamica (*"Imposta immagine in evidenza"* o *"Aggiungi alla galleria"*).
 
 ### 7. Centro Notifiche Persistente (Topbar)
 - **Campanella Interattiva**:
