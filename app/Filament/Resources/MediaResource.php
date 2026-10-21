@@ -38,7 +38,7 @@ class MediaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Grid::make(3)
+                Forms\Components\Grid::make(2)
                     ->schema([
                         Forms\Components\Group::make([
                             Forms\Components\Section::make('File & Anteprima')
@@ -83,16 +83,16 @@ class MediaResource extends Resource
                                             $url = e($record->url);
                                             if (str_starts_with($record->mime_type ?? '', 'video/')) {
                                                 return new HtmlString(
-                                                    '<video src="'.$url.'" controls class="max-h-[460px] w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-black"></video>'
+                                                    '<video src="'.$url.'" controls class="max-h-[260px] w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-black"></video>'
                                                 );
                                             }
 
                                             return new HtmlString(
-                                                '<div class="flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800"><img src="'.$url.'" alt="'.e($record->alt_text ?? $record->title).'" class="max-h-[460px] w-auto mx-auto rounded-md object-contain shadow-sm" /></div>'
+                                                '<div class="flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800"><img src="'.$url.'" alt="'.e($record->alt_text ?? $record->title).'" class="max-h-[260px] w-auto mx-auto rounded-md object-contain shadow-sm" /></div>'
                                             );
                                         }),
                                 ]),
-                        ])->columnSpan(['lg' => 2]),
+                        ])->columnSpan(['lg' => 1]),
 
                         Forms\Components\Group::make([
                             Forms\Components\Section::make('Metadati')

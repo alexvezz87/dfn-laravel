@@ -228,12 +228,16 @@
 
 /* Modale Dettagli Media: Scroll verticale fluido garantito */
 .fi-modal-window {
-    max-height: 90vh !important;
+    max-height: 88vh !important;
     display: flex !important;
     flex-direction: column !important;
+    overflow: hidden !important;
 }
 
-.fi-modal-window form {
+.fi-modal-window .fi-modal-content {
     overflow-y: auto !important;
-    max-height: calc(90vh - 130px) !important;
+    flex: 1 1 auto !important;
+    max-height: calc(88vh - 130px) !important;
+    padding-bottom: 24px !important;
 }
+
