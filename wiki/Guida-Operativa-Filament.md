@@ -32,11 +32,10 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
   - 🟢 **Eventi in Programma & In Corso**: mostra gli eventi con `event_date_end >= oggi` (ordinati in ordine cronologico crescente, il più vicino in cima), con badge dinamico del conteggio.
   - ⚪ **Eventi Conclusi & Passati**: raggruppa lo storico degli eventi terminati (`event_date_end < oggi`), ordinati dal più recente al più vecchio.
   - 📋 **Tutti gli Eventi**: panoramica complessiva di tutti i record a catalogo.
-- **Colonne del Tabellone**:
-  - **Evento**: titolo in grassetto con location e città mostrati come descrizione sottostante.
+- **Colonne del Tabellone (Layout Full-Width a Tutto Schermo)**:
+  - **Evento**: titolo in grassetto senza wrapping forzato, con location e città mostrati come descrizione sottostante.
   - **Date & Orari**: intervallo data inizio/fine formattato in italiano (`d/m/Y`) e orari di accesso.
   - **Tipologia**: badge semantico per *Fasce Orarie* (`info`) o *Flusso Libero* (`primary`), con indicazione della modalità di allocazione (*Automatica* o *Self-selection*).
-  - **Tariffe**: riepilogo rapido quota Intera/Standard e quota Soci FAI.
   - **Capacità**: conteggio posti occupati rispetto alla capienza massima configurata (`occupati / totale`).
   - **Stato**: badge per *Pubblicato* (verde), *Bozza* (grigio), *Archiviato* (ambra).
 - **Azioni Rapide di Riga**:
@@ -130,17 +129,14 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
 - **Scopo**: offre un archivio centralizzato in stile WordPress per visualizzare, caricare, organizzare ed eliminare tutti i file multimediali utilizzati sul portale.
 - **Switcher Modalità di Visualizzazione (in Testata)**:
   - ⊞ **Griglia** / ☰ **Elenco**: due pulsanti icona compatti affiancati (`heroicon-o-squares-2x2` e `heroicon-o-bars-3`) con tooltip informativo per alternare all'istante tra la griglia fotografica WordPress e la vista tabellare compatta.
-- **Visualizzazione a Griglia 1:1 WordPress (5-6 Colonne ad Alta Visibilità)**:
-  - **Tessere Grandi & Fluide (`aspect-square`)**: disposizione a scacchiera fluida da 5 (laptop/desktop) a 6 colonne (monitor larghi) con anteprime grandi e nitide (~200×200px), priva di checkbox di selezione laterali che riducano lo spazio utile.
-  - **Riempimento Totale 100%**: l'immagine occupa interamente il riquadro quadrato (`w-full h-full object-cover`) con bordi arrotondati, bordo neutro ed effetto micro-zoom al passaggio del mouse, senza etichette inferiori.
-  - **Overlay Hover Centrato**: al passaggio del cursore su una tessera, compare uno strato scuro semitrasparente con ESCLUSIVAMENTE l'icona matita centrata (`heroicon-m-pencil-square`) all'interno di un cerchio bianco in rilievo.
-- **Pannello Modifica e Dettagli Slide-Over (al Clic sulla Card o Riga)**:
-  - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`wire:click="mountTableAction('edit', ...)"` / `recordAction('edit')`), si apre lateralmente un cassetto scorrevole (*Slide-Over*) a comparsa rapida con titolo personalizzato (`Dettagli & Modifica: Titolo File`) contenente:
-    - Anteprima ad alta risoluzione o player video interattivo.
-    - Metadati modificabili: Titolo, Testo alternativo per SEO (`alt_text`), Didascalia (`caption`), Collezione / Categoria.
-    - Dati tecnici di sola lettura: Dimensione file formattata (KB/MB), Risoluzione in pixel, MIME Type.
-    - Link URL Pubblico con pulsante integrato per la copia istantanea negli appunti.
-    - Pulsanti di salvataggio modifiche e chiusura cassetto.
+- **Visualizzazione a Griglia 1:1 WordPress (6-7 Colonne ad Alta Densità)**:
+  - **Tessere Fluide & Grandi (`aspect-square`)**: disposizione a scacchiera fluida da 6 (laptop/desktop standard) a 7 colonne (monitor ampi), con tessere quadrate pure senza barre laterali di checkbox.
+  - **Hover Matita Indipendente**: classi CSS dedicate (`.dfn-media-card`, `.dfn-media-overlay`, `.dfn-media-pencil-btn`) che garantiscono al 100% l'aspetto quadrato, il micro-zoom dell'immagine e la comparsa al passaggio del mouse dell'icona matita centrata su cerchio bianco in rilievo.
+- **Popup Dettagli Allegato Centrale Scrollabile (`modalWidth('5xl')` stile WordPress)**:
+  - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`mountTableAction('edit')`), si apre al centro una finestra modale a due colonne in puro stile WordPress con titolo personalizzato (`Dettagli Allegato: Titolo File`).
+  - **Colonna Sinistra**: grande anteprima dell'immagine centrata ad alta leggibilità (`max-h-[460px] object-contain`) o player video interattivo, priva di box di upload che disturbino la consultazione.
+  - **Colonna Destra**: metadati editoriali modificabili (Titolo, Alt Text per SEO `alt_text`, Didascalia `caption`, Collezione), dati tecnici di sola lettura (Dimensione formattata, Risoluzione in pixel, MIME Type) e Link URL Pubblico con pulsante di copia negli appunti con un clic.
+  - **Scroll Verticale Fluido**: sbloccato (`max-height: 90vh`, `overflow-y: auto`) per consentire la navigazione completa dei dettagli anche su laptop con schermi compatti senza tagliare i pulsanti di salvataggio.
 - **Visualizzazione Tabella / Elenco Nativa (Singola Riga Orizzontale Monoriga)**:
   - **Tabella HTML Nativa**: tabella classica `<table>` con intestazioni `<th>` e righe orizzontali `<tr>` monoriga, eliminando definitivamente le card verticali impilate.
   - **Miniatura**: anteprima quadrata arrotondata 40×40 px con visualizzazione fedele dell'immagine o icona per video/documenti.

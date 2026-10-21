@@ -511,8 +511,7 @@ class EventResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->description(fn (Event $record): ?string => trim(($record->location ?? '').($record->city ? ' • '.$record->city : '')) ?: null)
-                    ->wrap(),
+                    ->description(fn (Event $record): ?string => trim(($record->location ?? '').($record->city ? ' • '.$record->city : '')) ?: null),
                 Tables\Columns\TextColumn::make('event_date_start')
                     ->label('Date & Orari')
                     ->formatStateUsing(function (Event $record): string {
@@ -542,9 +541,6 @@ class EventResource extends Resource
                         'manual', 'self_selection' => 'Self-selection',
                         default => null,
                     }),
-                Tables\Columns\TextColumn::make('pricing')
-                    ->label('Tariffe')
-                    ->state(fn (Event $record): string => 'Std: €'.number_format((float) $record->price_standard, 2, ',', '.').' • FAI: €'.number_format((float) $record->price_fai, 2, ',', '.')),
                 Tables\Columns\TextColumn::make('capacity')
                     ->label('Capacità')
                     ->state(function (Event $record): string {

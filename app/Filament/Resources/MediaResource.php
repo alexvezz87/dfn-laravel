@@ -47,9 +47,8 @@ class MediaResource extends Resource
                                         ->label('File Multimediale')
                                         ->disk('public')
                                         ->directory('uploads')
-                                        ->required()
-                                        ->disabled(fn (string $operation): bool => $operation === 'edit')
-                                        ->dehydrated(fn (string $operation): bool => $operation !== 'edit')
+                                        ->required(fn (string $operation): bool => $operation === 'create')
+                                        ->visible(fn (string $operation): bool => $operation === 'create')
                                         ->helperText('Carica immagini (JPG, PNG, WebP) o video (MP4, WebM) fino a 50 MB.')
                                         ->getUploadedFileNameForStorageUsing(function (BaseFileUpload $component, TemporaryUploadedFile $file): string {
                                             $originalBase = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
@@ -84,12 +83,12 @@ class MediaResource extends Resource
                                             $url = e($record->url);
                                             if (str_starts_with($record->mime_type ?? '', 'video/')) {
                                                 return new HtmlString(
-                                                    '<video src="'.$url.'" controls class="max-h-72 w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-black"></video>'
+                                                    '<video src="'.$url.'" controls class="max-h-[460px] w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-black"></video>'
                                                 );
                                             }
 
                                             return new HtmlString(
-                                                '<div class="flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800"><img src="'.$url.'" alt="'.e($record->alt_text ?? $record->title).'" class="max-h-72 rounded-md object-contain shadow-sm" /></div>'
+                                                '<div class="flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800"><img src="'.$url.'" alt="'.e($record->alt_text ?? $record->title).'" class="max-h-[460px] w-auto mx-auto rounded-md object-contain shadow-sm" /></div>'
                                             );
                                         }),
                                 ]),
@@ -267,8 +266,8 @@ class MediaResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make('edit')
                     ->label('Modifica')
-                    ->slideOver()
-                    ->modalHeading(fn (MediaItem $record): string => 'Dettagli & Modifica: '.($record->title ?: $record->file_name))
+                    ->modalWidth('5xl')
+                    ->modalHeading(fn (MediaItem $record): string => 'Dettagli Allegato: '.($record->title ?: $record->file_name))
                     ->icon('heroicon-m-pencil-square')
                     ->iconButton()
                     ->tooltip('Dettagli e Modifica'),
