@@ -185,4 +185,51 @@ class MediaLibraryAndNotificationsTest extends TestCase
         $this->assertStringStartsWith('/storage/', $url);
         $this->assertStringNotContainsString('http://localhost', $url);
     }
+
+    public function test_upload_file_preserves_slugified_original_filename_and_title(): void
+    {
+        Storage::fake('public');
+
+        $file = UploadedFile::fake()->image('Locandina United Gospel 2026.jpg', 600, 400);
+
+        Livewire::actingAs($this->admin)
+            ->test(CreateMedia::class)
+            ->fillForm([
+                'title' => null, // Lasciato vuoto intenzionalmente
+                'collection' => 'uploads',
+                'file_path' => $file,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        /** @var MediaItem $mediaItem */
+        $mediaItem = MediaItem::latest('id')->first();
+
+        $this->assertNotNull($mediaItem);
+        $this->assertStringContainsString('locandina-united-gospel-2026', $mediaItem->file_name);
+        $this->assertStringContainsString('locandina-united-gospel-2026', $mediaItem->file_path);
+        $this->assertStringEndsWith('.jpg', $mediaItem->file_path);
+        $this->assertStringContainsString('locandina-united-gospel-2026', strtolower($mediaItem->title));
+        $this->assertTrue(Storage::disk('public')->exists($mediaItem->file_path));
+
+        // Test collision management: secondo upload con medesimo nome file
+        $fileCollision = UploadedFile::fake()->image('Locandina United Gospel 2026.jpg', 600, 400);
+
+        Livewire::actingAs($this->admin)
+            ->test(CreateMedia::class)
+            ->fillForm([
+                'title' => null,
+                'collection' => 'uploads',
+                'file_path' => $fileCollision,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        /** @var MediaItem $secondItem */
+        $secondItem = MediaItem::latest('id')->first();
+
+        $this->assertNotSame($mediaItem->id, $secondItem->id);
+        $this->assertSame('locandina-united-gospel-2026-1.jpg', $secondItem->file_name);
+        $this->assertTrue(Storage::disk('public')->exists($secondItem->file_path));
+    }
 }

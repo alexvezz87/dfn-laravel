@@ -6,10 +6,15 @@ use App\Filament\Resources\EventResource\Pages;
 use App\Models\Event;
 use App\Models\Setting;
 use Filament\Forms;
+use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class EventResource extends Resource
 {
@@ -26,6 +31,26 @@ class EventResource extends Resource
     protected static ?string $pluralModelLabel = 'Eventi';
 
     protected static ?int $navigationSort = 1;
+
+    public static function generateSecureUploadedFileName(BaseFileUpload $component, TemporaryUploadedFile $file, string $fallbackSlug = 'media'): string
+    {
+        $originalBase = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $slug = Str::slug($originalBase) ?: $fallbackSlug;
+        $ext = $file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'bin';
+        $dir = $component->getDirectory();
+        $diskName = $component->getDiskName();
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk($diskName);
+
+        $filename = "{$slug}.{$ext}";
+        $counter = 1;
+        while ($storage->exists(($dir ? $dir.'/' : '').$filename)) {
+            $filename = "{$slug}-{$counter}.{$ext}";
+            $counter++;
+        }
+
+        return $filename;
+    }
 
     public static function makeHelpAction(string $name, string $title, string $intro, array $items = [], ?string $tip = null, ?string $warn = null): Forms\Components\Actions\Action
     {
@@ -351,6 +376,7 @@ class EventResource extends Resource
                                     ->image()
                                     ->disk('public')
                                     ->directory('events/featured')
+                                    ->getUploadedFileNameForStorageUsing(fn (BaseFileUpload $component, TemporaryUploadedFile $file): string => self::generateSecureUploadedFileName($component, $file, 'locandina'))
                                     ->imageEditor()
                                     ->maxSize(Setting::getBool('media_auto_compress', true) ? (50 * 1024) : (Setting::getInt('media_max_image_mb', 8) * 1024))
                                     ->when(
@@ -364,7 +390,7 @@ class EventResource extends Resource
                                     ->helperText(
                                         Setting::getBool('media_auto_compress', true)
                                             ? 'ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i '.Setting::getInt('media_max_image_mb', 8).' MB (max '.Setting::getInt('media_max_dimension_px', 1920).'px, qualità '.Setting::getInt('media_quality_percent', 82).'%).'
-                                            : '⚠️ Limite massimo rigido: '.Setting::getInt('media_max_image_mb', 8).' MB per immagine.'
+                                             : '⚠️ Limite massimo rigido: '.Setting::getInt('media_max_image_mb', 8).' MB per immagine.'
                                     ),
                             ]),
 
@@ -378,6 +404,7 @@ class EventResource extends Resource
                                     ->reorderable()
                                     ->disk('public')
                                     ->directory('events/gallery')
+                                    ->getUploadedFileNameForStorageUsing(fn (BaseFileUpload $component, TemporaryUploadedFile $file): string => self::generateSecureUploadedFileName($component, $file, 'gallery'))
                                     ->maxSize(Setting::getBool('media_auto_compress', true) ? (50 * 1024) : (Setting::getInt('media_max_image_mb', 8) * 1024))
                                     ->when(
                                         Setting::getBool('media_auto_compress', true),
@@ -390,7 +417,7 @@ class EventResource extends Resource
                                     ->helperText(
                                         Setting::getBool('media_auto_compress', true)
                                             ? 'ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i '.Setting::getInt('media_max_image_mb', 8).' MB (max '.Setting::getInt('media_max_dimension_px', 1920).'px, qualità '.Setting::getInt('media_quality_percent', 82).'%).'
-                                            : '⚠️ Limite massimo rigido: '.Setting::getInt('media_max_image_mb', 8).' MB per immagine.'
+                                             : '⚠️ Limite massimo rigido: '.Setting::getInt('media_max_image_mb', 8).' MB per immagine.'
                                     ),
                             ]),
 
@@ -409,6 +436,7 @@ class EventResource extends Resource
                                     ->multiple()
                                     ->disk('public')
                                     ->directory('events/wall')
+                                    ->getUploadedFileNameForStorageUsing(fn (BaseFileUpload $component, TemporaryUploadedFile $file): string => self::generateSecureUploadedFileName($component, $file, 'wall'))
                                     ->acceptedFileTypes(['image/*', 'video/mp4', 'video/webm', 'video/ogg'])
                                     ->maxSize(Setting::getInt('media_max_video_mb', 50) * 1024)
                                     ->helperText('Carica foto e video (mp4, webm) registrati durante l\'evento per la vista conclusa.'),

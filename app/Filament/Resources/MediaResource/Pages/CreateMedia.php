@@ -38,7 +38,7 @@ class CreateMedia extends CreateRecord
         $data['collection'] = $data['collection'] ?? 'uploads';
 
         if (empty($data['title'])) {
-            $data['title'] = pathinfo(basename($path), PATHINFO_FILENAME);
+            $data['title'] = pathinfo($data['original_name'] ?? basename($path), PATHINFO_FILENAME);
         }
 
         /** @var FilesystemAdapter $storage */

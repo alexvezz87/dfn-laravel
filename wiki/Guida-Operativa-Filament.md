@@ -57,8 +57,8 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
     - *Tipologia Accesso & Algoritmo di Allocazione*: selezione tra *Flusso Libero (Senza fasce)* con campo *Capacità Massima Evento*, oppure *Fasce Orarie (a turni)* con durata turno (min), capacità standard, capacità bonus staff, e orari del primo/ultimo turno. Tutti i campi dispongono di tooltip modali con popup `(?)`.
   - **Colonna Destra (Sidebar Modulare - 7 Box Ufficiali Bedrock)**:
     - 1. **Pubblica**: stato evento (Pubblicato/Bozza/Archiviato), workflow approvazione (con popup esplicativo), stato prenotazioni (Aperte/Chiuse/In Arrivo con popup), modalità pagamento (Online, In Loco, Entrambi con popup), timeout annullamento automatico in ore (con popup), modalità test isolata su email dedicata, toggle *Mostra Recensioni nel Front-End*.
-    - 2. **Immagine in Evidenza**: upload e preview della locandina o copertina principale dell'evento.
-    - 3. **Galleria Slider (Pre-Evento)**: upload multiplo per le foto descrittive mostrate nello slider della scheda evento (jpg, png, webp).
+    - 2. **Immagine in Evidenza**: upload e preview della locandina o copertina principale dell'evento. I file vengono memorizzati con il loro nome leggibile slugificato (con anti-collisione automatica). Al salvataggio, il box anteprima si aggiorna istantaneamente riflettendo l'immagine ottimizzata senza richiedere F5.
+    - 3. **Galleria Slider (Pre-Evento)**: upload multiplo per le foto descrittive mostrate nello slider della scheda evento (jpg, png, webp), con preservazione dei nomi leggibili e refresh automatico al salvataggio.
     - 4. **Wall dei Ricordi (Post-Evento)**: caricamento multimediale di foto e video (mp4, webm) con popup esplicativo sul funzionamento post-evento.
     - 5. **Layout Pagina Dettaglio**: selettore visivo interattivo con wireframe scheletrici delle tre opzioni (*Automatico*, *Layout 1 — Galleria* con slider in cima, *Layout 2 — Locandina* con locandina a sinistra e form a destra).
     - 6. **Listino Contributi**: Biglietto Standard (€) e Quota agevolata Socio FAI (€).
@@ -145,7 +145,9 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
   - 🗑️ **Eliminazione Singola e Massiva**: l'eliminazione rimuove fisicamente il file dal disco storage (`public`), evitando l'accumulo di file orfani.
 - **Caricamento Nuovo Media (`CreateMedia`)**:
   - Pulsante in alto a destra *Carica Nuovo Media*.
-  - Upload drag-and-drop con estrazione automatica di dimensioni, risoluzione e mime type all'atto del salvataggio.
+  - Upload drag-and-drop con memorizzazione su storage preservando il nome file originale in formato slug web-safe (es. `locandina-united-gospel-2026.jpg`) e gestione anti-collisione incrementale (`nome-1.ext`).
+  - Pre-compilazione automatica del Titolo: se il campo *Titolo* viene lasciato vuoto, il sistema imposta automaticamente il nome originale del file senza estensione.
+  - Estrazione automatica di dimensioni, risoluzione pixel e mime type all'atto del salvataggio.
 
 ---
 
