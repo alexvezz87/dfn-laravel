@@ -237,8 +237,8 @@
 .fi-modal-window .fi-modal-content {
     overflow-y: auto !important;
     flex: 1 1 auto !important;
-    max-height: calc(88vh - 130px) !important;
-    padding-bottom: 24px !important;
+    max-height: calc(88vh - 145px) !important;
+    padding-bottom: 20px !important;
 }
 
 /* Media Library Grid Layout Dinamico Nativo */
@@ -261,8 +261,18 @@
     }
 }
 
-/* Allineamento a destra dei bottoni footer modali */
+/* Allineamento a destra e spaziatura superiore dei bottoni footer modali */
+.fi-modal-footer {
+    padding-top: 20px !important;
+    padding-bottom: 24px !important;
+}
+
 .fi-modal-footer-actions {
-    justify-content: flex-end !important;
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 12px !important;
     width: 100% !important;
 }
