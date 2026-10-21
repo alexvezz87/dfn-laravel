@@ -9,6 +9,7 @@ use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -270,7 +271,21 @@ class MediaResource extends Resource
                     ->modalHeading(fn (MediaItem $record): string => 'Dettagli Allegato: '.($record->title ?: $record->file_name))
                     ->icon('heroicon-m-pencil-square')
                     ->iconButton()
-                    ->tooltip('Dettagli e Modifica'),
+                    ->tooltip('Dettagli e Modifica')
+                    ->modalSubmitActionLabel('Salva Modifiche')
+                    ->modalCancelActionLabel('Annulla')
+                    ->modalFooterActionsAlignment(Alignment::End)
+                    ->extraModalFooterActions([
+                        Tables\Actions\DeleteAction::make('modal_delete')
+                            ->label('Elimina')
+                            ->color('danger')
+                            ->icon('heroicon-o-trash')
+                            ->modalHeading('Elimina File Definitivamente')
+                            ->modalDescription('Sei sicuro di voler eliminare questo file multimediale? Il file verrà rimosso anche dallo storage e non sarà più recuperabile.')
+                            ->modalSubmitActionLabel('Sì, Elimina')
+                            ->modalCancelActionLabel('Annulla')
+                            ->cancelParentActions(),
+                    ]),
 
                 Tables\Actions\Action::make('copy_url')
                     ->label('Copia Link')

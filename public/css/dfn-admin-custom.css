@@ -261,4 +261,8 @@
     }
 }
 
-
+/* Allineamento a destra dei bottoni footer modali */
+.fi-modal-footer-actions {
+    justify-content: flex-end !important;
+    width: 100% !important;
+}
