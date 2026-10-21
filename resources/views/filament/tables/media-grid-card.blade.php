@@ -9,13 +9,12 @@
 
 <div 
     wire:click="mountTableAction('edit', '{{ $record->getKey() }}')"
-    class="group relative aspect-square w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-xs transition duration-200 hover:border-primary-500 hover:shadow-lg dark:border-white/10 dark:bg-gray-800 cursor-pointer"
+    class="dfn-media-card group"
 >
     @if ($isImage)
         <img 
             src="{{ $record->url }}" 
             alt="{{ $record->alt_text ?? $record->title }}" 
-            class="h-full w-full object-cover transition duration-200 group-hover:scale-105" 
             loading="lazy" 
         />
     @elseif ($isVideo)
@@ -31,8 +30,8 @@
     @endif
 
     {{-- Overlay in hover: compare ESCLUSIVAMENTE l'icona matita per la modifica --}}
-    <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-white/95 text-gray-800 shadow-xl backdrop-blur-xs transition transform group-hover:scale-110">
+    <div class="dfn-media-overlay">
+        <div class="dfn-media-pencil-btn">
             <x-heroicon-m-pencil-square class="h-6 w-6 text-gray-900" />
         </div>
     </div>

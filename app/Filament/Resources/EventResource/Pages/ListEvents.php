@@ -85,4 +85,9 @@ class ListEvents extends ListRecords
                 ->badge(Event::query()->count()),
         ];
     }
+
+    public function getMaxContentWidth(): ?string
+    {
+        return 'full';
+    }
 }

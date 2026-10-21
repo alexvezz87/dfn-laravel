@@ -160,3 +160,80 @@
 .fi-modal-close-btn:hover {
     opacity: 1 !important;
 }
+
+/* Media Library Grid Card: Aspetto 1:1, Hover garantito e Icona Matita */
+.dfn-media-card {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dfn-media-card:hover {
+    border-color: var(--dfn-primary, #004b23);
+    box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+}
+
+.dfn-media-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.25s ease-in-out;
+}
+
+.dfn-media-card:hover img {
+    transform: scale(1.06);
+}
+
+.dfn-media-card .dfn-media-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.dfn-media-card:hover .dfn-media-overlay {
+    opacity: 1 !important;
+}
+
+.dfn-media-card .dfn-media-pencil-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    color: #0f172a;
+    transform: scale(0.9);
+    transition: transform 0.2s ease-in-out;
+}
+
+.dfn-media-card:hover .dfn-media-pencil-btn {
+    transform: scale(1.08);
+}
+
+/* Modale Dettagli Media: Scroll verticale fluido garantito */
+.fi-modal-window {
+    max-height: 90vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.fi-modal-window form {
+    overflow-y: auto !important;
+    max-height: calc(90vh - 130px) !important;
+}

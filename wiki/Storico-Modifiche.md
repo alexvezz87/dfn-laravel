@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-21 | ⚡ Enhancement | #47 | Perfezionamento UI Libreria Media (hover CSS, modale 5xl, griglia 6-7 col) e Tabellone Eventi full-width | Alex / Antigravity | Classi CSS dedicate .dfn-media-* per hover matita e aspect-ratio 1:1, modale centrale scrollabile 5xl stile WordPress a 2 colonne, griglia a 6-7 col, rimozione colonna tariffe e getMaxContentWidth('full') in ListEvents |
 | 2026-10-21 | ⚡ Enhancement | #45 | Griglia Media 5-6 colonne grandi senza checkbox e ripristino tabella nativa monoriga | Alex / Antigravity | Disaccoppiamento Griglia/Elenco tramite Table::content(), eliminazione Layout\View per sbloccare la tabella HTML nativa orizzontale in Elenco, griglia CSS fluida a 5-6 colonne ad alta visibilità |
 | 2026-10-21 | ⚡ Enhancement | #43 | Ottimizzazione automatica WebP in CreateMedia e redesign UI Griglia/Elenco Libreria Media | Alex / Antigravity | Integrazione `OptimizeImageAction` su caricamento diretto con conversione WebP e notifiche di risparmio, card griglia aspect-square pura con overlay matita, elenco compatto monoriga e switcher icone compatto |
 | 2026-10-21 | 🚨 Hotfix | #41 | Configurazione bucket GCS reale `dfn_staging` per persistenza media su Cloud Run | Alex / Antigravity | Collegamento bucket `dfn_staging` nel deploy workflow, volume mount Cloud Storage FUSE su `/app/storage/app/public`, verifica bucket e FAQ |
