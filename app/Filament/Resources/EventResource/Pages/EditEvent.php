@@ -28,6 +28,7 @@ class EditEvent extends EditRecord
     {
         $this->optimizeRecordMedia();
         $this->registerEventMediaItems();
+        $this->refreshFormData(['featured_image', 'gallery_images']);
     }
 
     protected function getHeaderActions(): array

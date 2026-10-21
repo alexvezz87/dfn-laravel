@@ -5,13 +5,18 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MediaResource\Pages;
 use App\Models\MediaItem;
 use Filament\Forms;
+use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class MediaResource extends Resource
 {
@@ -45,7 +50,25 @@ class MediaResource extends Resource
                                         ->required()
                                         ->disabled(fn (string $operation): bool => $operation === 'edit')
                                         ->dehydrated(fn (string $operation): bool => $operation !== 'edit')
-                                        ->helperText('Carica immagini (JPG, PNG, WebP) o video (MP4, WebM) fino a 50 MB.'),
+                                        ->helperText('Carica immagini (JPG, PNG, WebP) o video (MP4, WebM) fino a 50 MB.')
+                                        ->getUploadedFileNameForStorageUsing(function (BaseFileUpload $component, TemporaryUploadedFile $file): string {
+                                            $originalBase = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                                            $slug = Str::slug($originalBase) ?: 'media';
+                                            $ext = $file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'bin';
+                                            $dir = $component->getDirectory();
+                                            $diskName = $component->getDiskName();
+                                            /** @var FilesystemAdapter $storage */
+                                            $storage = Storage::disk($diskName);
+
+                                            $filename = "{$slug}.{$ext}";
+                                            $counter = 1;
+                                            while ($storage->exists(($dir ? $dir.'/' : '').$filename)) {
+                                                $filename = "{$slug}-{$counter}.{$ext}";
+                                                $counter++;
+                                            }
+
+                                            return $filename;
+                                        }),
 
                                     Forms\Components\Placeholder::make('media_preview')
                                         ->label('Anteprima Attuale')
@@ -75,7 +98,8 @@ class MediaResource extends Resource
                                     Forms\Components\TextInput::make('title')
                                         ->label('Titolo')
                                         ->maxLength(255)
-                                        ->placeholder('Es. Locandina Castello Visconteo'),
+                                        ->helperText('Se lasciato vuoto, verrà utilizzato il nome originale del file senza estensione.')
+                                        ->placeholder('Es. Locandina United Gospel 2026'),
 
                                     Forms\Components\TextInput::make('alt_text')
                                         ->label('Testo Alternativo (Alt Text)')

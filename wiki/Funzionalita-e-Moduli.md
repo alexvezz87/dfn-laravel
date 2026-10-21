@@ -59,11 +59,14 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
 - **Pipeline Client-Side & Server-Side**:
   - FilePond in Filament applica ridimensionamento client-side in base alla configurazione attiva su locandina principale e gallery.
   - Action backend `OptimizeImageAction` con libreria nativa GD per ridimensionamento proporzionale, tracciamento byte e conversione WebP a zero dipendenze esterne.
+  - **Preservazione Nome Originale & Anti-Collisione**: i file salvati non utilizzano più hash casuali illeggibili a 40 caratteri, ma preservano il nome originale trasformato in slug web-safe (`Str::slug()`), con suffissi incrementali automatici in caso di omonimia (`nome-1.ext`, `nome-2.ext`).
+  - **Refresh Immediato del Form**: al salvataggio in `EditEvent`, l'invocazione di `$this->refreshFormData(['featured_image', 'gallery_images'])` sincronizza istantaneamente i box di upload con i percorsi `.webp` effettivi, eliminando lo svuotamento temporaneo del preview senza richiedere refresh F5.
 
 ### 6. Libreria Media Centralizzata (`MediaResource` stile WordPress)
 - **Archivio Asset Unificato**:
   - Gestione completa di immagini e video attraverso la risorsa `MediaResource` (`/admin/media`), raggruppata sotto il menu dedicato **Media**.
   - Scheda asset con anteprima interattiva (immagini o video player nativo), metadati completi (titolo, testo alternativo SEO/accessibilità `alt_text`, didascalia `caption`, categoria/collezione) e dettagli tecnici in sola lettura (dimensione file formattata, risoluzione pixel `width × height`, MIME type e data di caricamento).
+  - Pre-compilazione automatica del Titolo: se il campo `title` viene lasciato vuoto in caricamento, viene automaticamente assegnato il nome del file originario ripulito dall'estensione.
   - Pulsante ad azione rapida per copiare negli appunti l'URL pubblico assoluto dell'asset.
 - **Eliminazione Fisica da Storage**:
   - L'eliminazione di un singolo elemento o la cancellazione massiva (Bulk Delete) da tabella intercetta l'evento Eloquent `deleted` ed elimina fisicamente il file dal disco storage (`Storage::disk('public')->delete(...)`), prevenendo file orfani e accumulo di spazio su disco.
