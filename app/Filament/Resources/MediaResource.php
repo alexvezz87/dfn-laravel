@@ -169,39 +169,37 @@ class MediaResource extends Resource
         return $table
             ->contentGrid(function ($livewire): ?array {
                 if (method_exists($livewire, 'isGridView') && ! $livewire->isGridView()) {
-                    return null;
+                    return null; // Modalità Elenco (Tabella standard)
                 }
 
                 return [
                     'default' => 2,
-                    'sm' => 2,
-                    'md' => 3,
-                    'lg' => 4,
-                    'xl' => 5,
-                    '2xl' => 6,
+                    'sm' => 3,
+                    'md' => 4,
+                    'lg' => 6,
+                    'xl' => 8,
+                    '2xl' => 10,
                 ];
             })
             ->columns([
+                Tables\Columns\Layout\View::make('filament.tables.media-grid-card')
+                    ->visible(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+
                 Tables\Columns\ImageColumn::make('file_path')
                     ->label('Anteprima')
                     ->disk('public')
-                    ->extraImgAttributes(fn ($livewire): array => [
-                        'class' => (method_exists($livewire, 'isGridView') && $livewire->isGridView())
-                            ? 'w-full h-44 object-cover rounded-t-xl transition duration-200 hover:scale-105'
-                            : 'rounded-lg object-cover shadow-sm',
-                    ]),
+                    ->square()
+                    ->extraImgAttributes(['class' => 'rounded-lg object-cover shadow-sm'])
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Titolo & File')
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->limit(24)
-                    ->description(fn (MediaItem $record, $livewire): string => (method_exists($livewire, 'isGridView') && $livewire->isGridView())
-                        ? "{$record->formatted_size} • {$record->collection}"
-                        : $record->file_name
-                    )
-                    ->wrap(),
+                    ->description(fn (MediaItem $record): string => $record->file_name)
+                    ->wrap()
+                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
 
                 Tables\Columns\TextColumn::make('collection')
                     ->label('Collezione')

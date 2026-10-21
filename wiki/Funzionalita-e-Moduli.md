@@ -63,19 +63,20 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
   - **Refresh Immediato del Form**: al salvataggio in `EditEvent`, l'invocazione di `$this->refreshFormData(['featured_image', 'gallery_images'])` sincronizza istantaneamente i box di upload con i percorsi `.webp` effettivi, eliminando lo svuotamento temporaneo del preview senza richiedere refresh F5.
 
 ### 6. Libreria Media Centralizzata (`MediaResource` stile WordPress)
-- **Doppia Modalità di Visualizzazione (Griglia & Elenco)**:
-  - **Visualizzazione a Griglia (Default)**: layout minimalista a cards responsive (2 colonne su smartphone, 3 su tablet, 4-6 su desktop) ispirato alla Libreria Media di WordPress. Ciascuna card mostra in evidenza l'anteprima dell'immagine a grande formato (`h-44 object-cover`) con effetto zoom al passaggio del mouse, titolo compatto e indicazione combinata di peso e collezione nel sottotitolo.
-  - **Visualizzazione ad Elenco**: tabella amministrativa completa con tutte le colonne analitiche visibili (Collezione, MIME type, Dimensione formattata con ordinamento per byte, Risoluzione e Data di caricamento).
-  - **Switcher Istantaneo in Testata**: due pulsanti rapidi in cima alla pagina (*Griglia* ed *Elenco*) per commutare la modalità al volo via Livewire senza ricaricare la pagina.
+- **Doppia Modalità di Visualizzazione (Griglia 1:1 WordPress & Elenco)**:
+  - **Visualizzazione a Griglia (Default, Identica a WordPress)**: griglia ad alta densità a tessere quadrate (`aspect-square`, da 2 a 10 colonne in base alla risoluzione dello schermo). Ogni tessera (`media-grid-card.blade.php`) mostra l'immagine a riempimento 100% (`w-full h-full object-cover`) con micro-zoom al passaggio del mouse, un gradiente semitrasparente scuro in basso con il nome del file/titolo e icone vettoriali dedicate per video e documenti.
+  - **Visualizzazione ad Elenco**: tabella amministrativa classica con tutte le colonne analitiche visibili (Collezione, MIME type, Dimensione formattata con ordinamento per byte, Risoluzione e Data di caricamento).
+  - **Switcher Compatto in Testata**: switcher a pulsante compatto (`[ ≡ ] [ 田 ]`) per commutare la modalità al volo via Livewire.
 - **Pannello Dettagli al Clic (Slide-Over stile WordPress)**:
   - Cliccando su qualsiasi elemento della griglia o dell'elenco (`recordAction('view')`) si apre un cassetto laterale (*Slide-Over*) a comparsa rapida.
   - Presenta l'anteprima dell'immagine a dimensione estesa (o player video), tutti i metadati editoriali (Titolo, Nome Originale, Collezione), i dati tecnici (Dimensioni, Risoluzione pixel, MIME type, Data caricamento), il campo URL Pubblico copiabile con un clic e il pulsante per accedere direttamente alla modifica completa dei metadati.
-- **Archivio Asset Unificato**:
+- **Persistenza su Google Cloud Storage (GCS Volume Mount)**:
+  - Risoluzione del problema di stateless container su Cloud Run: la cartella `/app/storage/app/public` è montata tramite Cloud Storage FUSE (`--execution-environment=gen2`, `--add-volume` e `--add-volume-mount`) su un bucket dedicato di Google Cloud Storage (`${PROJECT_ID}-media-staging`).
+  - Tutti i file multimediali e le locandine caricate permangono intatti e disponibili attraverso ogni deploy e riavvio del container.
+- **Archivio Asset Unificato & Pulizia Fisica**:
   - Gestione completa di immagini e video attraverso la risorsa `MediaResource` (`/admin/media`), raggruppata sotto il menu dedicato **Media**.
-  - Pre-compilazione automatica del Titolo: se il campo `title` viene lasciato vuoto in caricamento, viene automaticamente assegnato il nome del file originario ripulito dall'estensione.
-  - Pulsante ad azione rapida per copiare negli appunti l'URL pubblico assoluto dell'asset.
-- **Eliminazione Fisica da Storage**:
-  - L'eliminazione di un singolo elemento o la cancellazione massiva (Bulk Delete) da tabella intercetta l'evento Eloquent `deleted` ed elimina fisicamente il file dal disco storage (`Storage::disk('public')->delete(...)`), prevenendo file orfani e accumulo di spazio su disco.
+  - Pre-compilazione automatica del Titolo se lasciato vuoto in caricamento.
+  - L'eliminazione di un singolo elemento o la cancellazione massiva rimuove fisicamente il file dallo storage GCS, prevenendo sprechi di spazio.
 - **Tracciamento Automatico da Eventi**:
   - In `CreateEvent` ed `EditEvent`, il salvataggio di locandine (`featured_image`), slider galleria (`gallery_images`) o video/foto del Wall (`wall_media`) esegue la registrazione automatica via `MediaItem::createFromStoragePath(...)`, garantendo che tutti gli asset caricati tramite gli eventi siano immediatamente censiti nella Libreria Media.
 

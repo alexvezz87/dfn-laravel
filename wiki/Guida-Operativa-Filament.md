@@ -129,11 +129,12 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
 - **Navigazione**: menu laterale *Media* > *Libreria Media*.
 - **Scopo**: offre un archivio centralizzato in stile WordPress per visualizzare, caricare, organizzare ed eliminare tutti i file multimediali utilizzati sul portale.
 - **Switcher Modalità di Visualizzazione (in Testata)**:
-  - ⏹️ **Griglia** (icona 4 quadrati): modalità predefinita all'accesso, focalizzata sull'impatto visivo di locandine e foto.
-  - 📋 **Elenco** (icona elenco puntato): vista tabellare classica con tutte le colonne analitiche visibili.
-- **Visualizzazione a Griglia (Cards)**:
-  - **Anteprima Grande**: immagine in risalto (`h-44 object-cover`) con effetto micro-zoom al passaggio del mouse.
-  - **Titolo & Informazioni Compatte**: titolo dell'asset e, nel sottotitolo, la combinazione immediata di dimensione e collezione (es. `303.1 KB • featured`).
+  - ⏹️ **Griglia** / 📋 **Elenco**: switcher a pulsante compatto per alternare all'istante tra la griglia fotografica WordPress e la vista tabellare.
+- **Visualizzazione a Griglia 1:1 WordPress (Tessere Quadrate)**:
+  - **Tessere ad Alta Densità (`aspect-square`)**: disposizione a scacchiera densa da 2 a 10 colonne che massimizza lo spazio a schermo.
+  - **Riempimento Totale 100%**: l'immagine occupa interamente il riquadro quadrato (`w-full h-full object-cover`) con bordi arrotondati, bordo neutro ed effetto micro-zoom al passaggio del mouse.
+  - **Etichetta Sovrimpressa Semitrasparente**: barra sfumata scura sul bordo inferiore con il nome del file / titolo dell'asset per un look identico a WordPress Media Library.
+  - **Supporto File Non-Immagine**: icone monocromatiche centrate per video e file generici.
 - **Pannello Dettagli Slide-Over (al Clic sulla Card o Riga)**:
   - Cliccando su qualsiasi elemento si apre lateralmente un cassetto scorrevole (*Slide-Over*) in stile WordPress contenente:
     - Anteprima ad alta risoluzione o player video.
