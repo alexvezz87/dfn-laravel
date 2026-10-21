@@ -26,6 +26,7 @@ WORKDIR /app
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     APP_ENV=staging \
     APP_DEBUG=false \
+    APP_URL=http://localhost:8080 \
     PORT=8080 \
     SERVER_NAME=:8080 \
     DB_CONNECTION=mysql \

@@ -14,6 +14,7 @@ use App\Models\MediaItem;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -173,5 +174,15 @@ class MediaLibraryAndNotificationsTest extends TestCase
         $duplicate = MediaItem::createFromStoragePath($path, 'featured');
         $this->assertSame($item->id, $duplicate->id);
         $this->assertSame(1, MediaItem::where('file_path', $path)->count());
+    }
+
+    public function test_public_storage_url_is_root_relative_and_not_localhost(): void
+    {
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+        $url = $disk->url('events/featured/sample.webp');
+
+        $this->assertStringStartsWith('/storage/', $url);
+        $this->assertStringNotContainsString('http://localhost', $url);
     }
 }

@@ -67,6 +67,15 @@ Questa pagina raccoglie la risoluzione di problemi noti, anomalie risolte (bug f
   5. Chiusura dei due alert sulla dashboard GitGuardian selezionando **"Resolved: Test key / False positive"** o **"Revoked"**.
 - **Issue GitHub di riferimento**: [#31](https://github.com/alexvezz87/dfn-laravel/issues/31)
 
+### 5. Anteprime Media Rotte o Blocco "Waiting for size" su FileUpload (Mixed Content & APP_URL)
+- **Descrizione del problema**: Nella Libreria Media l'anteprima risultava rotta, mentre nel form di modifica evento il campo FileUpload restava bloccato su "Waiting for size" / spinner infinito. Nel front-end pubblico invece la locandina era visibile.
+- **Causa scatenante**: `Storage::disk('public')->url(...)` utilizzava il default `http://localhost/storage/...` in assenza di `APP_URL` in Staging. Il browser su connessione HTTPS bloccava il fetch per Mixed Content. Inoltre, `'serve' => true` sul disco `'local'` privato generava un conflitto con codice di risposta 403 Forbidden su `/storage/{path}`.
+- **Fix applicato & Best Practice**:
+  1. Disattivato `'serve' => false` su disco `'local'`.
+  2. Impostato `'url' => env('FILESYSTEM_PUBLIC_URL', '/storage')` su disco `'public'` per generare percorsi root-relative conformi a qualunque protocollo/host.
+  3. Configurato `APP_URL=https://dfn-laravel-staging.dfnprenotazioni.it` nel workflow di deploy Cloud Run.
+- **Issue GitHub di riferimento**: [#33](https://github.com/alexvezz87/dfn-laravel/issues/33)
+
 ---
 
 ## 📝 Regola di Aggiornamento
