@@ -64,16 +64,16 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
   - **Refresh Immediato del Form**: al salvataggio in `EditEvent`, l'invocazione di `$this->refreshFormData(['featured_image', 'gallery_images'])` sincronizza istantaneamente i box di upload con i percorsi `.webp` effettivi, eliminando lo svuotamento temporaneo del preview senza richiedere refresh F5.
 
 ### 6. Libreria Media Centralizzata (`MediaResource` stile WordPress)
-- **Doppia Modalità di Visualizzazione (Griglia 6-7 Colonne & Tabella Nativa Monoriga)**:
+- **Doppia Modalità di Visualizzazione (Griglia 7 Colonne & Tabella Nativa Monoriga)**:
   - **Architettura Disaccoppiata (`Table::content()`)**: la visualizzazione è gestita tramite il metodo nativo `Table::content()`. In modalità Griglia restituisce la vista dedicata `media-grid.blade.php`, mentre in modalità Elenco restituisce `null`, permettendo a Filament di generare la tabella HTML nativa `<table>` senza layout card forzati.
-  - **Visualizzazione a Griglia ad Alta Densità (6-7 Colonne)**: griglia CSS fluida su 6 colonne per schermi standard e 7 su schermi ampi (`grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-4`), priva di checkbox laterali.
+  - **Visualizzazione a Griglia a 7 Colonne Desktop**: griglia CSS fluida impostata su 7 colonne fisse su schermi desktop (`grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 2xl:grid-cols-8`), priva di checkbox laterali e con spaziatura compatta `gap-3` per massimizzare la panoramica dei file.
   - **Hover Matita e Aspect-Ratio 1:1 Garantiti**: classi CSS dedicate (`.dfn-media-card`, `.dfn-media-overlay`, `.dfn-media-pencil-btn`) che assicurano riquadri quadrati perfetti con micro-zoom, overlay semitrasparente e icona matita centrata al passaggio del cursore indipendente dalle regole di purge di Tailwind.
   - **Visualizzazione ad Elenco (Tabella Nativa HTML Monoriga)**: tabella classica con intestazioni `<th>` e ogni record rigorosamente su una sola riga orizzontale (`<tr>`), con miniatura 40×40 px, titolo troncato monoriga a 40 caratteri, badge compatti e icone azione `iconButton` affiancate.
   - **Switcher Icone Compatto in Testata**: due pulsanti icona affiancati compatti (`[ ⊞ ] [ ☰ ]`) per alternare istantaneamente la vista via Livewire senza layout shift.
-- **Popup Dettagli Allegato Centrale Scrollabile (`modalWidth('5xl')` stile WordPress)**:
-  - Cliccando su qualsiasi elemento della griglia o riga dell'elenco (`mountTableAction('edit')`) si apre una finestra modale centrale a comparsa rapida (`Dettagli Allegato: Titolo File`), superando il vecchio slide-over laterale.
-  - Struttura a 2 colonne in stile WordPress: colonna sinistra dedicata interamente alla grande anteprima visiva (`max-h-[460px] object-contain`) e colonna destra contenente i metadati modificabili (Titolo, Alt Text SEO, Didascalia, Collezione) e le informazioni tecniche (Peso formattato, Risoluzione pixel, MIME Type, Link URL con copia rapida).
-  - Scroll verticale fluido nativo (`overflow-y: auto`, `max-height: 90vh`) che previene qualsiasi blocco visivo o taglio dei pulsanti di azione.
+- **Popup Dettagli Allegato Compatto 50/50 Scrollabile (`modalWidth('5xl')` stile WordPress)**:
+  - Cliccando su qualsiasi elemento della griglia o riga dell'elenco (`mountTableAction('edit')`) si apre una finestra modale centrale a comparsa rapida (`Dettagli Allegato: Titolo File`).
+  - **Layout Paritetico 50/50**: struttura a due colonne bilanciate (`Grid::make(2)`) con colonna sinistra dedicata all'anteprima visiva compatta (`max-h-[260px] object-contain`) e colonna destra per metadati (Titolo, Alt Text SEO, Didascalia, Collezione) e dati tecnici (Peso formattato, Risoluzione, MIME Type, Link URL copiabile con 1 clic).
+  - **Scroll Verticale Fluido su `.fi-modal-content`**: scroll garantito al 100% sul container interno della modale Filament (`overflow-y: auto !important`, `max-height: calc(88vh - 130px)` con `padding-bottom: 24px`), garantendo l'accessibilità immediata a tutti i campi e ai pulsanti di salvataggio.
 - **Ottimizzazione Automatica & Conversione WebP su Caricamento Diretto (`CreateMedia`)**:
   - Il caricamento diretto dalla Libreria Media (`CreateMedia`) è integrato con `OptimizeImageAction`.
   - Le immagini caricate vengono automaticamente convertite in formato WebP, scalate alle dimensioni massime consentite (es. 1920px), compresse alla qualità target (es. 82%) e salvate con gestione anti-collisione sia sul nome originario sia sulla controparte WebP.

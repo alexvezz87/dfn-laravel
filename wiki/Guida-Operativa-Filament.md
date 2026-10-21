@@ -129,14 +129,14 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
 - **Scopo**: offre un archivio centralizzato in stile WordPress per visualizzare, caricare, organizzare ed eliminare tutti i file multimediali utilizzati sul portale.
 - **Switcher Modalità di Visualizzazione (in Testata)**:
   - ⊞ **Griglia** / ☰ **Elenco**: due pulsanti icona compatti affiancati (`heroicon-o-squares-2x2` e `heroicon-o-bars-3`) con tooltip informativo per alternare all'istante tra la griglia fotografica WordPress e la vista tabellare compatta.
-- **Visualizzazione a Griglia 1:1 WordPress (6-7 Colonne ad Alta Densità)**:
-  - **Tessere Fluide & Grandi (`aspect-square`)**: disposizione a scacchiera fluida da 6 (laptop/desktop standard) a 7 colonne (monitor ampi), con tessere quadrate pure senza barre laterali di checkbox.
+- **Visualizzazione a Griglia 1:1 WordPress (7 Colonne Desktop ad Alta Densità)**:
+  - **Tessere Fluide & Compatte (`aspect-square`)**: disposizione a scacchiera fluida impostata su 7 colonne fisse su schermi desktop (`gap-3`), con tessere quadrate pure senza barre laterali di checkbox per visualizzare più asset contemporaneamente.
   - **Hover Matita Indipendente**: classi CSS dedicate (`.dfn-media-card`, `.dfn-media-overlay`, `.dfn-media-pencil-btn`) che garantiscono al 100% l'aspetto quadrato, il micro-zoom dell'immagine e la comparsa al passaggio del mouse dell'icona matita centrata su cerchio bianco in rilievo.
-- **Popup Dettagli Allegato Centrale Scrollabile (`modalWidth('5xl')` stile WordPress)**:
-  - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`mountTableAction('edit')`), si apre al centro una finestra modale a due colonne in puro stile WordPress con titolo personalizzato (`Dettagli Allegato: Titolo File`).
-  - **Colonna Sinistra**: grande anteprima dell'immagine centrata ad alta leggibilità (`max-h-[460px] object-contain`) o player video interattivo, priva di box di upload che disturbino la consultazione.
-  - **Colonna Destra**: metadati editoriali modificabili (Titolo, Alt Text per SEO `alt_text`, Didascalia `caption`, Collezione), dati tecnici di sola lettura (Dimensione formattata, Risoluzione in pixel, MIME Type) e Link URL Pubblico con pulsante di copia negli appunti con un clic.
-  - **Scroll Verticale Fluido**: sbloccato (`max-height: 90vh`, `overflow-y: auto`) per consentire la navigazione completa dei dettagli anche su laptop con schermi compatti senza tagliare i pulsanti di salvataggio.
+- **Popup Dettagli Allegato Compatto 50/50 Scrollabile (`modalWidth('5xl')` stile WordPress)**:
+  - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`mountTableAction('edit')`), si apre al centro una finestra modale paritetica a due colonne (`Grid::make(2)`) in puro stile WordPress con titolo personalizzato (`Dettagli Allegato: Titolo File`).
+  - **Colonna Sinistra (50%)**: anteprima dell'immagine compatta e centrata ad alta leggibilità (`max-h-[260px] object-contain`) o player video interattivo, priva di box di upload che disturbino la consultazione.
+  - **Colonna Destra (50%)**: metadati editoriali modificabili (Titolo, Alt Text per SEO `alt_text`, Didascalia `caption`, Collezione), dati tecnici di sola lettura (Dimensione formattata, Risoluzione in pixel, MIME Type) e Link URL Pubblico con pulsante di copia negli appunti con un clic.
+  - **Scroll Verticale Fluido Garantito**: applicato direttamente sul container interno `.fi-modal-content` (`overflow-y: auto !important`, altezza massima `calc(88vh - 130px)` con `padding-bottom: 24px`), consentendo di scorrere tutti i campi e accedere comodamente ai tasti Salva / Annulla.
 - **Visualizzazione Tabella / Elenco Nativa (Singola Riga Orizzontale Monoriga)**:
   - **Tabella HTML Nativa**: tabella classica `<table>` con intestazioni `<th>` e righe orizzontali `<tr>` monoriga, eliminando definitivamente le card verticali impilate.
   - **Miniatura**: anteprima quadrata arrotondata 40×40 px con visualizzazione fedele dell'immagine o icona per video/documenti.
@@ -146,7 +146,7 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
   - **Dimensione Formattata**: badge blu con peso in KB/MB con ordinamento per byte reali.
   - **Risoluzione**: indicazione di larghezza per altezza (es. `1920 × 1080 px`).
   - **Data di Caricamento**: timestamp formattato `d/m/Y H:i`.
-  - **Azioni Compatte (`iconButton`)**: pulsanti ad icona senza testo per Modifica (Slide-Over), Copia Link negli appunti ed Eliminazione.
+  - **Azioni Compatte (`iconButton`)**: pulsanti ad icona senza testo per Modifica (Popup centrale 5xl), Copia Link negli appunti ed Eliminazione.
 - **Filtri di Tabella**:
   - Filtro per *Tipo Contenuto* (*Tutti*, *Immagini*, *Video*).
   - Filtro per *Collezione* (*Locandine*, *Galleria Slider*, *Wall dei Ricordi*, *Caricamenti Diretti*, *Generale*).
