@@ -51,6 +51,8 @@ export MAIL_MAILER="${MAIL_MAILER:-log}"
     echo "[Entrypoint] Avvio migrazioni del database in background..."
     if php artisan migrate --force --no-interaction; then
         echo "[Entrypoint] Migrazioni del database completate con successo."
+        # Assicura la presenza dell'utente amministratore se il database è nuovo
+        php artisan db:seed --force --no-interaction || true
     else
         echo "[Entrypoint] ATTENZIONE: Migrazione non riuscita o database temporaneamente non disponibile. Il server web rimane attivo."
     fi
