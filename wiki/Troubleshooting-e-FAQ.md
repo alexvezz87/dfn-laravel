@@ -51,6 +51,22 @@ Questa pagina raccoglie la risoluzione di problemi noti, anomalie risolte (bug f
   3. Procedura di rotazione della password FTP su cPanel Netsons e chiusura degli alert sulla dashboard GitGuardian.
 - **Issue GitHub di riferimento**: [#19](https://github.com/alexvezz87/dfn-laravel/issues/19)
 
+### 4. Alert di Sicurezza GitGuardian: Laravel APP_KEY nei file di configurazione test (`phpunit.xml` e `.env.testing`)
+- **Descrizione del problema**: GitGuardian ha segnalato un alert di severità alta rilevando il pattern di una `Laravel APP_KEY` in `phpunit.xml` e `.env.testing`.
+- **Causa scatenante**: Per consentire l'esecuzione automatizzata dei test PHPUnit (sessioni, crittografia cookie e notifiche) senza generare eccezioni `No application encryption key has been specified`, erano state inserite stringhe statiche `base64:...` nei file di test versionati su Git. I crawler di GitGuardian rilevano qualsiasi hash a 44 caratteri base64 assegnato a variabili nominate `APP_KEY`.
+- **Fix applicato & Best Practice**:
+  1. Rimosso `<env name="APP_KEY" .../>` da `phpunit.xml`.
+  2. Rimosso `APP_KEY=...` da `.env.testing`.
+  3. Inserito il fallback dinamico in memoria dentro `tests/TestCase.php::createApplication()`:
+     ```php
+     if (empty(config('app.key'))) {
+         config(['app.key' => 'base64:'.base64_encode(str_repeat('a', 32))]);
+     }
+     ```
+  4. Nessun segreto o hash statico rimane presente nei file tracciati, mentre la suite di test dispone sempre di una chiave di crittografia a 256-bit valida a runtime.
+  5. Chiusura dei due alert sulla dashboard GitGuardian selezionando **"Resolved: Test key / False positive"** o **"Revoked"**.
+- **Issue GitHub di riferimento**: [#31](https://github.com/alexvezz87/dfn-laravel/issues/31)
+
 ---
 
 ## 📝 Regola di Aggiornamento

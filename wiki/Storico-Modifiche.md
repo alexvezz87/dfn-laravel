@@ -6,6 +6,7 @@ Registro cronologico di tutte le modifiche, funzionalità rilasciate, correzioni
 
 | Data | Tipo | Rif. Issue | Titolo Intervento | Autore / Agente | PR / Note |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-10-21 | 🔧 Chore | #31 | Risoluzione leak di sicurezza GitGuardian: rimozione APP_KEY da phpunit.xml e .env.testing | Alex / Antigravity | Rimozione chiavi statiche base64, generazione dinamica AES-256 in tests/TestCase.php, suite 40/40 test passata e aggiornamento FAQ |
 | 2026-10-21 | ✨ Feature | #29 | Centro Notifiche Topbar, Libreria Media centralizzata (`MediaResource`) e riorganizzazione menu Impostazioni | Alex / Antigravity | Database notifications con campanella e polling 30s, modello `MediaItem`, risorsa `MediaResource` con eliminazione fisica storage, sidebar a 3 gruppi, test PHPUnit e wiki |
 | 2026-10-21 | ⚡ Enhancement | #27 | Ottimizzazione automatica trasparente immagini: upload permissivo con resize e blocco rigido configurabile | Alex / Antigravity | Modalità trasparente con tetto server (50MB) e resize automatico, blocco rigido condizionato a `media_auto_compress`, trait `OptimizesEventImages` in `CreateEvent`/`EditEvent`, test e wiki |
 | 2026-10-21 | ✨ Feature | #25 | Gestione Media & Upload in Filament, tetto Docker 50MB e sistema di compressione/ottimizzazione automatica immagini | Alex / Antigravity | Tabella `settings` e modello `Setting`, pagina Filament `ManageMediaSettings`, limiti dinamici `EventResource`, `OptimizeImageAction` con GD, test PHPUnit e wiki |
