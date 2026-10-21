@@ -68,6 +68,35 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
+
+    MEDIA_ITEM {
+        bigint id PK
+        string disk
+        string file_path UK
+        string file_name
+        string original_name
+        string mime_type
+        unsigned_bigint file_size
+        unsigned_int width
+        unsigned_int height
+        string collection
+        string title
+        string alt_text
+        text caption
+        datetime created_at
+        datetime updated_at
+    }
+
+    NOTIFICATION {
+        uuid id PK
+        string type
+        string notifiable_type
+        unsigned_bigint notifiable_id
+        text data
+        datetime read_at
+        datetime created_at
+        datetime updated_at
+    }
 ```
 
 ---
@@ -134,6 +163,34 @@ Valori e chiavi per il gruppo `media`:
 - `media_max_dimension_px`: Risoluzione massima in pixel lato lungo (1280, 1920, 2560, default: 1920).
 - `media_quality_percent`: Percentuale di qualità compressione (range: 50-95, default: 82).
 - `media_convert_webp`: Conversione automatica nel formato WebP (boolean, default: true).
+
+### 6. `media_items`
+Archivio unificato e centralizzato per tutti i file multimediali gestiti tramite la Libreria Media Filament (`MediaResource`) o sincronizzati automaticamente dalle entità del portale.
+- `id`: Chiave primaria auto-incrementante (bigint unsigned).
+- `disk`: Driver del filesystem storage (string 50, default `'public'`).
+- `file_path`: Percorso relativo del file all'interno del disco storage (string 500, unique, index).
+- `file_name`: Nome del file salvato su storage (string 255).
+- `original_name`: Nome originale del file prima del caricamento (string 255, nullable).
+- `mime_type`: Content type del file (string 100, nullable, es. `image/webp`, `video/mp4`).
+- `file_size`: Dimensione del file in byte (unsignedBigInteger, default 0).
+- `width` / `height`: Dimensioni in pixel ricavate automaticamente per le immagini (unsignedInteger, nullable).
+- `collection`: Ambito o categoria dell'asset (string 50, default `'general'`, index; es. `'featured'`, `'gallery'`, `'wall'`, `'uploads'`).
+- `title`: Titolo descrittivo dell'asset (string 255, nullable).
+- `alt_text`: Testo alternativo per accessibilità e indicizzazione SEO (string 255, nullable).
+- `caption`: Didascalia del file (text, nullable).
+- `timestamps`: `created_at` e `updated_at`.
+
+> **Nota Operativa**: alla cancellazione di un record `MediaItem`, un hook su evento Eloquent `deleted` elimina fisicamente il file associato dallo storage (`Storage::disk($item->disk)->delete($item->file_path)`).
+
+### 7. `notifications`
+Tabella nativa del sistema Database Notifications di Laravel e Filament per la gestione degli avvisi persistenti.
+- `id`: Identificativo univoco UUID (uuid PK).
+- `type`: Classe della notifica (string, es. `Filament\Notifications\DatabaseNotification`).
+- `notifiable_type`: Classe dell'entità destinataria (string, es. `App\Models\User`).
+- `notifiable_id`: ID dell'utente destinatario (unsignedBigInteger).
+- `data`: Payload serializzato in JSON contenente titolo, corpo, icona, colore e metadati dell'avviso (text).
+- `read_at`: Timestamp di lettura (datetime, nullable).
+- `timestamps`: `created_at` e `updated_at`.
 
 ---
 

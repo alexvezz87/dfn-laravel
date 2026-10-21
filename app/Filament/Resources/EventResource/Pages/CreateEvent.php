@@ -26,6 +26,7 @@ class CreateEvent extends CreateRecord
     protected function afterCreate(): void
     {
         $this->optimizeRecordMedia();
+        $this->registerEventMediaItems();
     }
 
     protected function getHeaderActions(): array
