@@ -130,22 +130,21 @@ La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
 - **Scopo**: offre un archivio centralizzato in stile WordPress per visualizzare, caricare, organizzare ed eliminare tutti i file multimediali utilizzati sul portale.
 - **Switcher Modalità di Visualizzazione (in Testata)**:
   - ⊞ **Griglia** / ☰ **Elenco**: due pulsanti icona compatti affiancati (`heroicon-o-squares-2x2` e `heroicon-o-bars-3`) con tooltip informativo per alternare all'istante tra la griglia fotografica WordPress e la vista tabellare compatta.
-- **Visualizzazione a Griglia 1:1 WordPress (Tessere Quadrate Pure)**:
-  - **Tessere ad Alta Densità (`aspect-square`)**: disposizione a scacchiera densa da 2 a 10 colonne che massimizza lo spazio a schermo.
-  - **Riempimento Totale 100%**: l'immagine occupa interamente il riquadro quadrato (`w-full h-full object-cover`) con bordi arrotondati, priva di etichette di testo inferiori per preservare la pulizia visiva originale di WordPress.
+- **Visualizzazione a Griglia 1:1 WordPress (5-6 Colonne ad Alta Visibilità)**:
+  - **Tessere Grandi & Fluide (`aspect-square`)**: disposizione a scacchiera fluida da 5 (laptop/desktop) a 6 colonne (monitor larghi) con anteprime grandi e nitide (~200×200px), priva di checkbox di selezione laterali che riducano lo spazio utile.
+  - **Riempimento Totale 100%**: l'immagine occupa interamente il riquadro quadrato (`w-full h-full object-cover`) con bordi arrotondati, bordo neutro ed effetto micro-zoom al passaggio del mouse, senza etichette inferiori.
   - **Overlay Hover Centrato**: al passaggio del cursore su una tessera, compare uno strato scuro semitrasparente con ESCLUSIVAMENTE l'icona matita centrata (`heroicon-m-pencil-square`) all'interno di un cerchio bianco in rilievo.
-  - **Nessuna Barra Azioni Sottostante**: la barra delle azioni della tabella è nascosta in modalità griglia, garantendo una scacchiera visiva continua.
 - **Pannello Modifica e Dettagli Slide-Over (al Clic sulla Card o Riga)**:
-  - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`wire:click="mountTableAction('edit', ...)"` / `recordAction('edit')`), si apre lateralmente un cassetto scorrevole (*Slide-Over*) a comparsa rapida contenente:
+  - Cliccando su qualsiasi tessera della griglia o riga dell'elenco (`wire:click="mountTableAction('edit', ...)"` / `recordAction('edit')`), si apre lateralmente un cassetto scorrevole (*Slide-Over*) a comparsa rapida con titolo personalizzato (`Dettagli & Modifica: Titolo File`) contenente:
     - Anteprima ad alta risoluzione o player video interattivo.
     - Metadati modificabili: Titolo, Testo alternativo per SEO (`alt_text`), Didascalia (`caption`), Collezione / Categoria.
     - Dati tecnici di sola lettura: Dimensione file formattata (KB/MB), Risoluzione in pixel, MIME Type.
     - Link URL Pubblico con pulsante integrato per la copia istantanea negli appunti.
     - Pulsanti di salvataggio modifiche e chiusura cassetto.
-- **Visualizzazione Tabella / Elenco Compatta (Singola Riga Orizzontale)**:
-  - **Layout Orizzontale Compatto**: riga singola senza a capo, concepita per massimizzare la leggibilità tecnica degli asset.
+- **Visualizzazione Tabella / Elenco Nativa (Singola Riga Orizzontale Monoriga)**:
+  - **Tabella HTML Nativa**: tabella classica `<table>` con intestazioni `<th>` e righe orizzontali `<tr>` monoriga, eliminando definitivamente le card verticali impilate.
   - **Miniatura**: anteprima quadrata arrotondata 40×40 px con visualizzazione fedele dell'immagine o icona per video/documenti.
-  - **Titolo Monoriga**: titolo descrittivo troncato a 40 caratteri per evitare l'aumento dell'altezza di riga.
+  - **Titolo Monoriga**: titolo descrittivo troncato a 40 caratteri con tooltip al passaggio del mouse che mostra il nome originario del file.
   - **Collezione**: badge compatto colorato per distinguere l'ambito (`featured`, `gallery`, `wall`, `uploads`, `general`).
   - **MIME Type**: badge grigio con il tipo di file (es. `image/webp`, `image/jpeg`, `video/mp4`).
   - **Dimensione Formattata**: badge blu con peso in KB/MB con ordinamento per byte reali.
