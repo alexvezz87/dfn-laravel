@@ -60,6 +60,25 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
   - FilePond in Filament applica ridimensionamento client-side in base alla configurazione attiva su locandina principale e gallery.
   - Action backend `OptimizeImageAction` con libreria nativa GD per ridimensionamento proporzionale, tracciamento byte e conversione WebP a zero dipendenze esterne.
 
+### 6. Libreria Media Centralizzata (`MediaResource` stile WordPress)
+- **Archivio Asset Unificato**:
+  - Gestione completa di immagini e video attraverso la risorsa `MediaResource` (`/admin/media`), raggruppata sotto il menu dedicato **Media**.
+  - Scheda asset con anteprima interattiva (immagini o video player nativo), metadati completi (titolo, testo alternativo SEO/accessibilità `alt_text`, didascalia `caption`, categoria/collezione) e dettagli tecnici in sola lettura (dimensione file formattata, risoluzione pixel `width × height`, MIME type e data di caricamento).
+  - Pulsante ad azione rapida per copiare negli appunti l'URL pubblico assoluto dell'asset.
+- **Eliminazione Fisica da Storage**:
+  - L'eliminazione di un singolo elemento o la cancellazione massiva (Bulk Delete) da tabella intercetta l'evento Eloquent `deleted` ed elimina fisicamente il file dal disco storage (`Storage::disk('public')->delete(...)`), prevenendo file orfani e accumulo di spazio su disco.
+- **Tracciamento Automatico da Eventi**:
+  - In `CreateEvent` ed `EditEvent`, il salvataggio di locandine (`featured_image`), slider galleria (`gallery_images`) o video/foto del Wall (`wall_media`) esegue la registrazione automatica via `MediaItem::createFromStoragePath(...)`, garantendo che tutti gli asset caricati tramite gli eventi siano immediatamente censiti nella Libreria Media.
+
+### 7. Centro Notifiche Persistente (Topbar)
+- **Campanella Interattiva**:
+  - Integrazione nativa delle Database Notifications di Filament nel pannello amministrativo (`AdminPanelProvider`).
+  - Campanella collocata nella topbar superiore con badge rosso dinamico del conteggio delle notifiche non lette.
+  - Polling automatico ogni 30 secondi (`databaseNotificationsPolling('30s')`) per aggiornare lo stato senza ricaricare la pagina.
+  - Drawer laterale a comparsa con lo storico di tutti gli avvisi ricevuti, possibilità di contrassegnare singolarmente o in blocco le notifiche come lette.
+- **Notifiche di Sistema**:
+  - Registrazione persistente dell'esito delle ottimizzazioni immagini (risparmio di peso in MB e percentuale) inviata direttamente all'utente amministratore autenticato.
+
 ---
 
 ## 💡 Idee di Sviluppo & Proposte Future (Backlog)

@@ -27,6 +27,7 @@ class EditEvent extends EditRecord
     protected function afterSave(): void
     {
         $this->optimizeRecordMedia();
+        $this->registerEventMediaItems();
     }
 
     protected function getHeaderActions(): array

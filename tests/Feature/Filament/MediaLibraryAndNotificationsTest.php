@@ -1,0 +1,177 @@
+<?php
+
+namespace Tests\Feature\Filament;
+
+use App\Filament\Pages\ManageMediaSettings;
+use App\Filament\Resources\BookingResource;
+use App\Filament\Resources\EventResource;
+use App\Filament\Resources\FaiMemberResource;
+use App\Filament\Resources\MediaResource;
+use App\Filament\Resources\MediaResource\Pages\CreateMedia;
+use App\Filament\Resources\MediaResource\Pages\ListMedia;
+use App\Filament\Resources\SlotResource;
+use App\Models\MediaItem;
+use App\Models\User;
+use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
+use Tests\TestCase;
+
+class MediaLibraryAndNotificationsTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected User $admin;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->admin = User::factory()->create([
+            'email' => 'admin@dfnprenotazioni.it',
+        ]);
+    }
+
+    public function test_can_access_media_library_page(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->get(MediaResource::getUrl('index'));
+
+        $response->assertSuccessful();
+
+        Livewire::actingAs($this->admin)
+            ->test(ListMedia::class)
+            ->assertSuccessful();
+    }
+
+    public function test_can_create_media_item_record(): void
+    {
+        Storage::fake('public');
+
+        $file = UploadedFile::fake()->image('test-banner.jpg', 1200, 800);
+
+        Livewire::actingAs($this->admin)
+            ->test(CreateMedia::class)
+            ->fillForm([
+                'title' => 'Locandina Banner Villa',
+                'alt_text' => 'Foto panoramica della villa',
+                'caption' => 'Ingresso principale',
+                'collection' => 'featured',
+                'file_path' => $file,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $mediaItem = MediaItem::where('title', 'Locandina Banner Villa')->first();
+
+        $this->assertNotNull($mediaItem);
+        $this->assertSame('featured', $mediaItem->collection);
+        $this->assertSame('Foto panoramica della villa', $mediaItem->alt_text);
+        $this->assertSame('Ingresso principale', $mediaItem->caption);
+        $this->assertNotEmpty($mediaItem->file_path);
+        $this->assertTrue(Storage::disk('public')->exists($mediaItem->file_path));
+    }
+
+    public function test_deleting_media_item_removes_physical_file_from_storage(): void
+    {
+        Storage::fake('public');
+
+        $filePath = 'uploads/sample-delete.jpg';
+        Storage::disk('public')->put($filePath, 'fake image content');
+
+        $this->assertTrue(Storage::disk('public')->exists($filePath));
+
+        $item = MediaItem::create([
+            'disk' => 'public',
+            'file_path' => $filePath,
+            'file_name' => 'sample-delete.jpg',
+            'file_size' => 18,
+            'mime_type' => 'image/jpeg',
+            'collection' => 'uploads',
+            'title' => 'File da cancellare',
+        ]);
+
+        $this->assertDatabaseHas('media_items', ['id' => $item->id]);
+
+        $item->delete();
+
+        $this->assertDatabaseMissing('media_items', ['id' => $item->id]);
+        $this->assertFalse(Storage::disk('public')->exists($filePath));
+    }
+
+    public function test_database_notifications_are_enabled_in_panel(): void
+    {
+        $panel = Filament::getPanel('admin');
+
+        $this->assertTrue($panel->hasDatabaseNotifications());
+        $this->assertSame('30s', $panel->getDatabaseNotificationsPollingInterval());
+    }
+
+    public function test_notification_can_be_sent_to_database(): void
+    {
+        Notification::make()
+            ->title('Immagine ottimizzata con successo')
+            ->body('La locandina è stata ridotta da 4.5 MB a 1.1 MB (risparmio 75%).')
+            ->icon('heroicon-o-sparkles')
+            ->iconColor('success')
+            ->sendToDatabase($this->admin);
+
+        $this->assertCount(1, $this->admin->fresh()->notifications);
+
+        $notification = $this->admin->fresh()->notifications->first();
+        $this->assertSame('Immagine ottimizzata con successo', $notification->data['title']);
+        $this->assertStringContainsString('risparmio 75%', $notification->data['body']);
+        $this->assertSame('heroicon-o-sparkles', $notification->data['icon']);
+        $this->assertSame('success', $notification->data['iconColor']);
+    }
+
+    public function test_navigation_groups_are_properly_structured(): void
+    {
+        $this->assertSame('FAI Prenotazioni', EventResource::getNavigationGroup());
+        $this->assertSame('FAI Prenotazioni', BookingResource::getNavigationGroup());
+        $this->assertSame('FAI Prenotazioni', SlotResource::getNavigationGroup());
+        $this->assertSame('FAI Prenotazioni', FaiMemberResource::getNavigationGroup());
+
+        $this->assertSame(1, EventResource::getNavigationSort());
+        $this->assertSame(2, BookingResource::getNavigationSort());
+        $this->assertSame(3, SlotResource::getNavigationSort());
+        $this->assertSame(4, FaiMemberResource::getNavigationSort());
+
+        $this->assertSame('Media', MediaResource::getNavigationGroup());
+        $this->assertSame('Libreria Media', MediaResource::getNavigationLabel());
+        $this->assertSame(1, MediaResource::getNavigationSort());
+
+        $this->assertSame('Impostazioni', ManageMediaSettings::getNavigationGroup());
+        $this->assertSame('Media & Upload', ManageMediaSettings::getNavigationLabel());
+        $this->assertSame(1, ManageMediaSettings::getNavigationSort());
+    }
+
+    public function test_media_item_create_from_storage_path_registers_metadata(): void
+    {
+        Storage::fake('public');
+
+        $path = 'events/featured/auto-reg.jpg';
+        Storage::disk('public')->put($path, 'dummy image content');
+
+        $item = MediaItem::createFromStoragePath($path, 'featured', 'Locandina Originale.jpg');
+
+        $this->assertNotNull($item);
+        $this->assertSame('events/featured/auto-reg.jpg', $item->file_path);
+        $this->assertSame('featured', $item->collection);
+        $this->assertSame('Locandina Originale.jpg', $item->original_name);
+        $this->assertSame('Locandina Originale', $item->title);
+        $this->assertDatabaseHas('media_items', [
+            'file_path' => 'events/featured/auto-reg.jpg',
+            'collection' => 'featured',
+        ]);
+
+        // Second call should return existing item without duplicates
+        $duplicate = MediaItem::createFromStoragePath($path, 'featured');
+        $this->assertSame($item->id, $duplicate->id);
+        $this->assertSame(1, MediaItem::where('file_path', $path)->count());
+    }
+}

@@ -10,6 +10,21 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
 
 ---
 
+## 🧭 Struttura del Menu Laterale (Sidebar)
+
+La navigazione del pannello è organizzata in tre gruppi funzionali distinti:
+1. **`FAI Prenotazioni`** (operativo core):
+   - `Eventi`: catalogo, configurazione logistica, tariffe, turni e duplicazione eventi.
+   - `Verifica Prenotazioni FAI`: monitoraggio ordini e validazione soci FAI.
+   - `Gestione Turni`: gestione e disponibilità delle fasce orarie.
+   - `Soci FAI`: anagrafica soci tesserati e verifica scadenze.
+2. **`Media`** (gestione asset multimediali):
+   - `Libreria Media`: archivio centralizzato di file, foto e video con anteprime, metadati ed eliminazione fisica.
+3. **`Impostazioni`** (configurazioni di sistema):
+   - `Media & Upload`: parametri globali di upload, compressione automatica e formati immagini.
+
+---
+
 ## 📋 Risorse Gestite
 
 ### 1. Risorsa Eventi (`EventResource`)
@@ -110,8 +125,32 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
 
 ---
 
-### 6. Impostazioni Media & Upload (`ManageMediaSettings`)
-- **Navigazione**: menu laterale *FAI Prenotazioni* > *Impostazioni Media & Upload*.
+### 6. Libreria Media (`MediaResource`)
+- **Navigazione**: menu laterale *Media* > *Libreria Media*.
+- **Scopo**: offre un archivio centralizzato in stile WordPress per visualizzare, caricare, organizzare ed eliminare tutti i file multimediali utilizzati sul portale.
+- **Visualizzazione Tabella / Griglia Asset**:
+  - **Anteprima**: miniatura quadrata arrotondata con visualizzazione fedele dell'immagine o icona per video.
+  - **Titolo & Nome File**: titolo descrittivo con nome file originario e path relativo sottostante.
+  - **Collezione**: badge colorato per distinguere l'ambito (`featured` verde/blu per locandine, `gallery` per slider, `wall` per wall dei ricordi, `uploads` per caricamenti diretti).
+  - **MIME Type**: badge grigio con il tipo di file (es. `image/webp`, `image/jpeg`, `video/mp4`).
+  - **Dimensione Formattata**: badge blu con peso in KB/MB (es. `420 KB`, `1.4 MB`), con ordinamento per byte.
+  - **Risoluzione**: indicazione di larghezza per altezza (es. `1920 × 1080 px`).
+  - **Data di Caricamento**: timestamp formattato `d/m/Y H:i`.
+- **Filtri di Tabella**:
+  - Filtro per *Tipo Contenuto* (*Tutti*, *Immagini*, *Video*).
+  - Filtro per *Collezione* (*Locandine*, *Galleria Slider*, *Wall dei Ricordi*, *Caricamenti Diretti*, *Generale*).
+- **Azioni Disponibili**:
+  - 📋 **Copia Link**: copia istantaneamente l'URL pubblico assoluto dell'asset negli appunti e mostra notifica di conferma.
+  - ✏️ **Modifica**: apre la scheda di modifica dei metadati (titolo, testo alternativo SEO/accessibilità `alt_text`, didascalia `caption`, categoria/collezione), visualizzando a lato l'anteprima attuale e i dati tecnici (peso, risoluzione, mime, data e URL pubblico).
+  - 🗑️ **Eliminazione Singola e Massiva**: l'eliminazione rimuove fisicamente il file dal disco storage (`public`), evitando l'accumulo di file orfani.
+- **Caricamento Nuovo Media (`CreateMedia`)**:
+  - Pulsante in alto a destra *Carica Nuovo Media*.
+  - Upload drag-and-drop con estrazione automatica di dimensioni, risoluzione e mime type all'atto del salvataggio.
+
+---
+
+### 7. Impostazioni Media & Upload (`ManageMediaSettings`)
+- **Navigazione**: menu laterale *Impostazioni* > *Media & Upload* (icona slider/regolazioni).
 - **Scopo**: permette agli amministratori di regolare in autonomia le policy di upload dei file e la compressione automatica delle immagini senza dover intervenire sul server o su `php.ini`.
 - **Sezioni di Configurazione**:
   - **Limiti di Caricamento (Upload)**:
@@ -126,3 +165,16 @@ Questa guida è destinata agli operatori di backoffice e agli sviluppatori che g
   - **Con Ottimizzazione Automatica ATTIVA**: FilePond accetta file fino al tetto del server (50 MB) senza bloccare l'operatore con messaggi d'errore FilePond `File is too large`. Durante l'upload e il salvataggio in `CreateEvent` ed `EditEvent`, il sistema ridimensiona l'immagine (client-side) e la ottimizza/converte in WebP (backend), mostrando una notifica con l'avvenuto risparmio di peso. Helper text: `ℹ️ Ottimizzazione automatica attiva: le immagini pesanti verranno ridimensionate e compresse sotto i X MB`.
   - **Con Ottimizzazione Automatica DISATTIVATA**: FilePond applica il limite rigido impostato dall'amministratore (es. 4 MB) bloccando all'ingresso i file superiori alla soglia senza modifiche. Helper text: `⚠️ Limite massimo rigido: X MB per immagine`.
 - **Pulsante Salva Impostazioni**: salva immediatamente a database nella tabella `settings` con gruppo `media` e notifica di successo.
+
+---
+
+### 8. Centro Notifiche Topbar & Campanella
+- **Collocazione**: icona a campanella nella barra superiore (topbar) a destra, accanto al menu profilo operatore.
+- **Contatore Notifiche Non Lette**: badge circolare rosso indicante il numero esatto di notifiche pendenti.
+- **Funzionamento & Polling**:
+  - Il sistema interroga il backend ogni 30 secondi in background (`databaseNotificationsPolling('30s')`) per segnalare nuovi eventi senza necessità di ricaricare il browser.
+  - Cliccando sulla campanella si apre il pannello laterale (drawer) con la cronologia delle notifiche.
+  - È possibile contrassegnare singole notifiche come lette oppure utilizzare l'azione massiva *Segna tutte come lette*.
+- **Tipologie di Notifiche Registrate**:
+  - Notifiche informative di avvenuta compressione automatica delle immagini con dettaglio sul risparmio di peso e percentuale.
+  - Eventuali comunicazioni di sistema e aggiornamenti operativi.

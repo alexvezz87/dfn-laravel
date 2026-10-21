@@ -18,15 +18,15 @@ class ManageMediaSettings extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-photo';
+    protected static ?string $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
-    protected static ?string $navigationGroup = 'FAI Prenotazioni';
+    protected static ?string $navigationGroup = 'Impostazioni';
 
-    protected static ?string $navigationLabel = 'Impostazioni Media & Upload';
+    protected static ?string $navigationLabel = 'Media & Upload';
 
     protected static ?string $title = 'Configurazione Media, Upload & Ottimizzazione';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 1;
 
     protected static string $view = 'filament.pages.manage-media-settings';
 

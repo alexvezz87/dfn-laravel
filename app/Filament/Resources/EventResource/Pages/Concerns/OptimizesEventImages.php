@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\EventResource\Pages\Concerns;
 
 use App\Actions\OptimizeImageAction;
+use App\Models\MediaItem;
 use App\Models\Setting;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
 trait OptimizesEventImages
 {
@@ -82,14 +84,53 @@ trait OptimizesEventImages
                 );
             }
 
-            Notification::make()
+            $notification = Notification::make()
                 ->info()
                 ->title('Immagine ottimizzata automaticamente')
                 ->body('Il file è stato compresso per garantire massime prestazioni su web e mobile'.$savingsSummary.'.')
-                ->send();
+                ->icon('heroicon-o-sparkles')
+                ->iconColor('success');
+
+            $notification->send();
+
+            $user = Auth::user();
+            if ($user) {
+                $notification->sendToDatabase($user);
+            }
         }
 
         return $data;
+    }
+
+    /**
+     * Registra automaticamente in MediaItem i percorsi dei media associati all'evento.
+     */
+    protected function registerEventMediaItems(): void
+    {
+        $record = method_exists($this, 'getRecord') ? $this->getRecord() : null;
+        if (! $record) {
+            return;
+        }
+
+        if (! empty($record->featured_image) && is_string($record->featured_image)) {
+            MediaItem::createFromStoragePath($record->featured_image, 'featured');
+        }
+
+        if (! empty($record->gallery_images) && is_array($record->gallery_images)) {
+            foreach ($record->gallery_images as $img) {
+                if (is_string($img) && ! empty($img)) {
+                    MediaItem::createFromStoragePath($img, 'gallery');
+                }
+            }
+        }
+
+        if (! empty($record->wall_media) && is_array($record->wall_media)) {
+            foreach ($record->wall_media as $media) {
+                if (is_string($media) && ! empty($media)) {
+                    MediaItem::createFromStoragePath($media, 'wall');
+                }
+            }
+        }
     }
 
     /**
