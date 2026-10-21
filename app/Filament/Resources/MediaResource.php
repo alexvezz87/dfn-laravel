@@ -169,39 +169,28 @@ class MediaResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->contentGrid(function ($livewire): ?array {
-                if (method_exists($livewire, 'isGridView') && ! $livewire->isGridView()) {
-                    return null; // Modalità Elenco (Tabella standard)
+            ->content(function ($livewire) {
+                if (method_exists($livewire, 'isGridView') && $livewire->isGridView()) {
+                    return view('filament.tables.media-grid');
                 }
 
-                return [
-                    'default' => 2,
-                    'sm' => 3,
-                    'md' => 4,
-                    'lg' => 6,
-                    'xl' => 8,
-                    '2xl' => 10,
-                ];
+                return null;
             })
             ->columns([
-                Tables\Columns\Layout\View::make('filament.tables.media-grid-card')
-                    ->visible(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
-
                 Tables\Columns\ImageColumn::make('file_path')
                     ->label('Anteprima')
                     ->disk('public')
                     ->size(40)
-                    ->extraImgAttributes(['class' => 'rounded-md object-cover shadow-xs'])
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    ->square()
+                    ->extraImgAttributes(['class' => 'rounded object-cover shadow-xs']),
 
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Titolo & File')
+                    ->label('Titolo')
                     ->searchable()
                     ->sortable()
-                    ->weight('bold')
+                    ->weight('medium')
                     ->limit(40)
-                    ->tooltip(fn (MediaItem $record): string => $record->file_name)
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    ->tooltip(fn (MediaItem $record): string => $record->file_name),
 
                 Tables\Columns\TextColumn::make('collection')
                     ->label('Collezione')
@@ -220,34 +209,29 @@ class MediaResource extends Resource
                         'success' => 'uploads',
                         'gray' => 'general',
                     ])
-                    ->sortable()
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('mime_type')
-                    ->label('MIME Type')
+                    ->label('Tipo MIME')
                     ->badge()
                     ->color('gray')
-                    ->searchable()
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('formatted_size')
                     ->label('Dimensione')
                     ->badge()
                     ->color('info')
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('file_size', $direction))
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('file_size', $direction)),
 
                 Tables\Columns\TextColumn::make('resolution')
                     ->label('Risoluzione')
                     ->state(fn (MediaItem $record): string => ($record->width && $record->height) ? "{$record->width} × {$record->height}" : '—')
-                    ->alignCenter()
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Caricato il')
+                    ->label('Data')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->recordAction('edit')
@@ -284,6 +268,7 @@ class MediaResource extends Resource
                 Tables\Actions\EditAction::make('edit')
                     ->label('Modifica')
                     ->slideOver()
+                    ->modalHeading(fn (MediaItem $record): string => 'Dettagli & Modifica: '.($record->title ?: $record->file_name))
                     ->icon('heroicon-m-pencil-square')
                     ->iconButton()
                     ->tooltip('Dettagli e Modifica'),
@@ -300,15 +285,13 @@ class MediaResource extends Resource
                             ->body($record->url)
                             ->success()
                             ->send();
-                    })
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    }),
 
                 Tables\Actions\DeleteAction::make('delete')
                     ->label('Elimina')
                     ->icon('heroicon-o-trash')
                     ->iconButton()
-                    ->tooltip('Elimina')
-                    ->hidden(fn ($livewire): bool => method_exists($livewire, 'isGridView') && $livewire->isGridView()),
+                    ->tooltip('Elimina'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

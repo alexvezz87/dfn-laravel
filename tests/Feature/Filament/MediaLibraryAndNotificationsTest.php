@@ -286,8 +286,23 @@ class MediaLibraryAndNotificationsTest extends TestCase
             'title' => 'Locandina Test Preview',
         ]);
 
+        // Verifica in modalità Griglia
         Livewire::actingAs($this->admin)
             ->test(ListMedia::class)
+            ->assertSet('viewMode', 'grid')
+            ->mountTableAction('edit', $item)
+            ->assertTableActionMounted('edit');
+
+        // Verifica in modalità Elenco
+        Livewire::actingAs($this->admin)
+            ->test(ListMedia::class)
+            ->call('setViewMode', 'list')
+            ->assertSet('viewMode', 'list')
+            ->assertCanSeeTableRecords([$item])
+            ->assertTableColumnExists('title')
+            ->assertTableColumnExists('collection')
+            ->assertTableColumnExists('mime_type')
+            ->assertTableColumnExists('formatted_size')
             ->mountTableAction('edit', $item)
             ->assertTableActionMounted('edit');
     }
