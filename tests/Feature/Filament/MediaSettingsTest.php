@@ -50,6 +50,7 @@ class MediaSettingsTest extends TestCase
                 'media_max_dimension_px' => 1280,
                 'media_quality_percent' => 75,
                 'media_convert_webp' => false,
+                'media_grid_columns' => 8,
             ])
             ->call('submit')
             ->assertHasNoFormErrors()
@@ -61,6 +62,7 @@ class MediaSettingsTest extends TestCase
         $this->assertSame(1280, Setting::getInt('media_max_dimension_px'));
         $this->assertSame(75, Setting::getInt('media_quality_percent'));
         $this->assertFalse(Setting::getBool('media_convert_webp'));
+        $this->assertSame(8, Setting::getInt('media_grid_columns'));
     }
 
     public function test_setting_helper_returns_default_values_when_empty(): void
@@ -71,6 +73,7 @@ class MediaSettingsTest extends TestCase
         $this->assertSame(1920, Setting::getInt('media_max_dimension_px'));
         $this->assertSame(82, Setting::getInt('media_quality_percent'));
         $this->assertTrue(Setting::getBool('media_convert_webp'));
+        $this->assertSame(7, Setting::getInt('media_grid_columns', 7));
         $this->assertSame(99, Setting::getInt('non_existent_key', 99));
         $this->assertTrue(Setting::getBool('non_existent_bool', true));
     }

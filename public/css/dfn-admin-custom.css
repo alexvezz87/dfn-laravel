@@ -241,3 +241,24 @@
     padding-bottom: 24px !important;
 }
 
+/* Media Library Grid Layout Dinamico Nativo */
+.dfn-media-grid {
+    display: grid !important;
+    grid-template-columns: repeat(var(--dfn-grid-cols, 7), minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+
+@media (max-width: 640px) {
+    .dfn-media-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .dfn-media-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+}
+
+

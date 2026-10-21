@@ -54,6 +54,7 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
   - Risoluzione massima configurabile (`media_max_dimension_px`, opzioni: HD 1280px, Full HD 1920px, 2K 2560px).
   - Qualità di compressione modulare (`media_quality_percent`, range 50-95%, default 82%).
   - Generazione e conversione automatica nel formato WebP (`media_convert_webp`) per accelerare i tempi di caricamento e le prestazioni Core Web Vitals.
+  - **Densità Griglia Multimediale Dinamica (`media_grid_columns`)**: numero di colonne della griglia configurabile da 4 a 10 colonne su schermi desktop (default 7 consigliato), calcolato dinamicamente tramite CSS Grid nativo.
 - **Modalità Doppia di Upload**:
   - **Modalità Trasparente & Ottimizzata (`media_auto_compress === true`)**: FilePond accetta file pesanti fino al tetto del server (50 MB) senza generare errori di blocco. Il client e il backend ridimensionano e comprimono automaticamente l'immagine al di sotto della soglia target con conversione WebP. Un hook in `CreateEvent` ed `EditEvent` elabora il file e invia una notifica toast informativa del risparmio di peso.
   - **Modalità Rigida (`media_auto_compress === false`)**: Il componente `FileUpload` applica il limite rigido (`maxSize`) pari alla soglia configurata, bloccando all'ingresso i file oltre soglia senza alcuna manipolazione.
@@ -64,9 +65,9 @@ Questo documento raccoglie la descrizione dei moduli funzionali, le regole di bu
   - **Refresh Immediato del Form**: al salvataggio in `EditEvent`, l'invocazione di `$this->refreshFormData(['featured_image', 'gallery_images'])` sincronizza istantaneamente i box di upload con i percorsi `.webp` effettivi, eliminando lo svuotamento temporaneo del preview senza richiedere refresh F5.
 
 ### 6. Libreria Media Centralizzata (`MediaResource` stile WordPress)
-- **Doppia Modalità di Visualizzazione (Griglia 7 Colonne & Tabella Nativa Monoriga)**:
+- **Doppia Modalità di Visualizzazione (Griglia Dinamica & Tabella Nativa Monoriga)**:
   - **Architettura Disaccoppiata (`Table::content()`)**: la visualizzazione è gestita tramite il metodo nativo `Table::content()`. In modalità Griglia restituisce la vista dedicata `media-grid.blade.php`, mentre in modalità Elenco restituisce `null`, permettendo a Filament di generare la tabella HTML nativa `<table>` senza layout card forzati.
-  - **Visualizzazione a Griglia a 7 Colonne Desktop**: griglia CSS fluida impostata su 7 colonne fisse su schermi desktop (`grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 2xl:grid-cols-8`), priva di checkbox laterali e con spaziatura compatta `gap-3` per massimizzare la panoramica dei file.
+  - **Visualizzazione a Griglia CSS Dinamica (`--dfn-grid-cols`)**: layout a griglia calcolato matematicamente dal browser via CSS Grid nativo (`.dfn-media-grid`) in base all'impostazione configurata in *Media & Upload* (da 4 a 10 colonne, default 7), con `gap: 12px`, 2 colonne su mobile (<=640px) e 4 colonne su tablet (641-1024px), privo di checkbox laterali.
   - **Hover Matita e Aspect-Ratio 1:1 Garantiti**: classi CSS dedicate (`.dfn-media-card`, `.dfn-media-overlay`, `.dfn-media-pencil-btn`) che assicurano riquadri quadrati perfetti con micro-zoom, overlay semitrasparente e icona matita centrata al passaggio del cursore indipendente dalle regole di purge di Tailwind.
   - **Visualizzazione ad Elenco (Tabella Nativa HTML Monoriga)**: tabella classica con intestazioni `<th>` e ogni record rigorosamente su una sola riga orizzontale (`<tr>`), con miniatura 40×40 px, titolo troncato monoriga a 40 caratteri, badge compatti e icone azione `iconButton` affiancate.
   - **Switcher Icone Compatto in Testata**: due pulsanti icona affiancati compatti (`[ ⊞ ] [ ☰ ]`) per alternare istantaneamente la vista via Livewire senza layout shift.
