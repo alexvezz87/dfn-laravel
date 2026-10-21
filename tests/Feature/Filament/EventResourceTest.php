@@ -3,8 +3,10 @@
 namespace Tests\Feature\Filament;
 
 use App\Filament\Resources\EventResource;
+use App\Filament\Resources\EventResource\Pages\CreateEvent;
 use App\Models\Booking;
 use App\Models\Event;
+use App\Models\MediaItem;
 use App\Models\Slot;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -181,5 +183,27 @@ class EventResourceTest extends TestCase
             'max_capacity' => 50,
             'booked_count' => 0,
         ]);
+    }
+
+    public function test_can_select_featured_image_from_media_library(): void
+    {
+        $this->actingAs($this->admin);
+
+        $media = MediaItem::create([
+            'disk' => 'public',
+            'file_path' => 'uploads/locandina-archivio.webp',
+            'file_name' => 'locandina-archivio.webp',
+            'collection' => 'featured',
+            'title' => 'Locandina d\'Archivio',
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(CreateEvent::class)
+            ->mountAction('pick_featured_image')
+            ->setActionData([
+                'selected_media' => $media->file_path,
+            ])
+            ->callMountedAction()
+            ->assertHasNoActionErrors();
     }
 }
