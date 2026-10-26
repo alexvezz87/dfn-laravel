@@ -93,6 +93,21 @@ Questa pagina raccoglie la risoluzione di problemi noti, anomalie risolte (bug f
   4. **Bucket Effettivo Configurato**: `dfn_staging` (Region: `europe-west1`, Class: `Standard`, Accesso gestito dal Service Account Cloud Run).
 - **Issue GitHub di riferimento**: [#39](https://github.com/alexvezz87/dfn-laravel/issues/39) e [#41](https://github.com/alexvezz87/dfn-laravel/issues/41)
 
+### 7. Costi Inattesi da Container Registry / Artifact Registry Vulnerability Scanning
+- **Descrizione del problema**: Nella fatturazione di Google Cloud si è verificato un picco di spesa (circa 19 € in tre giorni) associato al servizio *Container Registry Vulnerability Scanning* / *Artifact Analysis*.
+- **Causa scatenante**: Artifact Registry attiva di default l'analisi automatica delle vulnerabilità (CVE) tramite la `Container Scanning API` (`containerscanning.googleapis.com`) per ogni nuova immagine Docker caricata (~0,26 $ per scansione). Durante i cicli di deploy frequenti su Staging con GitHub Actions, ogni build inviava un nuovo digest Docker (taggato con il commit SHA), provocando decine di scansioni automatiche a pagamento.
+- **Fix applicato & Best Practice**:
+  1. Disabilitata la `Container Scanning API` (`containerscanning.googleapis.com`) a livello di progetto su Google Cloud Console.
+  2. Aggiornato il workflow GitHub Actions `.github/workflows/deploy-staging.yml` aggiungendo il comando:
+     ```bash
+     gcloud artifacts repositories update ${{ env.GAR_REPOSITORY }} \
+       --location=${{ env.REGION }} \
+       --disable-vulnerability-scanning \
+       --quiet || true
+     ```
+  3. In questo modo il repository Docker mantiene forzata la disattivazione della scansione a pagamento e non può generare ulteriori costi imprevisti.
+- **Issue GitHub di riferimento**: [#61](https://github.com/alexvezz87/dfn-laravel/issues/61)
+
 ---
 
 ## 📝 Regola di Aggiornamento
