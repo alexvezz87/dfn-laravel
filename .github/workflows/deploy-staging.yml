@@ -48,6 +48,11 @@ jobs:
               --description="Docker repository for ${{ env.SERVICE_NAME }}" \
               --quiet
           fi
+          # Disattiva preventivamente la scansione automatica a pagamento delle vulnerabilità (Container Scanning API)
+          gcloud artifacts repositories update ${{ env.GAR_REPOSITORY }} \
+            --location=${{ env.REGION }} \
+            --disable-vulnerability-scanning \
+            --quiet || true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
